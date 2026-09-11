@@ -654,7 +654,7 @@ export default function VerifiedRsvpPage({ onRsvpSubmitted, onViewPass, onNaviga
                                   <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Rohan Rawat"
+                                    placeholder="e.g. Vikram Rawat"
                                     value={familyMembers[idx]?.name || ''}
                                     onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
                                     className="w-full px-2.5 py-1.5 text-xs bg-white border border-rose-300 rounded-md focus:outline-none"

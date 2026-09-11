@@ -18,7 +18,7 @@ export default function DigitalInvitePass({ isOpen, onClose, guestRsvp, weddingI
       guest: guestName,
       code: eventCode,
       headcount: guestCount,
-      wedding: "Aditi & Rohan Shubh Vivah 2026",
+      wedding: "Chandrika & Xudong Royal Wedding 2026",
       status: "VIP Confirmed"
     });
 
@@ -51,7 +51,7 @@ export default function DigitalInvitePass({ isOpen, onClose, guestRsvp, weddingI
         {/* Top Gold Foil Ribbon */}
         <div className="bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 px-6 py-4 text-center text-white relative">
           <p className="text-[10px] tracking-widest uppercase font-bold text-gold-100">Royal Invitation Pass</p>
-          <h2 className="text-xl font-serif font-bold tracking-wide mt-0.5">Aditi & Rohan</h2>
+          <h2 className="text-xl font-serif font-bold tracking-wide mt-0.5">Chandrika & Xudong</h2>
           <p className="text-[11px] text-gold-100 font-light mt-0.5">Shubh Vivah Mahotsav • Udaipur</p>
         </div>
 

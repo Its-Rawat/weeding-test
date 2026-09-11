@@ -320,7 +320,7 @@ export default function RsvpModal({ isOpen, onClose, onRsvpSubmitted, onViewPass
             {/* Blessing Message */}
             <div>
               <label className="block text-xs font-semibold text-charcoal mb-1">
-                Warm Blessing or Message for Aditi & Rohan
+                Warm Blessing or Message for Chandrika & Xudong
               </label>
               <textarea
                 rows={3}

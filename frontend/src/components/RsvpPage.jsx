@@ -311,7 +311,7 @@ export default function RsvpPage({ onRsvpSubmitted, onViewPass, onNavigate }) {
             {/* Blessing Note */}
             <div>
               <label className="block text-xs font-semibold text-charcoal mb-1">
-                Auspicious Blessing for Aditi & Rohan
+                Auspicious Blessing for Chandrika & Xudong
               </label>
               <textarea
                 rows={2}
