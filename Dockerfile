@@ -12,7 +12,7 @@ WORKDIR /app
 COPY backend/pom.xml ./pom.xml
 COPY backend/src ./src
 # Copy compiled React frontend into Spring Boot static web resources
-COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
+COPY --from=frontend-build /app/frontend/dist/ ./src/main/resources/static/
 RUN mvn clean package -DskipTests
 
 # Step 3: Run the All-in-One Fullstack Application
@@ -21,4 +21,4 @@ WORKDIR /app
 COPY --from=backend-build /app/target/*.jar app.jar
 EXPOSE 8080
 ENV PORT=8080
-ENTRYPOINT ["sh", "-c", "java -Dserver.port= -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
