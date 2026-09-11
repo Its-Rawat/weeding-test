@@ -331,7 +331,7 @@
           }
         },
         {
-          "name": "4. Delete / Revoke Pass",
+          "name": "4. Delete User / Pass (by Email, ID, or Code in URL)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -342,22 +342,55 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/admin/passes/1",
+              "raw": "{{baseUrl}}/api/admin/users/rawat.family@example.com",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "admin",
-                "passes",
-                "1"
+                "users",
+                "rawat.family@example.com"
               ]
             },
-            "description": "Permanently deletes the pass record from the system."
+            "description": "Permanently deletes a user or pass using Email (e.g. rawat.family@example.com) or numeric ID (e.g. 1) directly in the URL."
           }
         },
         {
-          "name": "5. Test Absence Email Notification",
+          "name": "5. Delete User (by Email in Request Body)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"email\\\": \\\"rawat.family@example.com\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ]
+            },
+            "description": "Deletes a user by passing JSON body with email or ID."
+          }
+        },
+        {
+          "name": "6. Test Absence Email Notification",
           "request": {
             "method": "POST",
             "header": [
@@ -383,7 +416,7 @@
           }
         },
         {
-          "name": "6. Submit Guest RSVP",
+          "name": "7. Submit Guest RSVP",
           "request": {
             "method": "POST",
             "header": [
@@ -394,7 +427,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\\n  \\\"primaryEmail\\\": \\\"rawat.family@example.com\\\",\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\",\\n  \\\"confirmedHeadcount\\\": 3,\\n  \\\"attendingMembers\\\": \\\"Col. & Mrs. Rawat, Ananya Rawat\\\",\\n  \\\"dietaryDetails\\\": \\\"PURE_VEG\\\",\\n  \\\"songRequest\\\": \\\"Gallan Goodiyaan\\\",\\n  \\\"blessingMessage\\\": \\\"Congratulations!\\\",\\n  \\\"members\\\": [\\n    {\\n      \\\"name\\\": \\\"Aditya Rawat\\\",\\n      \\\"relationship\\\": \\\"Brother\\\",\\n      \\\"isAttending\\\": false,\\n      \\\"absenceReason\\\": \\\"Exams in progress\\\"\\n    }\\n  ]\\n}"
+              "raw": "{\\n  \\\"primaryEmail\\\": \\\"rawat.family@example.com\\\",\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\",\\n  \\\"confirmedHeadcount\\\": 3,\\n  \\\"attendingMembers\\\": \\\"Col. & Mrs. Rawat, Ananya Rawat\\\",\\n  \\\"dietaryDetails\\\": \\\"PURE_VEG\\\",\\n  \\\"songRequest\\\": \\\"Gallan Goodiyaan\\\",\\n  \\\"blessingMessage\\\": \\\"Congratulations!\\\",\\n  \\\"members\\\": [\\n    {\\n      \\\"name\\\": \\\"Col. & Mrs. Rawat\\\",\\n      \\\"relationship\\\": \\\"Parents\\\",\\n      \\\"isAttending\\\": true,\\n      \\\"dietaryPreference\\\": \\\"PURE_VEG\\\",\\n      \\\"allergyNotes\\\": \\\"\\\"\\n    },\\n    {\\n      \\\"name\\\": \\\"Aditya Rawat\\\",\\n      \\\"relationship\\\": \\\"Brother\\\",\\n      \\\"isAttending\\\": false,\\n      \\\"absenceReason\\\": \\\"Exams in progress\\\"\\n    }\\n  ]\\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/family-rsvp",
@@ -410,7 +443,7 @@
           }
         },
         {
-          "name": "7. Post Guest Wish / Blessing",
+          "name": "8. Post Guest Wish / Blessing",
           "request": {
             "method": "POST",
             "header": [

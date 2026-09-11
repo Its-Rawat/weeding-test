@@ -822,15 +822,70 @@ public class AuthService {
     }
 
     @Transactional
-    public Map<String, Object> deleteAdminInvitation(Long partyId) {
-        InvitedParty party = invitedPartyRepository.findById(partyId)
-                .orElseThrow(() -> new IllegalArgumentException("Pass not found with ID: " + partyId));
+    public Map<String, Object> deleteUserOrParty(String identifier) {
+        if (identifier == null || identifier.trim().isEmpty()) {
+            throw new IllegalArgumentException("User identifier (ID, email, or invitation code) is required.");
+        }
 
-        String name = party.getFamilyName();
+        String query = identifier.trim();
+        Optional<InvitedParty> partyOpt = Optional.empty();
+
+        // 1. Try numeric ID
+        if (query.matches("^\\d+$")) {
+            try {
+                Long id = Long.parseLong(query);
+                partyOpt = invitedPartyRepository.findById(id);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        // 2. Try Email
+        if (partyOpt.isEmpty() && query.contains("@")) {
+            partyOpt = lookupEmail(query);
+        }
+
+        // 3. Try Invitation Code
+        if (partyOpt.isEmpty()) {
+            partyOpt = invitedPartyRepository.findByInvitationCodeIgnoreCase(query);
+        }
+
+        // 4. Try Pass Serial (e.g. CX-VIP-101)
+        if (partyOpt.isEmpty()) {
+            partyOpt = invitedPartyRepository.findByPassSerialIgnoreCase(query);
+        }
+
+        // 5. Fallback: Search by Family Name
+        if (partyOpt.isEmpty()) {
+            partyOpt = invitedPartyRepository.findAll().stream()
+                    .filter(p -> p.getFamilyName().equalsIgnoreCase(query))
+                    .findFirst();
+        }
+
+        if (partyOpt.isEmpty()) {
+            throw new IllegalArgumentException("User/Party not found with identifier: '" + query + "'. Please check the ID, email, or invitation code.");
+        }
+
+        InvitedParty party = partyOpt.get();
+        Long partyId = party.getId();
+        String familyName = party.getFamilyName();
+        String email = party.getPrimaryEmail() != null ? party.getPrimaryEmail() : "N/A";
+        String code = party.getInvitationCode();
+        String passSerial = party.getPassSerial();
+
         invitedPartyRepository.delete(party);
+
         Map<String, Object> res = new HashMap<>();
         res.put("success", true);
-        res.put("message", "Pass ID " + partyId + " (" + name + ") has been permanently deleted.");
+        res.put("message", "User/Party '" + familyName + "' (ID: " + partyId + ", Email: " + email + ") has been permanently deleted.");
+        res.put("deletedId", partyId);
+        res.put("deletedFamilyName", familyName);
+        res.put("deletedEmail", email);
+        res.put("deletedInvitationCode", code);
+        res.put("deletedPassSerial", passSerial);
         return res;
+    }
+
+    @Transactional
+    public Map<String, Object> deleteAdminInvitation(Long partyId) {
+        return deleteUserOrParty(String.valueOf(partyId));
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/passes")
+@RequestMapping({"/api/admin/passes", "/api/admin/users"})
 @CrossOrigin(origins = "*")
 public class AdminApiController {
 
@@ -198,12 +198,15 @@ public class AdminApiController {
     }
 
     /**
-     * DELETE /api/admin/passes/{id}
-     * Permanently revokes and deletes a pass from the database.
+     * DELETE /api/admin/users/{identifier} or DELETE /api/admin/passes/{identifier}
+     * Permanently deletes a user / pass by numeric ID, email, or invitation code.
+     * Example: DELETE /api/admin/users/1
+     * Example: DELETE /api/admin/users/rawat.family@example.com
+     * Example: DELETE /api/admin/users/INV-RAWAT1
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePass(
-        @PathVariable("id") Long id,
+    @DeleteMapping({"/{identifier:.+}", "/delete/{identifier:.+}"})
+    public ResponseEntity<?> deleteUserByIdentifier(
+        @PathVariable("identifier") String identifier,
         @RequestHeader(value = "X-Admin-Secret", required = false) String headerSecret,
         @RequestParam(value = "secret", required = false) String querySecret
     ) {
@@ -212,7 +215,55 @@ public class AdminApiController {
         }
 
         try {
-            Map<String, Object> deleted = authService.deleteAdminInvitation(id);
+            Map<String, Object> deleted = authService.deleteUserOrParty(identifier);
+            return ResponseEntity.ok(deleted);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * DELETE /api/admin/users or DELETE /api/admin/passes
+     * Deletes user / pass flexibly via query parameters (?email=... or ?id=...) or JSON body ({"email": "..."}).
+     */
+    @DeleteMapping
+    public ResponseEntity<?> deleteUserFlexible(
+        @RequestHeader(value = "X-Admin-Secret", required = false) String headerSecret,
+        @RequestParam(value = "secret", required = false) String querySecret,
+        @RequestParam(value = "email", required = false) String emailParam,
+        @RequestParam(value = "id", required = false) String idParam,
+        @RequestParam(value = "identifier", required = false) String identifierParam,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!isAuthorized(headerSecret, querySecret)) {
+            return unauthorizedResponse();
+        }
+
+        String target = null;
+        if (identifierParam != null && !identifierParam.trim().isEmpty()) {
+            target = identifierParam.trim();
+        } else if (emailParam != null && !emailParam.trim().isEmpty()) {
+            target = emailParam.trim();
+        } else if (idParam != null && !idParam.trim().isEmpty()) {
+            target = idParam.trim();
+        } else if (body != null) {
+            if (body.get("email") != null) {
+                target = body.get("email").toString().trim();
+            } else if (body.get("id") != null) {
+                target = body.get("id").toString().trim();
+            } else if (body.get("identifier") != null) {
+                target = body.get("identifier").toString().trim();
+            }
+        }
+
+        if (target == null || target.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "User identifier missing. Provide 'email', 'id', or 'identifier' via URL path (e.g. /api/admin/users/{email}), query param (?email=...), or JSON body ({\"email\": \"...\"})."
+            ));
+        }
+
+        try {
+            Map<String, Object> deleted = authService.deleteUserOrParty(target);
             return ResponseEntity.ok(deleted);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

@@ -35,6 +35,8 @@ status: active
 > ```
 > AdityaWeddingAdmin2026
 > ```
+> *(The server also accepts `AdityaWeddingAdmin2026!#` for backward compatibility)*
+>
 > **How to pass authentication in Postman**:
 > 1. **HTTP Header (Recommended)**:
 >    ```http
@@ -63,7 +65,7 @@ status: active
   - [[#21-forge--create-new-vip-pass|2.1 Forge / Create New VIP Pass]]
   - [[#22-update-existing-pass-details|2.2 Update Existing Pass Details]]
   - [[#23-reset-pass-to-unused-state|2.3 Reset Pass to UNUSED State]]
-  - [[#24-revoke--permanently-delete-pass|2.4 Revoke / Permanently Delete Pass]]
+  - [[#24-delete--revoke-user-or-pass|2.4 Delete / Revoke User or Pass (by Email, ID, or Code)]]
   - [[#25-trigger-test-absence-email-notification|2.5 Trigger Test Absence Email Notification]]
   - [[#26-submit-guest--family-rsvp|2.6 Submit Guest / Family RSVP]]
   - [[#27-submit-guest-blessing--wish|2.7 Submit Guest Blessing / Wish]]
@@ -99,7 +101,7 @@ Verify that the Spring Boot backend service is running and healthy on Render.
 Fetches the complete wedding snapshot in a single payload: real-time headcount vs 100 capacity, all unused passes with tokens, and all registered used passes with family member attendance breakdowns.
 
 - **Method**: `GET`
-- **URL**: `{{baseUrl}}/api/admin/passes`
+- **URL**: `{{baseUrl}}/api/admin/passes`  *(or `{{baseUrl}}/api/admin/users`)*
 - **Auth Header**: `X-Admin-Secret: {{adminSecret}}`
 - **Browser URL**: `{{baseUrl}}/api/admin/passes?secret=AdityaWeddingAdmin2026`
 - **cURL**:
@@ -180,26 +182,6 @@ Fetches only unassigned passes with their cryptographic tokens and shareable inv
   curl -X GET "https://weeding-test.onrender.com/api/admin/passes/unused" \
     -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
-- **Sample Response**:
-  ```json
-  {
-    "count": 31,
-    "unusedPasses": [
-      {
-        "id": 15,
-        "invitationCode": "INV-78A3F1",
-        "inviteToken": "e2a149f7b0c3451...",
-        "invitationUrl": "/invite/e2a149f7b0c3451...",
-        "familyName": "Sharma Family",
-        "allowedPartySize": 3,
-        "side": "Bride's Side (Chandrika)",
-        "assignedTable": "Table 3 - Jasmine Pavilion",
-        "passSerial": "CX-VIP-115",
-        "status": "UNUSED"
-      }
-    ]
-  }
-  ```
 
 ---
 
@@ -214,31 +196,6 @@ Fetches all passes already registered by guests, including primary emails, RSVP 
   curl -X GET "https://weeding-test.onrender.com/api/admin/passes/used" \
     -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
-- **Sample Response**:
-  ```json
-  {
-    "count": 4,
-    "usedPasses": [
-      {
-        "id": 2,
-        "invitationCode": "CX-VIP-102",
-        "primaryEmail": "wang.relatives@example.com",
-        "familyName": "Wang Family",
-        "allowedPartySize": 3,
-        "confirmedHeadcount": 3,
-        "peopleAttending": 3,
-        "peopleNotAttending": 0,
-        "rsvpStatus": "ATTENDING",
-        "side": "Groom's Side (Xudong)",
-        "assignedTable": "Table 4 - Grand Ballroom",
-        "songRequest": "Perfect - Ed Sheeran",
-        "blessingMessage": "Wishing you both a lifetime of happiness!",
-        "status": "REGISTERED",
-        "registeredAt": "2026-09-08T14:30:00"
-      }
-    ]
-  }
-  ```
 
 ---
 
@@ -251,25 +208,6 @@ Returns real-time capacity metrics against the strict 100-person limit.
 - **cURL**:
   ```bash
   curl -X GET "https://weeding-test.onrender.com/api/auth/stats"
-  ```
-- **Sample Response**:
-  ```json
-  {
-    "totalParties": 35,
-    "registeredParties": 4,
-    "unusedParties": 31,
-    "attendingParties": 3,
-    "declinedParties": 1,
-    "pendingParties": 31,
-    "totalAllowedSeats": 118,
-    "totalPeopleAttending": 11,
-    "totalPeopleNotAttending": 3,
-    "totalPeoplePending": 104,
-    "confirmedHeadcount": 11,
-    "remainingSeats": 89,
-    "absentFamilyMembersCount": 1,
-    "declinedPartyGuestsCount": 2
-  }
   ```
 
 ---
@@ -302,27 +240,6 @@ Look up an invited guest party using their registered email address.
     -H "Content-Type: application/json" \
     -d '{ "email": "rawat.family@example.com" }'
   ```
-- **Request Body**:
-  ```json
-  {
-    "email": "rawat.family@example.com"
-  }
-  ```
-- **Sample Response**:
-  ```json
-  {
-    "success": true,
-    "email": "rawat.family@example.com",
-    "familyName": "Rawat Family",
-    "allowedPartySize": 4,
-    "status": "REGISTERED",
-    "side": "Bride's Side (Chandrika)",
-    "assignedTable": "Table 1 - Royal Lotus",
-    "rsvpStatus": "ATTENDING",
-    "isVerified": true,
-    "passSerial": "CX-VIP-101"
-  }
-  ```
 
 ---
 
@@ -336,30 +253,11 @@ Returns wedding metadata: couple names, dates, venues in Udaipur, countdown targ
   ```bash
   curl -X GET "https://weeding-test.onrender.com/api/wedding-info"
   ```
-- **Sample Response**:
-  ```json
-  {
-    "brideName": "Chandrika",
-    "groomName": "Xudong",
-    "coupleTitle": "Chandrika & Xudong",
-    "monogram": "C & X",
-    "hostName": "The Verma & Wang Families",
-    "weddingDate": "November 28, 2026",
-    "weddingDatesRange": "November 26 – 28, 2026",
-    "targetCountdownDate": "2026-11-28T18:00:00",
-    "totalInvitedLimit": 100,
-    "locationCity": "Udaipur, Rajasthan, India",
-    "mainVenue": "The Oberoi Udaivilas, Haridas Ji Ki Magri, Udaipur",
-    "rsvpDeadline": "November 10, 2026",
-    "hospitalityPhone": "+91 98765 43210",
-    "hospitalityEmail": "hospitality@chandrika-xudong.in"
-  }
-  ```
 
 ---
 
 ### 1.9 Wedding Events & Ceremony Schedule
-Returns the schedule for all 6 traditional wedding ceremonies (Mehendi, Sangeet, Haldi, Chinese Tea Ceremony, Varmala & Pheras, Grand Reception).
+Returns the schedule for all 6 traditional wedding ceremonies.
 
 - **Method**: `GET`
 - **URL**: `{{baseUrl}}/api/events`
@@ -408,35 +306,6 @@ Creates a brand new invitation pass programmatically, generating a unique invita
       "assignedTable": "Table 5 - Rose Garden Terrace"
     }'
   ```
-- **Request Body**:
-  ```json
-  {
-    "familyName": "Kapoor Family",
-    "allowedPartySize": 4,
-    "side": "Bride's Side (Chandrika)",
-    "assignedTable": "Table 5 - Rose Garden Terrace"
-  }
-  ```
-- **Sample Response**:
-  ```json
-  {
-    "success": true,
-    "id": 36,
-    "invitationCode": "INV-9D82E1",
-    "rawToken": "a7b3c9e120f4d83492...",
-    "invitationUrl": "/invite/a7b3c9e120f4d83492...",
-    "familyName": "Kapoor Family",
-    "allowedPartySize": 4,
-    "status": "UNUSED",
-    "passSerial": "CX-VIP-136",
-    "side": "Bride's Side (Chandrika)",
-    "assignedTable": "Table 5 - Rose Garden Terrace",
-    "message": "Invitation pass successfully created for Kapoor Family."
-  }
-  ```
-> [!tip]
-> The full shareable invite URL to send the guest is:  
-> `https://weeding-test.onrender.com/invite/{rawToken}`
 
 ---
 
@@ -464,31 +333,6 @@ Update an existing pass's family name, seat quota, table seating, side, confirme
       "rsvpStatus": "ATTENDING"
     }'
   ```
-- **Request Body**:
-  ```json
-  {
-    "familyName": "Rawat Family (VIP)",
-    "allowedPartySize": 5,
-    "assignedTable": "Table 1 - Royal Lotus Head Table",
-    "side": "Bride's Side (Chandrika)",
-    "confirmedHeadcount": 4,
-    "rsvpStatus": "ATTENDING"
-  }
-  ```
-- **Sample Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Pass ID 1 (Rawat Family (VIP)) successfully updated.",
-    "id": 1,
-    "familyName": "Rawat Family (VIP)",
-    "allowedPartySize": 5,
-    "confirmedHeadcount": 4,
-    "assignedTable": "Table 1 - Royal Lotus Head Table",
-    "side": "Bride's Side (Chandrika)",
-    "rsvpStatus": "ATTENDING"
-  }
-  ```
 
 ---
 
@@ -506,46 +350,64 @@ Resets a registered pass back to `UNUSED` state. Clears out the claimed email, v
   curl -X POST "https://weeding-test.onrender.com/api/admin/passes/1/reset" \
     -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
-- **Sample Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Pass ID 1 (Rawat Family) reset to UNUSED state.",
-    "id": 1,
-    "invitationCode": "CX-VIP-101",
-    "rawToken": "demo-rawat-token-2026",
-    "invitationUrl": "/invite/demo-rawat-token-2026"
-  }
-  ```
 
 ---
 
-### 2.4 Revoke / Permanently Delete Pass
-Permanently revokes and removes an invitation pass from the database.
+### 2.4 Delete / Revoke User or Pass (by Email, ID, or Code)
+Permanently deletes a registered user or invitation pass from the database. All associated family members and RSVP submissions are cleanly removed in a cascade.
 
+> [!tip]
+> You can delete a user by **Email**, by numeric **ID**, or by **Invitation Code**!
+
+#### 📍 Style A: In the URL Path (Fastest in Postman)
 - **Method**: `DELETE`
-- **URL**: `{{baseUrl}}/api/admin/passes/{id}`  *(e.g. `{{baseUrl}}/api/admin/passes/36`)*
+- **URL**: `{{baseUrl}}/api/admin/users/{email_or_id}`  *(or `/api/admin/passes/{email_or_id}`)*
 - **Headers**:
   ```http
   X-Admin-Secret: {{adminSecret}}
   ```
-- **cURL**:
+- **cURL (Delete by Email)**:
   ```bash
-  curl -X DELETE "https://weeding-test.onrender.com/api/admin/passes/36" \
+  curl -X DELETE "https://weeding-test.onrender.com/api/admin/users/rawat.family@example.com" \
     -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
-- **Sample Response**:
+- **cURL (Delete by ID)**:
+  ```bash
+  curl -X DELETE "https://weeding-test.onrender.com/api/admin/users/1" \
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
+  ```
+
+#### 📍 Style B: Using JSON Body in Postman
+- **Method**: `DELETE`
+- **URL**: `{{baseUrl}}/api/admin/users`
+- **Headers**:
+  ```http
+  Content-Type: application/json
+  X-Admin-Secret: {{adminSecret}}
+  ```
+- **Request Body**:
+  ```json
+  {
+    "email": "rawat.family@example.com"
+  }
+  ```
+- **Sample Success Response**:
   ```json
   {
     "success": true,
-    "message": "Pass ID 36 (Kapoor Family) has been permanently deleted."
+    "message": "User/Party 'Rawat Family' (ID: 1, Email: rawat.family@example.com) has been permanently deleted.",
+    "deletedId": 1,
+    "deletedFamilyName": "Rawat Family",
+    "deletedEmail": "rawat.family@example.com",
+    "deletedInvitationCode": "INV-RAWAT1",
+    "deletedPassSerial": "CX-VIP-101"
   }
   ```
 
 ---
 
 ### 2.5 Trigger Test Absence Email Notification
-Dispatches a test absence notification email directly to `adi2002rawat@gmail.com` using the live notification engine to verify that alert emails are working properly.
+Dispatches a test absence notification email directly to `adi2002rawat@gmail.com` using the live notification engine.
 
 - **Method**: `POST`
 - **URL**: `{{baseUrl}}/api/admin/passes/test-email`
@@ -558,25 +420,14 @@ Dispatches a test absence notification email directly to `adi2002rawat@gmail.com
   curl -X POST "https://weeding-test.onrender.com/api/admin/passes/test-email" \
     -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
-- **Sample Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Test absence email notification queued for dispatch to adi2002rawat@gmail.com",
-    "recipient": "adi2002rawat@gmail.com"
-  }
-  ```
 
 ---
 
 ### 2.6 Submit Guest / Family RSVP
 Submits or updates an RSVP for a registered party, including individual member attendance (`isAttending: true/false`), absence reasons, dietary preferences, and song requests.
 
-> [!important]
-> If any member in `members` has `"isAttending": false`, the system automatically sends an alert email to `adi2002rawat@gmail.com` detailing who is absent and their reason!
-
 - **Method**: `POST`
-- **URL**: `{{baseUrl}}/api/auth/family-rsvp`  *(also accepts `{{baseUrl}}/api/auth/rsvp`)*
+- **URL**: `{{baseUrl}}/api/auth/family-rsvp`
 - **Headers**:
   ```http
   Content-Type: application/json
@@ -591,29 +442,18 @@ Submits or updates an RSVP for a registered party, including individual member a
       "confirmedHeadcount": 3,
       "attendingMembers": "Col. & Mrs. Rawat, Ananya Rawat",
       "dietaryDetails": "PURE_VEG",
-      "allergies": "Nut allergy for Ananya",
-      "songRequest": "Gallan Goodiyaan",
-      "blessingMessage": "Heartiest congratulations Chandrika & Xudong!",
       "members": [
         {
           "name": "Col. & Mrs. Rawat",
           "relationship": "Parents",
           "isAttending": true,
-          "dietaryPreference": "PURE_VEG",
-          "allergyNotes": ""
-        },
-        {
-          "name": "Ananya Rawat",
-          "relationship": "Sister",
-          "isAttending": true,
-          "dietaryPreference": "PURE_VEG",
-          "allergyNotes": "Nut-free"
+          "dietaryPreference": "PURE_VEG"
         },
         {
           "name": "Aditya Rawat",
           "relationship": "Brother",
           "isAttending": false,
-          "absenceReason": "Final exams in progress"
+          "absenceReason": "Final university exams"
         }
       ]
     }'
@@ -661,7 +501,8 @@ Post a heartfelt blessing from a guest for the couple.
 | **UPDATE** | `POST` | `/api/admin/passes/create` | Programmatically create new VIP pass | `X-Admin-Secret` |
 | **UPDATE** | `PUT` | `/api/admin/passes/{id}` | Update pass quota, table, side, RSVP status | `X-Admin-Secret` |
 | **UPDATE** | `POST` | `/api/admin/passes/{id}/reset` | Reset pass to UNUSED, clear claimed email | `X-Admin-Secret` |
-| **UPDATE** | `DELETE` | `/api/admin/passes/{id}` | Permanently delete / revoke pass | `X-Admin-Secret` |
+| **UPDATE** | `DELETE` | `/api/admin/users/{email_or_id}` | **Delete User / Pass by Email, ID, or Code** | `X-Admin-Secret` |
+| **UPDATE** | `DELETE` | `/api/admin/users` | **Delete User by JSON body (`{"email": "..."}`)** | `X-Admin-Secret` |
 | **UPDATE** | `POST` | `/api/admin/passes/test-email` | Trigger absence alert to adi2002rawat@gmail.com | `X-Admin-Secret` |
 | **UPDATE** | `POST` | `/api/auth/family-rsvp` | Submit family RSVP with member attendance | None |
 | **UPDATE** | `POST` | `/api/wishes` | Post new blessing for bride & groom | None |
@@ -1010,7 +851,7 @@ To import this complete suite directly into Postman:
           }
         },
         {
-          "name": "4. Delete / Revoke Pass",
+          "name": "4. Delete User / Pass (by Email, ID, or Code in URL)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1021,22 +862,55 @@ To import this complete suite directly into Postman:
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/admin/passes/1",
+              "raw": "{{baseUrl}}/api/admin/users/rawat.family@example.com",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "admin",
-                "passes",
-                "1"
+                "users",
+                "rawat.family@example.com"
               ]
             },
-            "description": "Permanently deletes the pass record from the system."
+            "description": "Permanently deletes a user or pass using Email (e.g. rawat.family@example.com) or numeric ID (e.g. 1) directly in the URL."
           }
         },
         {
-          "name": "5. Test Absence Email Notification",
+          "name": "5. Delete User (by Email in Request Body)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"email\\\": \\\"rawat.family@example.com\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ]
+            },
+            "description": "Deletes a user by passing JSON body with email or ID."
+          }
+        },
+        {
+          "name": "6. Test Absence Email Notification",
           "request": {
             "method": "POST",
             "header": [
@@ -1062,7 +936,7 @@ To import this complete suite directly into Postman:
           }
         },
         {
-          "name": "6. Submit Guest RSVP",
+          "name": "7. Submit Guest RSVP",
           "request": {
             "method": "POST",
             "header": [
@@ -1073,7 +947,7 @@ To import this complete suite directly into Postman:
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\\n  \\\"primaryEmail\\\": \\\"rawat.family@example.com\\\",\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\",\\n  \\\"confirmedHeadcount\\\": 3,\\n  \\\"attendingMembers\\\": \\\"Col. & Mrs. Rawat, Ananya Rawat\\\",\\n  \\\"dietaryDetails\\\": \\\"PURE_VEG\\\",\\n  \\\"songRequest\\\": \\\"Gallan Goodiyaan\\\",\\n  \\\"blessingMessage\\\": \\\"Congratulations!\\\",\\n  \\\"members\\\": [\\n    {\\n      \\\"name\\\": \\\"Aditya Rawat\\\",\\n      \\\"relationship\\\": \\\"Brother\\\",\\n      \\\"isAttending\\\": false,\\n      \\\"absenceReason\\\": \\\"Exams in progress\\\"\\n    }\\n  ]\\n}"
+              "raw": "{\\n  \\\"primaryEmail\\\": \\\"rawat.family@example.com\\\",\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\",\\n  \\\"confirmedHeadcount\\\": 3,\\n  \\\"attendingMembers\\\": \\\"Col. & Mrs. Rawat, Ananya Rawat\\\",\\n  \\\"dietaryDetails\\\": \\\"PURE_VEG\\\",\\n  \\\"songRequest\\\": \\\"Gallan Goodiyaan\\\",\\n  \\\"blessingMessage\\\": \\\"Congratulations!\\\",\\n  \\\"members\\\": [\\n    {\\n      \\\"name\\\": \\\"Col. & Mrs. Rawat\\\",\\n      \\\"relationship\\\": \\\"Parents\\\",\\n      \\\"isAttending\\\": true,\\n      \\\"dietaryPreference\\\": \\\"PURE_VEG\\\",\\n      \\\"allergyNotes\\\": \\\"\\\"\\n    },\\n    {\\n      \\\"name\\\": \\\"Aditya Rawat\\\",\\n      \\\"relationship\\\": \\\"Brother\\\",\\n      \\\"isAttending\\\": false,\\n      \\\"absenceReason\\\": \\\"Exams in progress\\\"\\n    }\\n  ]\\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/family-rsvp",
@@ -1089,7 +963,7 @@ To import this complete suite directly into Postman:
           }
         },
         {
-          "name": "7. Post Guest Wish / Blessing",
+          "name": "8. Post Guest Wish / Blessing",
           "request": {
             "method": "POST",
             "header": [
