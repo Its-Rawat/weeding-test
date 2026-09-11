@@ -327,6 +327,11 @@ public class AuthService {
         System.out.println(" Guest: " + party.getFamilyName() + " | Code: " + code);
         System.out.println("=================================================");
 
+        // Dispatch real Gmail message if SMTP credentials are configured
+        if (emailNotificationService != null && party.getPrimaryEmail() != null) {
+            emailNotificationService.sendOtpEmail(party.getPrimaryEmail(), party.getFamilyName(), code);
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("email", party.getPrimaryEmail());

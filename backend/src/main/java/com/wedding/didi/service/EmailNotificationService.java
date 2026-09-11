@@ -204,6 +204,56 @@ public class EmailNotificationService {
         return html.toString();
     }
 
+    /**
+     * Dispatches a royal 6-digit OTP email to guests logging in.
+     */
+    public void sendOtpEmail(String toEmail, String familyName, String otpCode) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                if (mailSender != null && mailEnabled) {
+                    MimeMessage message = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+                    helper.setFrom(mailFrom);
+                    helper.setTo(toEmail);
+                    helper.setSubject("🌸 Your Wedding Verification Code: " + otpCode + " — Chandrika & Xudong");
+
+                    String html = buildOtpHtmlEmail(familyName, otpCode);
+                    String plainText = "Dear " + familyName + ",\n\nYour 6-digit wedding portal verification code is: " + otpCode + "\n\nThis code is valid for 15 minutes.\n\nWarm regards,\nChandrika & Xudong";
+
+                    helper.setText(plainText, html);
+                    mailSender.send(message);
+                    logger.info("Successfully dispatched OTP email to: {}", toEmail);
+                }
+            } catch (Exception e) {
+                logger.warn("Could not dispatch OTP email to {}: {}", toEmail, e.getMessage());
+            }
+        });
+    }
+
+    private String buildOtpHtmlEmail(String familyName, String otpCode) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>");
+        html.append("<html><head><meta charset='UTF-8'></head>");
+        html.append("<body style='font-family: Arial, sans-serif; background-color: #f7f4ef; margin: 0; padding: 24px; color: #23201e;'>");
+        html.append("<div style='max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e0cfb3; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); text-align: center;'>");
+        html.append("<div style='background: linear-gradient(135deg, #b73239, #8c1d23); padding: 24px; color: #ffffff;'>");
+        html.append("<h1 style='margin: 0; font-size: 22px; font-family: Georgia, serif; letter-spacing: 0.5px;'>Chandrika &amp; Xudong</h1>");
+        html.append("<p style='margin: 6px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;'>Royal Wedding Portal • Login Verification</p>");
+        html.append("</div>");
+        html.append("<div style='padding: 32px 24px;'>");
+        html.append("<p style='font-size: 15px; color: #444; margin: 0 0 16px 0;'>Dear <strong>").append(escapeHtml(familyName)).append("</strong>,</p>");
+        html.append("<p style='font-size: 14px; color: #666; margin: 0 0 24px 0;'>Use the following 6-digit one-time password to access your private wedding pass &amp; RSVP concierge:</p>");
+        html.append("<div style='display: inline-block; background: #fdf8ed; border: 2px dashed #d4af37; border-radius: 10px; padding: 14px 28px; font-size: 32px; font-family: monospace; font-weight: bold; letter-spacing: 6px; color: #b73239; margin-bottom: 24px;'>");
+        html.append(escapeHtml(otpCode));
+        html.append("</div>");
+        html.append("<p style='font-size: 12px; color: #888; margin: 0;'>This code is valid for 15 minutes. Please do not share this code with anyone.</p>");
+        html.append("</div>");
+        html.append("<div style='background: #faf7f2; padding: 14px; font-size: 11px; color: #999; border-top: 1px solid #eee;'>");
+        html.append("The Oberoi Udaivilas, Udaipur • November 26 – 28, 2026");
+        html.append("</div></div></body></html>");
+        return html.toString();
+    }
+
     private String escapeHtml(String text) {
         if (text == null) return "";
         return text.replace("&", "&amp;")
