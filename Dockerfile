@@ -1,4 +1,4 @@
-﻿# Step 1: Build the Spring Boot application using Maven and JDK 21
+# Step 1: Build the Spring Boot application using Maven and JDK 21
 FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY backend/pom.xml ./pom.xml
