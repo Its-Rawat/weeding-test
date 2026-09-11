@@ -33,16 +33,16 @@ status: active
 > ### 🔑 Admin Security Authentication
 > All admin endpoints are protected by your private **Admin Secret Key**:
 > ```
-> AdityaWeddingAdmin2026!#
+> AdityaWeddingAdmin2026
 > ```
 > **How to pass authentication in Postman**:
 > 1. **HTTP Header (Recommended)**:
 >    ```http
->    X-Admin-Secret: AdityaWeddingAdmin2026!#
+>    X-Admin-Secret: AdityaWeddingAdmin2026
 >    ```
 > 2. **URL Query Parameter (Quick Browser Check)**:
 >    ```http
->    ?secret=AdityaWeddingAdmin2026!#
+>    ?secret=AdityaWeddingAdmin2026
 >    ```
 
 ---
@@ -101,11 +101,11 @@ Fetches the complete wedding snapshot in a single payload: real-time headcount v
 - **Method**: `GET`
 - **URL**: `{{baseUrl}}/api/admin/passes`
 - **Auth Header**: `X-Admin-Secret: {{adminSecret}}`
-- **Browser URL**: `{{baseUrl}}/api/admin/passes?secret=AdityaWeddingAdmin2026!#`
+- **Browser URL**: `{{baseUrl}}/api/admin/passes?secret=AdityaWeddingAdmin2026`
 - **cURL**:
   ```bash
   curl -X GET "https://weeding-test.onrender.com/api/admin/passes" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -178,7 +178,7 @@ Fetches only unassigned passes with their cryptographic tokens and shareable inv
 - **cURL**:
   ```bash
   curl -X GET "https://weeding-test.onrender.com/api/admin/passes/unused" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -212,7 +212,7 @@ Fetches all passes already registered by guests, including primary emails, RSVP 
 - **cURL**:
   ```bash
   curl -X GET "https://weeding-test.onrender.com/api/admin/passes/used" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -400,7 +400,7 @@ Creates a brand new invitation pass programmatically, generating a unique invita
   ```bash
   curl -X POST "https://weeding-test.onrender.com/api/admin/passes/create" \
     -H "Content-Type: application/json" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#" \
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026" \
     -d '{
       "familyName": "Kapoor Family",
       "allowedPartySize": 4,
@@ -454,7 +454,7 @@ Update an existing pass's family name, seat quota, table seating, side, confirme
   ```bash
   curl -X PUT "https://weeding-test.onrender.com/api/admin/passes/1" \
     -H "Content-Type: application/json" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#" \
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026" \
     -d '{
       "familyName": "Rawat Family (VIP)",
       "allowedPartySize": 5,
@@ -504,7 +504,7 @@ Resets a registered pass back to `UNUSED` state. Clears out the claimed email, v
 - **cURL**:
   ```bash
   curl -X POST "https://weeding-test.onrender.com/api/admin/passes/1/reset" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -532,7 +532,7 @@ Permanently revokes and removes an invitation pass from the database.
 - **cURL**:
   ```bash
   curl -X DELETE "https://weeding-test.onrender.com/api/admin/passes/36" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -556,7 +556,7 @@ Dispatches a test absence notification email directly to `adi2002rawat@gmail.com
 - **cURL**:
   ```bash
   curl -X POST "https://weeding-test.onrender.com/api/admin/passes/test-email" \
-    -H "X-Admin-Secret: AdityaWeddingAdmin2026!#"
+    -H "X-Admin-Secret: AdityaWeddingAdmin2026"
   ```
 - **Sample Response**:
   ```json
@@ -691,7 +691,7 @@ To import this complete suite directly into Postman:
     },
     {
       "key": "adminSecret",
-      "value": "AdityaWeddingAdmin2026!#",
+      "value": "AdityaWeddingAdmin2026",
       "type": "string"
     }
   ],

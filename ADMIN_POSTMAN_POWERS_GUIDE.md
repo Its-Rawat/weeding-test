@@ -470,12 +470,12 @@ Chandrika & Xudong
 
 ## 🛠️ Quick Troubleshooting
 
-| Issue | Cause | Solution |
-| :--- | :--- | :--- |
-| **`403 Forbidden`** | Missing or incorrect admin secret key | Verify `X-Admin-Secret` header or `?secret=...` parameter matches `AdityaWeddingAdmin2026!#`. |
-| **`Unable to connect to remote server`** | Spring Boot backend is not running | Click **Run** or **Restart** on `DidiWeddingBackendApplication` in IntelliJ. |
-| **Pass shows `ALREADY_REGISTERED`** | A guest already claimed this token with their email | Use Power 3 (`GET /api/admin/passes/used`) to see which email claimed it, or use Power 4 to create a fresh new pass. |
-| **Want to change the Secret Key** | Routine security rotation | Edit `admin.secret.key=...` in `backend/src/main/resources/application.properties` and restart backend. |
+| Issue                                    | Cause                                               | Solution                                                                                                             |
+| :--------------------------------------- | :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| **`403 Forbidden`**                      | Missing or incorrect admin secret key               | Verify `X-Admin-Secret` header or `?secret=...` parameter matches `AdityaWeddingAdmin2026!#`.                        |
+| **`Unable to connect to remote server`** | Spring Boot backend is not running                  | Click **Run** or **Restart** on `DidiWeddingBackendApplication` in IntelliJ.                                         |
+| **Pass shows `ALREADY_REGISTERED`**      | A guest already claimed this token with their email | Use Power 3 (`GET /api/admin/passes/used`) to see which email claimed it, or use Power 4 to create a fresh new pass. |
+| **Want to change the Secret Key**        | Routine security rotation                           | Edit `admin.secret.key=...` in `backend/src/main/resources/application.properties` and restart backend.              |
 
 
 
