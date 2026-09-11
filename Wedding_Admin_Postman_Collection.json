@@ -1,0 +1,132 @@
+{
+  "info": {
+    "name": "👑 Chandrika & Xudong Wedding — Admin Superpowers",
+    "description": "Exclusive Admin APIs for wedding host Aditya. Secure pass extraction, creation, and RSVP tracking.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminSecret",
+      "value": "AdityaWeddingAdmin2026!#",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Master Overview (The God-View)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Admin-Secret",
+            "value": "{{adminSecret}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/passes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "passes"]
+        },
+        "description": "Returns overall wedding headcount, all unused passes with shareable links, and all registered used passes."
+      }
+    },
+    {
+      "name": "2. Get All Unused Passes (Tokens & Links to Send)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Admin-Secret",
+            "value": "{{adminSecret}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/passes/unused",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "passes", "unused"]
+        },
+        "description": "Returns available invitation tokens and direct URLs to copy and send to guest families."
+      }
+    },
+    {
+      "name": "3. Get All Used Passes (RSVPs & Attendance)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Admin-Secret",
+            "value": "{{adminSecret}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/passes/used",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "passes", "used"]
+        },
+        "description": "Returns all claimed passes, registered guest emails, and RSVP confirmation statuses."
+      }
+    },
+    {
+      "name": "4. Forge New VIP Pass On Demand",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Admin-Secret",
+            "value": "{{adminSecret}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"familyName\": \"Kapoor Family\",\n  \"allowedPartySize\": 4,\n  \"side\": \"BRIDE\",\n  \"assignedTable\": \"Table 5 - Rose Garden Terrace\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/passes/create",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "passes", "create"]
+        },
+        "description": "Programmatically creates a new invitation code, token, and direct URL for a guest family."
+      }
+    },
+    {
+      "name": "5. Headcount & Catering Dietary Breakdown",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "stats"]
+        },
+        "description": "Returns total confirmed headcount against the 100 capacity and vegetarian/Jain/non-veg counts."
+      }
+    },
+    {
+      "name": "6. Full Raw Guest List Manifest",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/master-list",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "master-list"]
+        },
+        "description": "Complete list of all guest parties and structured RSVP records."
+      }
+    }
+  ]
+}
