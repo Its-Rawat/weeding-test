@@ -1,13 +1,13 @@
 {
   "info": {
-    "name": "👑 Chandrika & Xudong Wedding — Admin Superpowers",
-    "description": "Exclusive Admin APIs for wedding host Aditya. Secure pass extraction, creation, and RSVP tracking.",
+    "name": "\ud83d\udc51 Chandrika & Xudong Wedding \u2014 Production Admin Suite",
+    "description": "Production Ready Postman Collection for Aditya (Wedding Host). Includes Check & Update APIs for both live Render and localhost environments.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:8080",
+      "value": "https://weeding-test.onrender.com",
       "type": "string"
     },
     {
@@ -18,115 +18,424 @@
   ],
   "item": [
     {
-      "name": "1. Master Overview (The God-View)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "X-Admin-Secret",
-            "value": "{{adminSecret}}",
-            "type": "text"
+      "name": "\ud83d\udd0d CHECK APIs",
+      "item": [
+        {
+          "name": "1. Service Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            },
+            "description": "Verifies that Render deployment is UP and operational."
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/admin/passes",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "admin", "passes"]
         },
-        "description": "Returns overall wedding headcount, all unused passes with shareable links, and all registered used passes."
-      }
-    },
-    {
-      "name": "2. Get All Unused Passes (Tokens & Links to Send)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "X-Admin-Secret",
-            "value": "{{adminSecret}}",
-            "type": "text"
+        {
+          "name": "2. Master God-View (All Passes & Headcount)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes"
+              ]
+            },
+            "description": "Comprehensive summary: remaining seats, unused passes with tokens, and registered RSVPs."
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/admin/passes/unused",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "admin", "passes", "unused"]
         },
-        "description": "Returns available invitation tokens and direct URLs to copy and send to guest families."
-      }
-    },
-    {
-      "name": "3. Get All Used Passes (RSVPs & Attendance)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "X-Admin-Secret",
-            "value": "{{adminSecret}}",
-            "type": "text"
+        {
+          "name": "3. Get Unused Passes (Tokens & Shareable Links)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/unused",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "unused"
+              ]
+            },
+            "description": "Returns unassigned tokens and URLs ready to send to guests."
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/admin/passes/used",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "admin", "passes", "used"]
         },
-        "description": "Returns all claimed passes, registered guest emails, and RSVP confirmation statuses."
-      }
-    },
-    {
-      "name": "4. Forge New VIP Pass On Demand",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-Admin-Secret",
-            "value": "{{adminSecret}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+        {
+          "name": "4. Get Used Passes (Claimed RSVPs & Member Attendance)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/used",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "used"
+              ]
+            },
+            "description": "Returns all registered parties, headcount breakdown, and member absence reasons."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"familyName\": \"Kapoor Family\",\n  \"allowedPartySize\": 4,\n  \"side\": \"BRIDE\",\n  \"assignedTable\": \"Table 5 - Rose Garden Terrace\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/admin/passes/create",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "admin", "passes", "create"]
+        {
+          "name": "5. Headcount & Attendance Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "stats"
+              ]
+            },
+            "description": "Real-time seat calculation against the 100-seat limit."
+          }
         },
-        "description": "Programmatically creates a new invitation code, token, and direct URL for a guest family."
-      }
+        {
+          "name": "6. Full Raw Manifest List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/master-list",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "master-list"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Lookup Guest by Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"email\\\": \\\"rawat.family@example.com\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/lookup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "lookup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8. Wedding Information & Venues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wedding-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "wedding-info"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9. Wedding Events Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "10. Guest Wishes Wall",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "wishes"
+              ]
+            }
+          }
+        }
+      ]
     },
     {
-      "name": "5. Headcount & Catering Dietary Breakdown",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/auth/stats",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "auth", "stats"]
+      "name": "\u270f\ufe0f UPDATE & MANAGE APIs",
+      "item": [
+        {
+          "name": "1. Forge New VIP Pass",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"familyName\\\": \\\"Kapoor Family\\\",\\n  \\\"allowedPartySize\\\": 4,\\n  \\\"side\\\": \\\"Bride's Side (Chandrika)\\\",\\n  \\\"assignedTable\\\": \\\"Table 5 - Rose Garden Terrace\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "create"
+              ]
+            },
+            "description": "Generates a fresh pass token and shareable URL."
+          }
         },
-        "description": "Returns total confirmed headcount against the 100 capacity and vegetarian/Jain/non-veg counts."
-      }
-    },
-    {
-      "name": "6. Full Raw Guest List Manifest",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/auth/master-list",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "auth", "master-list"]
+        {
+          "name": "2. Update Existing Pass Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"familyName\\\": \\\"Rawat Family (VIP)\\\",\\n  \\\"allowedPartySize\\\": 5,\\n  \\\"assignedTable\\\": \\\"Table 1 - Royal Lotus Head Table\\\",\\n  \\\"side\\\": \\\"Bride's Side (Chandrika)\\\",\\n  \\\"confirmedHeadcount\\\": 4,\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "1"
+              ]
+            },
+            "description": "Updates pass fields like headcount, table, side, and name."
+          }
         },
-        "description": "Complete list of all guest parties and structured RSVP records."
-      }
+        {
+          "name": "3. Reset Pass to UNUSED State",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/1/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "1",
+                "reset"
+              ]
+            },
+            "description": "Clears claimed email, login tokens, and RSVP so the link can be reused."
+          }
+        },
+        {
+          "name": "4. Delete / Revoke Pass",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "1"
+              ]
+            },
+            "description": "Permanently deletes the pass record from the system."
+          }
+        },
+        {
+          "name": "5. Test Absence Email Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Admin-Secret",
+                "value": "{{adminSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/passes/test-email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "passes",
+                "test-email"
+              ]
+            },
+            "description": "Triggers a test absence alert dispatch to adi2002rawat@gmail.com."
+          }
+        },
+        {
+          "name": "6. Submit Guest RSVP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"primaryEmail\\\": \\\"rawat.family@example.com\\\",\\n  \\\"rsvpStatus\\\": \\\"ATTENDING\\\",\\n  \\\"confirmedHeadcount\\\": 3,\\n  \\\"attendingMembers\\\": \\\"Col. & Mrs. Rawat, Ananya Rawat\\\",\\n  \\\"dietaryDetails\\\": \\\"PURE_VEG\\\",\\n  \\\"songRequest\\\": \\\"Gallan Goodiyaan\\\",\\n  \\\"blessingMessage\\\": \\\"Congratulations!\\\",\\n  \\\"members\\\": [\\n    {\\n      \\\"name\\\": \\\"Aditya Rawat\\\",\\n      \\\"relationship\\\": \\\"Brother\\\",\\n      \\\"isAttending\\\": false,\\n      \\\"absenceReason\\\": \\\"Exams in progress\\\"\\n    }\\n  ]\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/family-rsvp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "family-rsvp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Post Guest Wish / Blessing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"guestName\\\": \\\"Uncle Rajesh\\\",\\n  \\\"city\\\": \\\"Dehradun\\\",\\n  \\\"message\\\": \\\"Heartiest congratulations Chandrika & Xudong!\\\",\\n  \\\"relationship\\\": \\\"Uncle\\\"\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/wishes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "wishes"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

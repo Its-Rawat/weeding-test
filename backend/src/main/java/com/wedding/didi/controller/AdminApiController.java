@@ -151,4 +151,71 @@ public class AdminApiController {
             "recipient", "adi2002rawat@gmail.com"
         ));
     }
+
+    /**
+     * PUT /api/admin/passes/{id}
+     * Updates pass details such as familyName, allowedPartySize, assignedTable, side, rsvpStatus, confirmedHeadcount.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePass(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "X-Admin-Secret", required = false) String headerSecret,
+        @RequestParam(value = "secret", required = false) String querySecret,
+        @RequestBody Map<String, Object> payload
+    ) {
+        if (!isAuthorized(headerSecret, querySecret)) {
+            return unauthorizedResponse();
+        }
+
+        try {
+            Map<String, Object> updated = authService.updateAdminInvitation(id, payload);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * POST /api/admin/passes/{id}/reset
+     * Resets a pass back to UNUSED state, clearing out claimed emails, auth tokens, and RSVP statuses.
+     */
+    @PostMapping("/{id}/reset")
+    public ResponseEntity<?> resetPass(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "X-Admin-Secret", required = false) String headerSecret,
+        @RequestParam(value = "secret", required = false) String querySecret
+    ) {
+        if (!isAuthorized(headerSecret, querySecret)) {
+            return unauthorizedResponse();
+        }
+
+        try {
+            Map<String, Object> reset = authService.resetAdminInvitation(id);
+            return ResponseEntity.ok(reset);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * DELETE /api/admin/passes/{id}
+     * Permanently revokes and deletes a pass from the database.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePass(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "X-Admin-Secret", required = false) String headerSecret,
+        @RequestParam(value = "secret", required = false) String querySecret
+    ) {
+        if (!isAuthorized(headerSecret, querySecret)) {
+            return unauthorizedResponse();
+        }
+
+        try {
+            Map<String, Object> deleted = authService.deleteAdminInvitation(id);
+            return ResponseEntity.ok(deleted);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

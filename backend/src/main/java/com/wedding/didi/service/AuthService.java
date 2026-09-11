@@ -740,4 +740,85 @@ public class AuthService {
 
         return stats;
     }
+
+    @Transactional
+    public Map<String, Object> updateAdminInvitation(Long partyId, Map<String, Object> payload) {
+        InvitedParty party = invitedPartyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("Pass not found with ID: " + partyId));
+
+        if (payload.containsKey("familyName") && payload.get("familyName") != null) {
+            party.setFamilyName(((String) payload.get("familyName")).trim());
+        }
+        if (payload.containsKey("allowedPartySize") && payload.get("allowedPartySize") != null) {
+            party.setAllowedPartySize(Integer.parseInt(payload.get("allowedPartySize").toString()));
+        }
+        if (payload.containsKey("assignedTable") && payload.get("assignedTable") != null) {
+            party.setAssignedTable((String) payload.get("assignedTable"));
+        }
+        if (payload.containsKey("side") && payload.get("side") != null) {
+            party.setSide((String) payload.get("side"));
+        }
+        if (payload.containsKey("rsvpStatus") && payload.get("rsvpStatus") != null) {
+            party.setRsvpStatus((String) payload.get("rsvpStatus"));
+        }
+        if (payload.containsKey("confirmedHeadcount") && payload.get("confirmedHeadcount") != null) {
+            party.setConfirmedHeadcount(Integer.parseInt(payload.get("confirmedHeadcount").toString()));
+        }
+
+        InvitedParty saved = invitedPartyRepository.save(party);
+        Map<String, Object> res = new HashMap<>();
+        res.put("success", true);
+        res.put("message", "Pass ID " + partyId + " (" + saved.getFamilyName() + ") successfully updated.");
+        res.put("id", saved.getId());
+        res.put("familyName", saved.getFamilyName());
+        res.put("allowedPartySize", saved.getAllowedPartySize());
+        res.put("confirmedHeadcount", saved.getConfirmedHeadcount());
+        res.put("assignedTable", saved.getAssignedTable());
+        res.put("side", saved.getSide());
+        res.put("rsvpStatus", saved.getRsvpStatus());
+        return res;
+    }
+
+    @Transactional
+    public Map<String, Object> resetAdminInvitation(Long partyId) {
+        InvitedParty party = invitedPartyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("Pass not found with ID: " + partyId));
+
+        party.setStatus("UNUSED");
+        party.setPrimaryEmail(null);
+        party.setAuthToken(null);
+        party.setVerificationCode(null);
+        party.setCodeExpiresAt(null);
+        party.setIsVerified(false);
+        party.setRsvpStatus("PENDING");
+        party.setConfirmedHeadcount(0);
+        party.setAttendingMembers(null);
+        party.setDietaryDetails(null);
+        party.setAllergies(null);
+        party.setSongRequest(null);
+        party.setBlessingMessage(null);
+
+        InvitedParty saved = invitedPartyRepository.save(party);
+        Map<String, Object> res = new HashMap<>();
+        res.put("success", true);
+        res.put("message", "Pass ID " + partyId + " (" + saved.getFamilyName() + ") reset to UNUSED state.");
+        res.put("id", saved.getId());
+        res.put("invitationCode", saved.getInvitationCode());
+        res.put("rawToken", saved.getInviteToken());
+        res.put("invitationUrl", "/invite/" + saved.getInviteToken());
+        return res;
+    }
+
+    @Transactional
+    public Map<String, Object> deleteAdminInvitation(Long partyId) {
+        InvitedParty party = invitedPartyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("Pass not found with ID: " + partyId));
+
+        String name = party.getFamilyName();
+        invitedPartyRepository.delete(party);
+        Map<String, Object> res = new HashMap<>();
+        res.put("success", true);
+        res.put("message", "Pass ID " + partyId + " (" + name + ") has been permanently deleted.");
+        return res;
+    }
 }
