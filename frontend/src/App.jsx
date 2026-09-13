@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import BufferLoader from './components/BufferLoader';
 import HeroPostcard from './components/HeroPostcard';
+import CinematicCoverPage from './components/CinematicCoverPage';
 import Welcome3DPage from './components/Welcome3DPage';
 import Countdown from './components/Countdown';
 import CoupleStory from './components/CoupleStory';
@@ -71,16 +72,17 @@ export default function App() {
 
   const pageList = [
     { id: 'cover', label: 'Cover', name: 'Invitation Postcard' },
-    { id: 'welcome', label: 'Welcome 3D', name: '3D Wedding Rings & Welcome' },
-    { id: 'countdown', label: 'Countdown', name: 'Auspicious Muhurat' },
-    { id: 'story', label: 'Our Story', name: 'Love Story & Milestones' },
-    { id: 'traditions', label: 'Traditions', name: 'Cultural Traditions & Etiquette' },
-    { id: 'ceremonies', label: 'Ceremonies', name: 'Wedding Functions' },
+    { id: 'cinematic', label: 'Photo', name: 'Cinematic Wedding Cover' },
+    { id: 'welcome', label: 'Welcome', name: '3D Wedding Rings & Welcome' },
+    { id: 'story', label: 'Stories', name: 'Love Story & Milestones' },
+    { id: 'ceremonies', label: 'Events', name: 'Wedding Functions' },
     { id: 'rsvp', label: 'RSVP', name: 'Private 100-Guest RSVP' },
-    { id: 'pass', label: 'Wedding Pass', name: 'Digital Pass & QR' },
-    { id: 'wishes', label: 'Wishes Wall', name: 'Guest Blessings' },
-    { id: 'travel', label: 'Travel & Stay', name: 'Logistics & Hotels' },
+    { id: 'traditions', label: 'Traditions', name: 'Cultural Traditions & Etiquette' },
+    { id: 'travel', label: 'Hotels', name: 'Logistics & Hotels' },
+    { id: 'wishes', label: 'Wishes', name: 'Guest Blessings Wall' },
     { id: 'gallery', label: 'Gallery', name: 'Photo Album' },
+    { id: 'pass', label: 'Pass', name: 'VIP Digital Pass & QR' },
+    { id: 'countdown', label: 'Countdown', name: 'Auspicious Muhurat' },
   ];
 
   const currentIndex = pageList.findIndex(p => p.id === currentPage);
@@ -115,7 +117,6 @@ export default function App() {
 
   // 3D Model Readiness Handler (Keeps buffering active until ThreeScene is compiled and ready to bloom)
   const handle3DSceneReady = useCallback(() => {
-    // Keep loader on screen for at least 850ms total from click so user experiences smooth royal buffer
     const elapsed = Date.now() - navStartTimeRef.current;
     const remaining = Math.max(350, 850 - elapsed);
     setTimeout(() => {
@@ -130,19 +131,16 @@ export default function App() {
     const targetPage = pageList.find(p => p.id === targetPageId);
     setBufferPageName(targetPage ? targetPage.name : 'Wedding Celebrations');
     
-    // 1. Immediately activate loading screen for instant visual feedback
+    // Immediately activate loading screen for smooth visual feedback
     setIsBufferLoading(true);
     navStartTimeRef.current = Date.now();
 
     if (targetPageId === 'welcome') {
-      // Yield to browser layout/paint so the loading screen appears INSTANTLY on click
-      // before mounting the heavy ThreeScene component in background
       setTimeout(() => {
         setCurrentPage('welcome');
         window.scrollTo(0, 0);
       }, 90);
 
-      // Safeguard timeout (5s) to guarantee page opens even on low-end devices
       const fallbackTimer = setTimeout(() => {
         setIsBufferLoading(false);
       }, 5000);
@@ -171,10 +169,8 @@ export default function App() {
     }
   }, [currentIndex, pageList, navigateToPage]);
 
-  // Keyboard navigation support (ArrowRight / ArrowLeft)
+  // Keyboard navigation support (ArrowRight / ArrowLeft) for all visitors
   useEffect(() => {
-    if (!verifiedParty) return; // Only enable keyboard navigation when authenticated
-
     const handleKeyDown = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowRight') handleNextPage();
@@ -183,28 +179,8 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [verifiedParty, handleNextPage, handlePrevPage]);
+  }, [handleNextPage, handlePrevPage]);
 
-  // =========================================================================
-  // GATEKEEPER: If user is not authenticated, show the royal Invitation screen
-  // =========================================================================
-  if (!verifiedParty) {
-    return (
-      <div className="h-screen w-screen overflow-y-auto bg-[#FAF7F2] text-[#23201E]">
-        <InvitationAuthPage
-          initialToken={initialInviteToken}
-          onAuthenticated={(party) => {
-            handleUpdateVerifiedParty(party);
-            navigateToPage('cover');
-          }}
-        />
-      </div>
-    );
-  }
-
-  // =========================================================================
-  // AUTHENTICATED GUEST: Full access to the royal wedding website
-  // =========================================================================
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#FDFBF7] text-[#23201E] flex flex-col selection:bg-gold-500 selection:text-white relative">
       
@@ -236,6 +212,13 @@ export default function App() {
             weddingInfo={weddingInfo}
             onOpenRsvp={() => navigateToPage('rsvp')}
             onOpenPass={() => navigateToPage('pass')}
+            onNavigate={navigateToPage}
+          />
+        )}
+
+        {currentPage === 'cinematic' && (
+          <CinematicCoverPage
+            weddingInfo={weddingInfo}
             onNavigate={navigateToPage}
           />
         )}
@@ -277,18 +260,41 @@ export default function App() {
         )}
 
         {currentPage === 'rsvp' && (
-          <VerifiedRsvpPage
-            verifiedParty={verifiedParty}
-            setVerifiedParty={handleUpdateVerifiedParty}
-            onRsvpSubmitted={(party) => {
-              handleUpdateVerifiedParty(party);
-            }}
-            onViewPass={(party) => {
-              handleUpdateVerifiedParty(party);
-              navigateToPage('pass');
-            }}
-            onNavigate={navigateToPage}
-          />
+          !verifiedParty ? (
+            <div className="max-w-3xl mx-auto px-4 py-4 sm:py-6">
+              <div className="text-center mb-4">
+                <span className="px-3 py-1 rounded-full bg-gold-100 text-gold-900 border border-gold-300 text-xs font-bold uppercase tracking-wider">
+                  🔒 Strictly Private 100-Guest RSVP
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 mt-2">
+                  Verify Invitation to RSVP
+                </h2>
+                <p className="text-xs text-stone-600 mt-1 max-w-md mx-auto">
+                  Please enter your invitation passcode (e.g. CX2026) or registered family email to unlock attendance confirmation and VIP pass.
+                </p>
+              </div>
+              <InvitationAuthPage
+                initialToken={initialInviteToken}
+                onAuthenticated={(party) => {
+                  handleUpdateVerifiedParty(party);
+                  navigateToPage('rsvp');
+                }}
+              />
+            </div>
+          ) : (
+            <VerifiedRsvpPage
+              verifiedParty={verifiedParty}
+              setVerifiedParty={handleUpdateVerifiedParty}
+              onRsvpSubmitted={(party) => {
+                handleUpdateVerifiedParty(party);
+              }}
+              onViewPass={(party) => {
+                handleUpdateVerifiedParty(party);
+                navigateToPage('pass');
+              }}
+              onNavigate={navigateToPage}
+            />
+          )
         )}
 
         {currentPage === 'pass' && (
@@ -338,27 +344,12 @@ export default function App() {
         ) : (
           <button
             onClick={() => navigateToPage('cover')}
-            className="px-4 py-2.5 bg-charcoal hover:bg-black text-white rounded-xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all"
+            className="px-4 py-2.5 bg-charcoal hover:bg-black text-white rounded-xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all hover:scale-105"
+            title="Back to Beginning"
           >
             <span>Back to Cover</span>
           </button>
         )}
-      </div>
-
-      {/* Slide Dots Indicator (Bottom Center) */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-md rounded-full border border-gold-200/80 shadow-sm">
-        {pageList.map((p, idx) => (
-          <button
-            key={p.id}
-            onClick={() => navigateToPage(p.id)}
-            title={p.name}
-            className={`transition-all rounded-full ${
-              idx === currentIndex
-                ? 'w-6 h-2 bg-gold-500'
-                : 'w-2 h-2 bg-gold-200 hover:bg-gold-400'
-            }`}
-          />
-        ))}
       </div>
 
     </div>

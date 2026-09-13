@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Volume2, VolumeX, Menu, X, ChevronLeft, ChevronRight, ChevronDown, Sparkles, LogOut, UserCheck } from 'lucide-react';
+import { Heart, Volume2, VolumeX, Menu, X, ChevronLeft, ChevronRight, ChevronDown, Sparkles, LogOut, UserCheck, ShieldCheck } from 'lucide-react';
 
 export default function Navbar({
   currentPage,
@@ -20,8 +20,8 @@ export default function Navbar({
   const displayIndex = currentIndex >= 0 ? currentIndex + 1 : 1;
   const coupleTitle = weddingInfo?.coupleTitle || "Chandrika & Xudong";
 
-  // Divide into Primary Quick Tabs & More Dropdown to ensure 0 overlap on laptops
-  const primaryPageIds = ['cover', 'welcome', 'ceremonies', 'rsvp', 'pass'];
+  // Core tabs for top navbar
+  const primaryPageIds = ['cover', 'cinematic', 'welcome', 'story', 'ceremonies', 'rsvp'];
   const primaryPages = pageList.filter(p => primaryPageIds.includes(p.id));
   const morePages = pageList.filter(p => !primaryPageIds.includes(p.id));
   const activeMorePage = morePages.find(p => p.id === currentPage);
@@ -38,20 +38,20 @@ export default function Navbar({
             className="flex items-center gap-2 group text-left shrink-0"
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gold-500/80 flex items-center justify-center bg-gold-50 group-hover:bg-gold-100 transition-colors shrink-0">
-              <span className="font-serif font-bold text-xs sm:text-sm text-gold-800 tracking-tighter">C&X</span>
+              <span className="font-serif font-bold text-xs sm:text-sm text-gold-800 tracking-tighter">C&amp;X</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-serif font-bold text-sm sm:text-base tracking-wide text-charcoal group-hover:text-gold-700 transition-colors leading-tight truncate max-w-[140px] sm:max-w-[200px]">
+              <span className="font-serif font-bold text-sm sm:text-base tracking-wide text-charcoal group-hover:text-gold-700 transition-colors leading-tight truncate max-w-[130px] sm:max-w-[190px]">
                 {coupleTitle}
               </span>
               <span className="text-[8px] sm:text-[9px] tracking-widest uppercase text-gold-700 font-semibold">
-                Udaipur • 2026
+                Udaipur • Nov 28, 2026
               </span>
             </div>
           </button>
 
-          {/* Desktop Nav: 5 Core Buttons + Dropdown for Remaining (Zero Overlap Guaranteed) */}
-          <nav className="hidden xl:flex items-center space-x-1 shrink-0">
+          {/* Desktop Nav: Core Buttons + Dropdown for Remaining */}
+          <nav className="hidden lg:flex items-center space-x-1 shrink-0">
             {primaryPages.map((page) => {
               const isActive = page.id === currentPage;
               return (
@@ -61,10 +61,10 @@ export default function Navbar({
                     setMoreMenuOpen(false);
                     onNavigate(page.id);
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 xl:px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'bg-gold-500 text-white shadow-sm font-bold'
-                      : 'text-charcoal/70 hover:text-gold-800 hover:bg-gold-50'
+                      : 'text-charcoal/75 hover:text-gold-800 hover:bg-gold-50'
                   }`}
                 >
                   {page.label}
@@ -77,10 +77,10 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-1 shrink-0 ${
+                className={`px-2.5 xl:px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-1 shrink-0 ${
                   isMoreActive
                     ? 'bg-gold-500 text-white shadow-sm font-bold'
-                    : 'text-charcoal/70 hover:text-gold-800 hover:bg-gold-50'
+                    : 'text-charcoal/75 hover:text-gold-800 hover:bg-gold-50'
                 }`}
               >
                 <span>{isMoreActive ? activeMorePage.label : 'More'}</span>
@@ -92,7 +92,7 @@ export default function Navbar({
                   {/* Backdrop to close on click outside */}
                   <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
 
-                  {/* Royal Dropdown Card */}
+                  {/* Dropdown Card */}
                   <div className="absolute top-full right-0 mt-2 w-56 bg-white/98 backdrop-blur-xl border border-gold-300 rounded-2xl shadow-2xl p-2 z-50 animate-fade-in space-y-1">
                     <div className="px-2.5 py-1 text-[10px] font-bold text-gold-800 uppercase tracking-wider border-b border-gold-100 flex items-center justify-between">
                       <span>Celebrations</span>
@@ -130,7 +130,7 @@ export default function Navbar({
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             
             {/* Slide / Page Stepper Indicator */}
-            <div className="hidden lg:flex items-center gap-1 bg-[#F5EFEB] px-2 py-1 rounded-lg border border-gold-300/70 text-xs font-bold text-charcoal shrink-0">
+            <div className="hidden xl:flex items-center gap-1 bg-[#F5EFEB] px-2 py-1 rounded-lg border border-gold-300/70 text-xs font-bold text-charcoal shrink-0">
               <button
                 onClick={onPrevPage}
                 disabled={currentIndex <= 0}
@@ -171,9 +171,9 @@ export default function Navbar({
               )}
             </button>
 
-            {/* Authenticated Guest Badge */}
-            {verifiedParty && (
-              <div className="hidden md:flex flex-col text-right shrink-0 px-2 py-0.5 rounded-lg bg-gold-50/80 border border-gold-200">
+            {/* Authenticated Guest Badge OR Unauthenticated Quick RSVP Button */}
+            {verifiedParty ? (
+              <div className="hidden md:flex flex-col text-right shrink-0 px-2.5 py-1 rounded-lg bg-gold-50/80 border border-gold-200">
                 <span className="text-[11px] font-bold text-gold-900 leading-tight truncate max-w-[100px] lg:max-w-[130px]">
                   🌸 {verifiedParty.familyName}
                 </span>
@@ -181,9 +181,17 @@ export default function Navbar({
                   {verifiedParty.rsvpStatus === 'ATTENDING' ? 'Confirmed' : 'Verified'}
                 </span>
               </div>
+            ) : (
+              <button
+                onClick={() => onNavigate('rsvp')}
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-gold-gradient hover:opacity-95 shadow-sm transition-all uppercase tracking-wider shrink-0"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>RSVP</span>
+              </button>
             )}
 
-            {/* Dedicated, Always-Visible Sign Out Button (Never cut off or out of window) */}
+            {/* Dedicated Sign Out Button */}
             {verifiedParty && onSignOut && (
               <button
                 onClick={onSignOut}
@@ -198,7 +206,7 @@ export default function Navbar({
             {/* Mobile / Tablet Hamburger Drawer */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-1.5 sm:p-2 rounded-lg text-charcoal hover:text-gold-700 transition-colors shrink-0"
+              className="lg:hidden p-1.5 sm:p-2 rounded-lg text-charcoal hover:text-gold-700 transition-colors shrink-0"
               title="Open Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -211,8 +219,8 @@ export default function Navbar({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-gold-300 px-4 pt-3 pb-6 space-y-3 shadow-2xl animate-fade-in">
-          {verifiedParty && (
+        <div className="lg:hidden bg-white border-b border-gold-300 px-4 pt-3 pb-6 space-y-3 shadow-2xl animate-fade-in">
+          {verifiedParty ? (
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-gold-50 border border-gold-200">
               <div className="flex items-center gap-2">
                 <UserCheck className="w-4 h-4 text-gold-700" />
@@ -230,10 +238,26 @@ export default function Navbar({
                 </button>
               )}
             </div>
+          ) : (
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 border border-gold-200">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-stone-800">Visiting Guest</span>
+                <span className="text-[10px] text-stone-500">Private 100-Guest RSVP</span>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onNavigate('rsvp');
+                }}
+                className="px-3 py-1 text-xs font-bold text-white bg-gold-gradient rounded-lg shadow-sm"
+              >
+                RSVP Now
+              </button>
+            </div>
           )}
 
           <div className="flex items-center justify-between pb-2 border-b border-gold-100 text-xs font-bold text-charcoal/70">
-            <span>SELECT PAGE</span>
+            <span>SELECT CELEBRATION</span>
             <span className="font-mono text-gold-800">{displayIndex} of {pageList.length}</span>
           </div>
 
@@ -245,9 +269,9 @@ export default function Navbar({
                   onNavigate(page.id);
                   setMobileMenuOpen(false);
                 }}
-                className={`p-2 rounded-lg text-xs font-semibold text-left transition-colors flex items-center justify-between ${
+                className={`p-2.5 rounded-xl text-xs font-semibold text-left transition-colors flex items-center justify-between ${
                   page.id === currentPage
-                    ? 'bg-gold-500 text-white'
+                    ? 'bg-gold-500 text-white font-bold shadow-sm'
                     : 'bg-gold-50/50 hover:bg-gold-100 text-charcoal'
                 }`}
               >
