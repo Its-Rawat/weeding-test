@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { ChevronDown, Mail, Sparkles } from "lucide-react";
 import type { AppConfig } from "../types";
 
 const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
@@ -49,7 +49,22 @@ const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
       </div>
 
       <div className="z-10 container mx-auto flex flex-col items-center px-6 text-center">
-        <div className="animate-reveal w-full space-y-4 [animation-delay:200ms] md:space-y-10">
+        <div className="animate-reveal w-full space-y-4 [animation-delay:200ms] md:space-y-8">
+          {/* Host Badge */}
+          <div className="flex items-center justify-center">
+            <a
+              href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-1.5 text-[11px] sm:text-xs font-medium tracking-wider text-amber-200/90 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-accent hover:bg-black/65 hover:text-white"
+              title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
+            >
+              <Mail className="h-3.5 w-3.5 text-accent transition-transform group-hover:scale-110" />
+              <span>
+                Host: <strong className="font-semibold text-white group-hover:text-accent transition-colors">Aditya Rawat</strong>
+              </span>
+              <span className="text-[10px] text-accent/80 font-mono">✉</span>
+            </a>
+          </div>
+
           <div className="flex items-center justify-center gap-3 md:gap-4">
             <div className="h-[1px] w-6 bg-white/30 md:w-20"></div>
             <span className="font-sans tracking-luxury text-[9px] font-semibold text-white/90 uppercase md:text-[12px]">

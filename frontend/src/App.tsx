@@ -12,8 +12,9 @@ import Navbar from "./components/Navbar";
 import FloatingPetals from "./components/FloatingPetals";
 import Envelope from "./components/Envelope";
 import InstallPrompt from "./components/InstallPrompt";
+import WeddingLoader from "./components/WeddingLoader";
 import { useConfig } from "./hooks/useConfig";
-import { Heart, Quote, ChevronUp } from "lucide-react";
+import { Heart, Quote, ChevronUp, Mail } from "lucide-react";
 
 const App: React.FC = () => {
   const { config, loading } = useConfig();
@@ -28,6 +29,15 @@ const App: React.FC = () => {
   });
 
   const [isOpened, setIsOpened] = useState(false);
+  const [minLoadingDone, setMinLoadingDone] = useState(false);
+
+  useEffect(() => {
+    // Show pixel loading screen smoothly so guests can enjoy the charming animation
+    const timer = setTimeout(() => {
+      setMinLoadingDone(true);
+    }, 1600);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -89,12 +99,8 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (loading || !config) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
-      </div>
-    );
+  if (loading || !minLoadingDone || !config) {
+    return <WeddingLoader />;
   }
 
   const footerDate = (() => {
@@ -107,6 +113,23 @@ const App: React.FC = () => {
 
   return (
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden">
+      {/* Floating Top Host Pill (Click to email Host Aditya Rawat) */}
+      {isOpened && (
+        <div className="fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
+          <a
+            href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+            className="group inline-flex items-center gap-2 rounded-full border border-accent/40 bg-white/90 dark:bg-darkSurface/90 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-medium tracking-wide text-slate-800 dark:text-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-accent hover:shadow-[0_4px_25px_rgba(212,175,55,0.3)] hover:text-accent"
+            title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
+          >
+            <Mail className="h-3.5 w-3.5 text-accent transition-transform group-hover:scale-110" />
+            <span>
+              Host: <strong className="font-semibold text-slate-900 dark:text-white group-hover:text-accent transition-colors">Aditya Rawat</strong>
+            </span>
+            <span className="text-[10px] text-accent font-mono">✉</span>
+          </a>
+        </div>
+      )}
+
       {!isOpened && <Envelope onOpen={handleOpenInvitation} config={config} />}
 
       <InstallPrompt />
@@ -181,6 +204,20 @@ const App: React.FC = () => {
                 {config.couple.bride.name} & {config.couple.groom.name}
               </p>
               <p className="font-sans text-[11px] text-slate-500 uppercase tracking-widest">{config.text.closing.family}</p>
+
+              {/* Host Credit & Contact */}
+              <div className="pt-4">
+                <a
+                  href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+                  className="group inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 transition-all duration-300 hover:border-accent hover:bg-accent/20 hover:text-accent shadow-sm"
+                  title="Contact Host: Aditya Rawat (adi2002rawat@gmail.com)"
+                >
+                  <Mail className="h-3.5 w-3.5 text-accent group-hover:scale-110 transition-transform" />
+                  <span>
+                    Host: <strong className="font-semibold text-slate-900 dark:text-white group-hover:text-accent transition-colors">Aditya Rawat</strong> (adi2002rawat@gmail.com)
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

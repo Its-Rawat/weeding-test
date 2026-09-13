@@ -1,4 +1,4 @@
-import { MailOpen, Sparkles } from "lucide-react";
+import { Mail, MailOpen, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import type { AppConfig } from "../types";
 
@@ -53,6 +53,21 @@ const Envelope: React.FC<EnvelopeProps> = ({ onOpen, config }) => {
       >
         <div className="space-y-6 sm:space-y-8 md:space-y-10">
           <div className="space-y-3 sm:space-y-4">
+            {/* Host Badge */}
+            <div className="flex items-center justify-center pb-1">
+              <a
+                href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+                className="group inline-flex items-center gap-2 rounded-full border border-accent/40 bg-black/50 px-4 py-1.5 text-[11px] sm:text-xs font-medium tracking-wider text-amber-200/90 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-accent hover:bg-black/75 hover:text-white"
+                title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
+              >
+                <Mail className="h-3.5 w-3.5 text-accent transition-transform group-hover:scale-110" />
+                <span>
+                  Host: <strong className="font-semibold text-white group-hover:text-accent transition-colors">Aditya Rawat</strong>
+                </span>
+                <span className="text-[10px] text-accent/80 font-mono">✉</span>
+              </a>
+            </div>
+
             <div className="flex items-center justify-center gap-3">
               <div className="to-accent/40 h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent"></div>
               <Sparkles className="text-accent/60 animate-spin-slow h-4 w-4 sm:h-5 sm:w-5" />
