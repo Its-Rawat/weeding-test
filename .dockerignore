@@ -1,7 +1,6 @@
-node_modules
-target
-.git
-.idea
-.vscode
-dist
+﻿target/
+frontend/node_modules/
+database/
+.git/
+.idea/
 *.log
