@@ -304,13 +304,14 @@ export default function VerifiedRsvpPage({ onRsvpSubmitted, onViewPass, onNaviga
                 placeholder="Enter Email"
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs bg-white border border-gold-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="w-full px-4 py-3 text-base sm:text-xs bg-white border border-gold-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 shadow-inner"
               />
 
               <button
                 type="submit"
                 disabled={isLookingUp}
-                className="w-full py-2.5 px-4 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2"
+                style={{ minHeight: '44px' }}
               >
                 <ShieldCheck className="w-4 h-4" />
                 <span>{isLookingUp ? "Checking Invitation List..." : "Find My Invitation"}</span>
@@ -364,14 +365,15 @@ export default function VerifiedRsvpPage({ onRsvpSubmitted, onViewPass, onNaviga
                   placeholder="6-digit code"
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value)}
-                  className="w-full text-center tracking-widest text-lg font-mono font-bold py-2 bg-white border border-gold-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full text-center tracking-widest text-lg font-mono font-bold py-3 bg-white border border-gold-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 shadow-inner"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isVerifying}
-                className="w-full py-2.5 px-4 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg transition-all"
+                className="w-full py-3 px-4 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg active:scale-98 transition-all"
+                style={{ minHeight: '44px' }}
               >
                 {isVerifying ? "Verifying..." : "Verify & Unlock RSVP"}
               </button>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
+import MobileBottomNav from './components/MobileBottomNav';
 import BufferLoader from './components/BufferLoader';
 import HeroPostcard from './components/HeroPostcard';
 import CinematicCoverPage from './components/CinematicCoverPage';
@@ -90,7 +91,6 @@ export default function App() {
   // Initial load: verify active session & load wedding metadata
   useEffect(() => {
     async function loadInitial() {
-      // Validate session with backend if auth token exists
       const sessionUser = await WeddingService.getCurrentUser();
       if (sessionUser) {
         handleUpdateVerifiedParty(sessionUser);
@@ -105,7 +105,6 @@ export default function App() {
       setEvents(evts);
       setWishes(wshs);
 
-      // Dismiss initial buffer loader after brief royal intro
       setTimeout(() => {
         setIsBufferLoading(false);
       }, 600);
@@ -115,7 +114,7 @@ export default function App() {
 
   const navStartTimeRef = React.useRef(Date.now());
 
-  // 3D Model Readiness Handler (Keeps buffering active until ThreeScene is compiled and ready to bloom)
+  // 3D Model Readiness Handler
   const handle3DSceneReady = useCallback(() => {
     const elapsed = Date.now() - navStartTimeRef.current;
     const remaining = Math.max(350, 850 - elapsed);
@@ -131,14 +130,13 @@ export default function App() {
     const targetPage = pageList.find(p => p.id === targetPageId);
     setBufferPageName(targetPage ? targetPage.name : 'Wedding Celebrations');
     
-    // Immediately activate loading screen for smooth visual feedback
     setIsBufferLoading(true);
     navStartTimeRef.current = Date.now();
 
     if (targetPageId === 'welcome') {
       setTimeout(() => {
         setCurrentPage('welcome');
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 90);
 
       const fallbackTimer = setTimeout(() => {
@@ -147,14 +145,13 @@ export default function App() {
       return () => clearTimeout(fallbackTimer);
     }
 
-    // Regular pages: keep loading screen visible while page mounts, then smoothly dismiss
     setTimeout(() => {
       setCurrentPage(targetPageId);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => {
         setIsBufferLoading(false);
       }, 250);
-    }, 400);
+    }, 350);
   }, [currentPage, pageList]);
 
   const handleNextPage = useCallback(() => {
@@ -169,7 +166,7 @@ export default function App() {
     }
   }, [currentIndex, pageList, navigateToPage]);
 
-  // Keyboard navigation support (ArrowRight / ArrowLeft) for all visitors
+  // Keyboard navigation support for desktop
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -182,7 +179,7 @@ export default function App() {
   }, [handleNextPage, handlePrevPage]);
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#FDFBF7] text-[#23201E] flex flex-col selection:bg-gold-500 selection:text-white relative">
+    <div className="min-h-[100dvh] w-full bg-[#FDFBF7] text-[#23201E] flex flex-col selection:bg-gold-500 selection:text-white relative">
       
       {/* Royal Buffer Loader Modal */}
       <BufferLoader pageName={bufferPageName} isVisible={isBufferLoading} />
@@ -190,7 +187,7 @@ export default function App() {
       {/* Procedural Web Audio Player */}
       <AudioPlayer isPlaying={isPlayingMusic} onToggle={() => setIsPlayingMusic(!isPlayingMusic)} />
 
-      {/* Sticky Top Navbar with Page Controls */}
+      {/* Sticky Top Navbar */}
       <Navbar
         currentPage={currentPage}
         onNavigate={navigateToPage}
@@ -204,8 +201,8 @@ export default function App() {
         onSignOut={handleSignOut}
       />
 
-      {/* Viewport-Fitted Slide Container */}
-      <main className="flex-1 overflow-y-auto max-h-[calc(100vh-4.5rem)] relative scroll-smooth">
+      {/* Mobile-Friendly Main Content Area (with safe bottom padding for MobileBottomNav) */}
+      <main className="flex-1 w-full overflow-y-auto pb-24 sm:pb-28 lg:pb-12 relative scroll-smooth">
         
         {currentPage === 'cover' && (
           <HeroPostcard
@@ -233,12 +230,12 @@ export default function App() {
         )}
 
         {currentPage === 'countdown' && (
-          <div className="flex flex-col justify-center min-h-[calc(100vh-6rem)]">
+          <div className="flex flex-col justify-center min-h-[calc(100dvh-10rem)] px-4">
             <Countdown targetDate={weddingInfo?.targetCountdownDate || "2026-11-28T18:00:00"} />
             <div className="text-center mt-6">
               <button
                 onClick={() => navigateToPage('story')}
-                className="px-6 py-2.5 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2"
+                className="px-6 py-3 bg-gold-gradient text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2"
               >
                 <span>Discover Our Journey</span>
                 <ArrowRight className="w-4 h-4" />
@@ -319,8 +316,15 @@ export default function App() {
 
       </main>
 
-      {/* Floating Bottom Navigation Controls */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 flex items-center gap-2">
+      {/* Mobile-Centric Bottom Navigation Dock (Phones & Tablets < 1024px) */}
+      <MobileBottomNav
+        currentPage={currentPage}
+        onNavigate={navigateToPage}
+        pageList={pageList}
+      />
+
+      {/* Desktop-Only Slide Stepper Controls (Screens >= 1024px) */}
+      <div className="hidden lg:flex fixed bottom-6 right-6 z-30 items-center gap-2">
         {currentIndex > 0 && (
           <button
             onClick={handlePrevPage}
@@ -328,14 +332,14 @@ export default function App() {
             title="Previous Page (Left Arrow)"
           >
             <ChevronLeft className="w-4 h-4 text-gold-700" />
-            <span className="hidden sm:inline">Prev</span>
+            <span>Prev</span>
           </button>
         )}
 
         {currentIndex < pageList.length - 1 ? (
           <button
             onClick={handleNextPage}
-            className="px-4 sm:px-5 py-2.5 bg-gold-gradient hover:opacity-95 text-white rounded-xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105"
+            className="px-5 py-2.5 bg-gold-gradient hover:opacity-95 text-white rounded-xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105"
             title="Next Page (Right Arrow)"
           >
             <span>Next: {pageList[currentIndex + 1].label}</span>
