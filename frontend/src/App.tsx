@@ -35,10 +35,10 @@ const App: React.FC = () => {
   const [minLoadingDone, setMinLoadingDone] = useState(false);
 
   useEffect(() => {
-    // Show pixel loading screen smoothly so guests can enjoy the charming animation
+    // Transition promptly so guests immediately experience the luxury envelope unboxing
     const timer = setTimeout(() => {
       setMinLoadingDone(true);
-    }, 1600);
+    }, 200);
     return () => clearTimeout(timer);
   }, []);
 
