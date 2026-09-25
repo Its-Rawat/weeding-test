@@ -7,4 +7,5 @@ database/
 .DS_Store
 .obsidian/
 *.mp4
+!**/wedding_invitation.mp4
 
