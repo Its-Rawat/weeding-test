@@ -17,7 +17,7 @@ import VideoLanding from "./components/VideoLanding";
 import InstallPrompt from "./components/InstallPrompt";
 import WeddingLoader from "./components/WeddingLoader";
 import { useConfig } from "./hooks/useConfig";
-import { Heart, Quote, ChevronUp, Mail } from "lucide-react";
+import { Heart, Quote, Mail } from "lucide-react";
 
 const App: React.FC = () => {
   const { config, loading } = useConfig();
@@ -31,15 +31,88 @@ const App: React.FC = () => {
     return "light";
   });
 
-  const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const [bufferProgress, setBufferProgress] = useState(15);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
 
   useEffect(() => {
-    // Quick buffer completion for landing video
-    const timer = setTimeout(() => {
-      setMinLoadingDone(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
+    let videoReady = false;
+    let windowReady = false;
+
+    const checkComplete = () => {
+      if (videoReady && (windowReady || document.readyState === "complete") && !loading && config) {
+        setBufferProgress(100);
+        setTimeout(() => {
+          setIsFullyLoaded(true);
+        }, 400);
+      }
+    };
+
+    // 1. Buffer the full-screen video
+    const testVideo = document.createElement("video");
+    testVideo.src = "/wedding_invitation.mp4";
+    testVideo.preload = "auto";
+    testVideo.muted = true;
+
+    if (testVideo.readyState >= 3) {
+      videoReady = true;
+      setBufferProgress((p) => Math.max(p, 75));
+      checkComplete();
+    } else {
+      testVideo.onloadeddata = () => {
+        setBufferProgress((p) => Math.max(p, 50));
+      };
+      testVideo.oncanplay = () => {
+        videoReady = true;
+        setBufferProgress((p) => Math.max(p, 80));
+        checkComplete();
+      };
+      testVideo.oncanplaythrough = () => {
+        videoReady = true;
+        setBufferProgress((p) => Math.max(p, 95));
+        checkComplete();
+      };
+      testVideo.onerror = () => {
+        videoReady = true;
+        checkComplete();
+      };
+    }
+
+    // 2. Buffer window resources (images, fonts, stylesheets)
+    if (document.readyState === "complete") {
+      windowReady = true;
+      setBufferProgress((p) => Math.max(p, 60));
+      checkComplete();
+    } else {
+      window.addEventListener(
+        "load",
+        () => {
+          windowReady = true;
+          setBufferProgress((p) => Math.max(p, 85));
+          checkComplete();
+        },
+        { once: true }
+      );
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        setBufferProgress((p) => Math.max(p, 70));
+      });
+    }
+
+    // Safety timeout: max 6.5s to ensure guest is never permanently blocked
+    const timeout = setTimeout(() => {
+      videoReady = true;
+      windowReady = true;
+      setBufferProgress(100);
+      setIsFullyLoaded(true);
+    }, 6500);
+
+    return () => {
+      clearTimeout(timeout);
+      testVideo.src = "";
+    };
+  }, [loading, config]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -52,6 +125,7 @@ const App: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
+    if (!isFullyLoaded) return;
     document.body.style.overflow = "unset";
 
     const observerOptions = {
@@ -80,18 +154,14 @@ const App: React.FC = () => {
     });
 
     return () => observer.disconnect();
-  }, [minLoadingDone]);
+  }, [isFullyLoaded]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  if (loading || !minLoadingDone || !config) {
-    return <WeddingLoader />;
+  if (!isFullyLoaded || loading || !config) {
+    return <WeddingLoader progress={bufferProgress} />;
   }
 
   const footerDate = (() => {
@@ -104,34 +174,19 @@ const App: React.FC = () => {
 
   return (
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
-      {/* Top Semi-Transparent Navigation Menu Bar with RSVP, Events, Sound, etc. */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
-
-      {/* Floating Host Attribution Pill (Aditya Rawat) */}
-      <div className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
-        <a
-          href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-          className="group inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/90 dark:bg-darkSurface/90 px-3 py-1 text-[10.5px] sm:text-[11px] font-medium tracking-wide text-[#231C18] dark:text-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.2)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#8C1D24]"
-          title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
-        >
-          <Mail className="h-3 w-3 text-[#8C1D24] transition-transform group-hover:scale-110" />
-          <span>
-            Host: <strong className="font-semibold text-[#8C1D24]">Aditya Rawat</strong>
-          </span>
-          <span className="text-[9px] text-[#D4AF37] font-mono">✉</span>
-        </a>
-      </div>
-
-      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER) */}
       <VideoLanding config={config} />
+
+      {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
 
       <InstallPrompt />
       <FloatingPetals />
 
-      {/* 2. FORMAL ARCHED INVITATION CARD */}
+      {/* 3. FORMAL ARCHED INVITATION CARD */}
       <Hero config={config} />
 
-      {/* 3. WEDDING DETAILS & INTERACTIVE SECTIONS */}
+      {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
         <CountdownSection config={config} />
         <EventDetails config={config} />
@@ -147,29 +202,20 @@ const App: React.FC = () => {
 
       <MusicPlayer url={config.music.url} />
 
+      {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT */}
       <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
           <Heart className="animate-pulse-soft h-[85vw] w-[85vw] stroke-[0.3] text-[#8C1D24]" />
         </div>
 
         <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center gap-12 md:gap-24 py-16">
-          <button
-            onClick={scrollToTop}
-            className="group flex flex-col items-center gap-4 transition-transform duration-500 hover:scale-105 cursor-pointer"
-          >
-            <div className="border-[#D4AF37]/50 text-[#8C6B1C] dark:text-accent group-hover:bg-[#D4AF37]/10 flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition-colors md:h-16 md:w-16 bg-[#FFFDF9]">
-              <ChevronUp className="h-6 w-6 animate-bounce md:h-8 md:w-8" />
-            </div>
-            <span className="tracking-luxury text-[10px] font-bold uppercase text-[#8C6B1C] opacity-80 transition-opacity group-hover:opacity-100">
-              We Look Forward to Celebrating With You
+          <div className="space-y-4 text-center md:space-y-6">
+            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#8C6B1C] uppercase">
+              Save The Date
             </span>
-          </button>
-
-          <div className="space-y-8 text-center md:space-y-12 w-full">
-            <Heart className="text-[#8C1D24] mx-auto h-8 w-8 animate-pulse fill-current md:h-12 md:w-12" />
             <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
               <span>{config.couple.bride.name}</span>
-              <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&</span>
+              <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
               <span>{config.couple.groom.name}</span>
             </h2>
             <div className="flex items-center justify-center gap-4 md:gap-6">
@@ -199,7 +245,7 @@ const App: React.FC = () => {
                 {config.text.closing.signature}
               </p>
               <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
-                {config.couple.bride.name} & {config.couple.groom.name}
+                {config.couple.bride.name} &amp; {config.couple.groom.name}
               </p>
               <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
 

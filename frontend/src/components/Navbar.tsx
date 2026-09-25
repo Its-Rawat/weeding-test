@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
+  Home,
+  Mail,
   Calendar,
   Palette,
   MapPin,
@@ -8,11 +10,7 @@ import {
   VolumeX,
   Moon,
   Sun,
-  Menu,
-  X,
-  Heart,
-  Sparkles,
-  Gift,
+  Video,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -21,20 +19,22 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 80) {
-        setIsScrolled(true);
+      // Navbar is hidden/minimized on the landing video, and appears at the bottom once user scrolls down
+      const threshold = window.innerHeight * 0.35;
+      if (window.scrollY > threshold) {
+        setIsVisible(true);
       } else {
-        setIsScrolled(false);
+        setIsVisible(false);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial check
 
     const handleMusicPlayState = (e: any) => {
       if (e.detail?.isPlaying !== undefined) {
@@ -54,18 +54,17 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     window.dispatchEvent(new CustomEvent("toggle-wedding-music"));
   };
 
-  const navLinks = [
-    { label: "Invitation", href: "#invitation" },
-    { label: "Celebrations", href: "#event", icon: Calendar },
-    { label: "Dress Code", href: "#dress-code", icon: Palette },
-    { label: "Venue", href: "#venue", icon: MapPin },
-    { label: "Our Story", href: "#story", icon: Heart },
-    { label: "Wishes", href: "#wishes", icon: Sparkles },
-    { label: "Shagun", href: "#gift", icon: Gift },
+  const navItems = [
+    { icon: Video, label: "Video", href: "#video-hero" },
+    { icon: Mail, label: "Invitation", href: "#invitation" },
+    { icon: Calendar, label: "Celebrations", href: "#event" },
+    { icon: Palette, label: "Dress Code", href: "#dress-code" },
+    { icon: MapPin, label: "Venue", href: "#venue" },
+    { icon: Send, label: "RSVP", href: "#rsvp", isRsvp: true },
   ];
 
-  const handleNavClick = (href: string) => {
-    setMobileMenuOpen(false);
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
     const id = href.replace("#", "");
     const elem = document.getElementById(id);
     if (elem) {
@@ -73,164 +72,88 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     }
   };
 
+  const itemBaseClass =
+    "p-2 sm:p-2.5 rounded-full text-[#4A3E36] dark:text-slate-200 hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-[#FAF5EB] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
+  const tooltipClass =
+    "absolute -top-9 left-1/2 -translate-x-1/2 bg-[#231C18] dark:bg-[#D4AF37] text-white dark:text-[#231C18] text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block";
+
   return (
-    <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 select-none ${
-        isScrolled
-          ? "bg-[#FFFDF9]/95 dark:bg-[#1a1715]/95 backdrop-blur-xl border-b border-[#D4AF37]/40 shadow-[0_4px_25px_rgba(140,107,28,0.15)] text-[#231C18] dark:text-white py-2.5 sm:py-3"
-          : "bg-black/35 backdrop-blur-md border-b border-[#D4AF37]/30 text-white shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-3 sm:py-4"
+    <nav
+      className={`fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md transition-all duration-500 ease-out select-none pointer-events-none ${
+        isVisible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-24 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
+      <div className="pointer-events-auto flex items-center justify-between gap-0.5 sm:gap-1 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/92 dark:bg-[#1a1715]/92 p-1.5 shadow-[0_12px_35px_rgba(140,107,28,0.2)] backdrop-blur-2xl transition-colors duration-500">
         
-        {/* LEFT: ROYAL MONOGRAM & LOGO */}
-        <a
-          href="#video-hero"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          className="group flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer"
+        {navItems.map((item) => {
+          if (item.isRsvp) {
+            return (
+              <button
+                key={item.label}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="py-1.5 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] text-white shadow-md active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer border border-[#FFD54F]/70"
+                title={item.label}
+              >
+                <item.icon className="h-3.5 w-3.5 text-[#FFE082]" />
+                <span className="text-[10.5px] uppercase tracking-wider">RSVP</span>
+                <span className={tooltipClass}>Confirm Attendance</span>
+              </button>
+            );
+          }
+
+          return (
+            <button
+              key={item.label}
+              onClick={(e) => handleNavClick(e, item.href)}
+              className={itemBaseClass}
+              title={item.label}
+            >
+              <item.icon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+              <span className={tooltipClass}>{item.label}</span>
+            </button>
+          );
+        })}
+
+        {/* Music Sound Toggle */}
+        <button
+          onClick={handleToggleMusic}
+          className={itemBaseClass}
+          title={isPlayingMusic ? "Mute Music" : "Play Wedding Music"}
         >
-          <div
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-colors shadow-sm ${
-              isScrolled
-                ? "border-[#D4AF37] bg-[#FAF5EB] text-[#8C1D24]"
-                : "border-[#FFD54F] bg-white/10 text-white"
-            }`}
-          >
-            <span className="font-royal font-bold text-xs sm:text-sm tracking-wider">
-              C &amp; X
-            </span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif italic font-bold text-xs sm:text-sm tracking-wide leading-tight">
-              Chandrika &amp; Xudong
-            </span>
-            <span
-              className={`font-devanagari text-[9.5px] tracking-widest leading-none ${
-                isScrolled ? "text-[#8C1D24]" : "text-amber-300"
-              }`}
-            >
-              ॥ शुभ विवाह ॥
-            </span>
-          </div>
-        </a>
+          {isPlayingMusic ? (
+            <Volume2 className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#8C1D24] animate-pulse" />
+          ) : (
+            <VolumeX className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-stone-400" />
+          )}
+          <span className={tooltipClass}>
+            {isPlayingMusic ? "Mute Music" : "Play Music"}
+          </span>
+        </button>
 
-        {/* CENTER: DESKTOP NAVIGATION MENU ITEMS */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => handleNavClick(link.href)}
-              className={`px-3 py-1.5 rounded-full text-xs font-serif tracking-wide transition-all cursor-pointer ${
-                isScrolled
-                  ? "text-[#4A3E36] dark:text-stone-200 hover:text-[#8C1D24] hover:bg-[#FAF5EB] dark:hover:bg-white/10"
-                  : "text-white/90 hover:text-white hover:bg-white/15"
-              }`}
-            >
-              {link.label}
-            </button>
-          ))}
-        </nav>
+        {/* Theme Toggle */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleTheme();
+          }}
+          className={itemBaseClass}
+          aria-label="Toggle theme"
+          title="Toggle Light / Dark Mode"
+        >
+          {theme === "light" ? (
+            <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+          ) : (
+            <Sun className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#D4AF37]" />
+          )}
+          <span className={tooltipClass}>
+            {theme === "light" ? "Dark Mode" : "Light Mode"}
+          </span>
+        </button>
 
-        {/* RIGHT: CONTROLS & RSVP BUTTON */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Music Audio Toggle */}
-          <button
-            onClick={handleToggleMusic}
-            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border transition-all hover:scale-110 active:scale-95 cursor-pointer shadow-xs ${
-              isScrolled
-                ? "border-[#D4AF37]/50 bg-[#FAF5EB] dark:bg-white/10 text-[#8C6B1C]"
-                : "border-white/25 bg-black/40 text-amber-200"
-            }`}
-            title={isPlayingMusic ? "Mute Music" : "Play Wedding Shehnai"}
-          >
-            {isPlayingMusic ? (
-              <Volume2 className="w-4 h-4 text-[#8C1D24] animate-pulse" />
-            ) : (
-              <VolumeX className="w-4 h-4 text-stone-400" />
-            )}
-          </button>
-
-          {/* Theme Toggle (Light / Dark) */}
-          <button
-            onClick={toggleTheme}
-            className={`hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-full items-center justify-center border transition-all hover:scale-110 active:scale-95 cursor-pointer shadow-xs ${
-              isScrolled
-                ? "border-[#D4AF37]/50 bg-[#FAF5EB] dark:bg-white/10 text-[#8C6B1C]"
-                : "border-white/25 bg-black/40 text-amber-200"
-            }`}
-            title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
-          >
-            {theme === "light" ? (
-              <Moon className="w-4 h-4 text-[#8C6B1C]" />
-            ) : (
-              <Sun className="w-4 h-4 text-[#D4AF37]" />
-            )}
-          </button>
-
-          {/* THE PROMINENT RSVP BUTTON */}
-          <button
-            onClick={() => handleNavClick("#rsvp")}
-            className="group inline-flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] text-white border border-[#FFD54F]/80 shadow-[0_4px_16px_rgba(140,29,36,0.35)] text-xs font-serif font-bold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-            title="Confirm Attendance"
-          >
-            <Send className="w-3.5 h-3.5 text-[#FFD54F] transition-transform group-hover:translate-x-0.5" />
-            <span>RSVP</span>
-          </button>
-
-          {/* Mobile Menu Hamburger Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className={`lg:hidden w-8 h-8 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
-              isScrolled
-                ? "border-[#D4AF37]/50 bg-[#FAF5EB] text-[#231C18]"
-                : "border-white/30 bg-black/40 text-white"
-            }`}
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
       </div>
-
-      {/* MOBILE SLIDE-DOWN SEMI-TRANSPARENT MENU DRAWER */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full inset-x-0 bg-[#FFFDF9]/98 dark:bg-[#1a1715]/98 backdrop-blur-2xl border-b border-[#D4AF37]/50 shadow-2xl py-4 px-6 flex flex-col gap-2 animate-fade-in text-[#231C18] dark:text-white">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => handleNavClick(link.href)}
-              className="flex items-center justify-between py-2.5 px-4 rounded-xl hover:bg-[#FAF5EB] dark:hover:bg-white/10 text-left font-serif text-sm transition-colors cursor-pointer"
-            >
-              <span className="flex items-center gap-2.5">
-                {link.icon && <link.icon className="w-4 h-4 text-[#8C1D24]" />}
-                <span>{link.label}</span>
-              </span>
-              <span className="text-xs text-[#D4AF37]">→</span>
-            </button>
-          ))}
-
-          <div className="pt-2 mt-2 border-t border-[#D4AF37]/30 flex items-center justify-between">
-            <button
-              onClick={toggleTheme}
-              className="inline-flex items-center gap-2 text-xs font-serif text-[#8C6B1C] py-1"
-            >
-              {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-[#D4AF37]" />}
-              <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
-            </button>
-
-            <button
-              onClick={() => handleNavClick("#rsvp")}
-              className="px-4 py-1.5 rounded-full bg-[#8C1D24] text-white text-xs font-serif font-bold shadow-md"
-            >
-              Confirm RSVP
-            </button>
-          </div>
-        </div>
-      )}
-    </header>
+    </nav>
   );
 };
 

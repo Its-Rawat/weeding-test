@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Volume2, VolumeX, Sparkles, ArrowDown } from "lucide-react";
+import { Volume2, VolumeX, ChevronDown } from "lucide-react";
 import type { AppConfig } from "../types";
 
 interface VideoLandingProps {
@@ -19,10 +19,10 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
     };
     window.addEventListener("wedding-music-state", handleMusicState);
 
-    // Attempt video play immediately on mount
+    // Autoplay video on load
     if (videoRef.current) {
       videoRef.current.play().catch((err) => {
-        console.warn("Autoplay muted fallback:", err);
+        console.warn("Video autoplay info:", err);
       });
     }
 
@@ -31,14 +31,14 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
     };
   }, []);
 
-  const handleToggleSound = (e?: React.MouseEvent) => {
+  const handleToggleMusic = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (videoRef.current) {
       const nextMuted = !videoRef.current.muted;
       videoRef.current.muted = nextMuted;
       setIsMuted(nextMuted);
     }
-    // Also trigger background wedding music / Shehnai
+    // Dispatches music toggle to MusicPlayer for background Shehnai/music
     window.dispatchEvent(new CustomEvent("toggle-wedding-music"));
   };
 
@@ -52,15 +52,12 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
     }
   };
 
-  const brideName = config?.couple?.bride?.name || "Chandrika";
-  const groomName = config?.couple?.groom?.name || "Xudong";
-
   return (
     <section
       id="video-hero"
-      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black flex flex-col justify-between select-none"
+      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between"
     >
-      {/* 100% FULL SCREEN CINEMATIC VIDEO */}
+      {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
       <video
         ref={videoRef}
         src="/wedding_invitation.mp4"
@@ -70,66 +67,47 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
         playsInline
         webkit-playsinline="true"
         preload="auto"
-        onClick={handleToggleSound}
+        onClick={handleToggleMusic}
         className="absolute inset-0 w-full h-full object-cover cursor-pointer"
       />
 
-      {/* TOP VIGNETTE FOR NAVIGATION LEGIBILITY */}
-      <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none z-10" />
-
-      {/* FLOATING SOUND PILL (TAP TO UNMUTE) */}
-      <div className="relative z-20 pt-24 sm:pt-28 px-4 flex justify-center pointer-events-auto">
+      {/* TOP: ONLY THE MUSIC / VOLUME TAB (SEMI-TRANSPARENT GLASS) */}
+      <div className="relative z-30 pt-4 sm:pt-6 px-4 sm:px-6 flex items-center justify-end pointer-events-auto">
         <button
-          onClick={handleToggleSound}
-          className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/45 hover:bg-black/65 backdrop-blur-md border border-[#D4AF37]/60 text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] text-xs font-serif transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          onClick={handleToggleMusic}
+          className="group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/25 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white/90 shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          title={isPlayingMusic ? "Mute Music" : "Play Wedding Music"}
         >
-          {isMuted && !isPlayingMusic ? (
+          {isPlayingMusic && !isMuted ? (
             <>
-              <VolumeX className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span className="text-amber-100 font-medium">
-                आवाज़ चालू करें • Tap for Music &amp; Shehnai
+              <Volume2 className="w-4 h-4 text-amber-300 animate-pulse" />
+              <span className="text-[11px] font-serif text-amber-100 font-medium">
+                Music Playing 🪷
               </span>
             </>
           ) : (
             <>
-              <Volume2 className="w-4 h-4 text-[#8C1D24] animate-pulse" />
-              <span className="text-amber-200 font-medium">
-                Wedding Shehnai Playing 🪷
+              <VolumeX className="w-4 h-4 text-white/80" />
+              <span className="text-[11px] font-serif text-white/90 font-medium">
+                Tap for Sound 🔊
               </span>
             </>
           )}
         </button>
       </div>
 
-      {/* BOTTOM VIGNETTE & CALLIGRAPHY / SCROLL CUE */}
-      <div className="relative z-20 pb-8 sm:pb-12 px-4 flex flex-col items-center text-center bg-gradient-to-t from-black/85 via-black/45 to-transparent pt-20 pointer-events-auto">
-        {/* Sacred Lord Ganesha Shloka */}
-        <div className="flex items-center gap-1.5 text-amber-300/90 text-xs sm:text-sm font-devanagari tracking-widest mb-1.5 drop-shadow-md">
-          <span>卐</span>
-          <span>॥ ॐ श्री गणेशाय नमः ॥</span>
-          <span>卐</span>
-        </div>
-
-        {/* Grand Royal Couple Title */}
-        <h1 className="font-script text-4xl sm:text-6xl text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] leading-tight my-1">
-          {brideName} <span className="text-[#FFD54F] font-serif text-2xl sm:text-4xl">&amp;</span> {groomName}
-        </h1>
-
-        <p className="font-royal uppercase tracking-[0.25em] text-[#FFD54F] text-[10px] sm:text-xs font-semibold drop-shadow mt-1">
-          Saturday, 28th November 2026 • The Oberoi Udaivilas, Udaipur
-        </p>
-
-        {/* Bouncing Scroll Down Cue */}
+      {/* BOTTOM: ULTRA-SUBTLE TRANSLUCENT SCROLL CHEVRON */}
+      <div className="relative z-30 pb-6 sm:pb-8 flex flex-col items-center pointer-events-auto">
         <button
           onClick={handleScrollDown}
-          className="group mt-5 flex flex-col items-center gap-1.5 text-white/90 hover:text-white transition-all cursor-pointer"
-          title="Scroll to explore wedding details"
+          className="group flex flex-col items-center gap-1 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+          title="Scroll to explore website"
         >
-          <span className="font-serif italic text-xs tracking-wider text-amber-200 group-hover:text-white drop-shadow">
-            Scroll down to explore wedding • नीचे स्क्रॉल करें
+          <span className="text-[11px] font-serif italic text-white/80 drop-shadow-md group-hover:text-white">
+            Scroll to explore
           </span>
-          <div className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-md border border-[#D4AF37]/60 flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 group-hover:bg-[#8C1D24]">
-            <ChevronDown className="w-5 h-5 text-amber-300 animate-bounce" />
+          <div className="w-8 h-8 rounded-full bg-black/25 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+            <ChevronDown className="w-4 h-4 text-white/90 animate-bounce" />
           </div>
         </button>
       </div>
