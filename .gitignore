@@ -1,7 +1,10 @@
-﻿target/
+target/
 frontend/node_modules/
 frontend/dist/
 database/
 .idea/
 *.log
 .DS_Store
+.obsidian/
+*.mp4
+

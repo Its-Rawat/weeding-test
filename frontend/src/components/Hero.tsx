@@ -1,134 +1,152 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Mail, Sparkles } from "lucide-react";
+import { ChevronDown, Sparkles, Calendar, MapPin, Heart } from "lucide-react";
 import type { AppConfig } from "../types";
 
 const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
   const [guestName, setGuestName] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setGuestName(params.get("to"));
+  }, []);
 
-    const timer = setInterval(() => {
-      const distance =
-        config.events.akad.startDateTime.getTime() - new Date().getTime();
-      if (distance > 0) {
-        setTimeLeft({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-          ),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000),
-        });
-      }
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [config.events.akad.startDateTime]);
-
-  const handleScrollToContent = () => {
-    document.getElementById("couple")?.scrollIntoView({ behavior: "smooth" });
+  const handleScrollToCelebrations = () => {
+    document.getElementById("countdown")?.scrollIntoView({ behavior: "smooth" }) ||
+    document.getElementById("event")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Extract day name, day number, month and year
+  const eventDate = config.events.akad.startDateTime;
+  const dayName = config.events.akad.day || "Saturday";
+  const dayNumber = String(eventDate.getDate()).padStart(2, "0");
+  const monthName = eventDate.toLocaleString("en-US", { month: "long" }).toUpperCase();
+  const yearNumber = eventDate.getFullYear();
+  const timeString = "AT FOUR-THIRTY IN THE AFTERNOON";
+
   return (
-    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden py-12 md:py-20">
-      <div className="absolute inset-0 z-0">
-        <img
-          src={config.hero.image}
-          className="animate-subtle-zoom h-full w-full object-cover"
-          alt="Wedding Backdrop"
-        />
-        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[0.5px] dark:bg-slate-950/60"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-transparent to-slate-950/80"></div>
+    <section className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center py-8 sm:py-14 px-4 bg-gradient-to-b from-[#F7F2EC] via-[#FDFBF7] to-[#F7F2EC] overflow-hidden">
+      
+      {/* Subtle Background Glows */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-[#d4af37]/15 via-[#f8c2c9]/10 to-transparent rounded-full blur-3xl -z-10" />
       </div>
 
-      <div className="z-10 container mx-auto flex flex-col items-center px-6 text-center">
-        <div className="animate-reveal w-full space-y-4 [animation-delay:200ms] md:space-y-8">
-          {/* Host Badge */}
-          <div className="flex items-center justify-center">
-            <a
-              href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-1.5 text-[11px] sm:text-xs font-medium tracking-wider text-amber-200/90 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-accent hover:bg-black/65 hover:text-white"
-              title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
-            >
-              <Mail className="h-3.5 w-3.5 text-accent transition-transform group-hover:scale-110" />
-              <span>
-                Host: <strong className="font-semibold text-white group-hover:text-accent transition-colors">Aditya Rawat</strong>
+      <div className="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center">
+        
+        {/* THE ARCHED FORMAL INVITATION CARD matching video frame 00:04 - 00:06 */}
+        <div className="relative w-full bg-[#FFFDF9] rounded-t-[140px] sm:rounded-t-[190px] md:rounded-t-[220px] rounded-b-3xl border-2 border-[#d4af37]/60 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] p-6 sm:p-10 md:p-12 text-center overflow-hidden transition-all duration-300">
+          
+          {/* Ornate Inner Double Filigree Arch Border */}
+          <div className="absolute inset-2.5 sm:inset-3 rounded-t-[130px] sm:rounded-t-[175px] md:rounded-t-[205px] rounded-b-2xl border border-[#d4af37]/30 pointer-events-none" />
+
+          {/* Delicate Botanical Floral Watercolor Garland at the top of the Arch */}
+          <div className="pt-2 sm:pt-4 mb-4 flex flex-col items-center">
+            
+            {/* Top Monogram Crest */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#d4af37] bg-gradient-to-b from-[#FAF5EE] to-[#FFFDF9] shadow-sm flex flex-col items-center justify-center p-1 mb-3">
+              <span className="font-serif font-bold text-base sm:text-lg text-[#8C6B1C] tracking-tight">
+                C &amp; X
               </span>
-              <span className="text-[10px] text-accent/80 font-mono">✉</span>
-            </a>
+            </div>
+
+            {/* Floral garland icon accent */}
+            <div className="inline-flex items-center gap-2 text-xs text-[#9e7241] tracking-widest uppercase font-serif">
+              <span>🌸</span>
+              <span className="text-[10px] tracking-[0.25em]">Royal Nuptials</span>
+              <span>🌸</span>
+            </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 md:gap-4">
-            <div className="h-[1px] w-6 bg-white/30 md:w-20"></div>
-            <span className="font-sans tracking-luxury text-[9px] font-semibold text-white/90 uppercase md:text-[12px]">
-              The Wedding Celebration
-            </span>
-            <div className="h-[1px] w-6 bg-white/30 md:w-20"></div>
+          {/* Formal Request Copy */}
+          <div className="space-y-1.5 sm:space-y-2 mb-6">
+            <p className="font-serif italic text-stone-600 text-xs sm:text-sm">
+              With the blessings of our parents
+            </p>
+            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#9e7241] uppercase">
+              The Verma &amp; Wang Families
+            </p>
+            <p className="font-serif text-xs sm:text-sm text-stone-600 italic max-w-sm mx-auto leading-relaxed pt-1">
+              Request the pleasure of your company at the celebration of the marriage of
+            </p>
           </div>
 
-          <h1 className="font-script text-6xl sm:text-8xl md:text-9xl lg:text-[10.5rem] leading-[1.1] text-white text-center mx-auto flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 py-2 drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)]">
-            <span className="hover:scale-105 transition-transform duration-500">{config.couple.bride.name}</span>
-            <span className="text-accent font-script not-italic text-5xl sm:text-7xl md:text-8xl lg:text-9xl mx-2 font-normal">
-              &
+          {/* Grand Couple Title */}
+          <div className="my-4 sm:my-6">
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-stone-900 tracking-tight leading-tight">
+              {config.couple.bride.name}
+            </h1>
+            <span className="font-script text-3xl sm:text-4xl text-[#d4af37] block my-0.5">
+              &amp;
             </span>
-            <span className="hover:scale-105 transition-transform duration-500">{config.couple.groom.name}</span>
-          </h1>
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-stone-900 tracking-tight leading-tight">
+              {config.couple.groom.name}
+            </h1>
+          </div>
 
           {guestName && (
-            <p className="animate-reveal mt-4 font-serif text-xl sm:text-2xl text-white/90 italic">
-              Dear {guestName}
-            </p>
+            <div className="mb-6">
+              <span className="inline-block px-3 py-1 rounded-full bg-[#d4af37]/10 text-stone-800 font-serif italic text-xs border border-[#d4af37]/30">
+                Warmly welcoming {guestName}
+              </span>
+            </div>
           )}
 
-          <div className="space-y-3 md:space-y-6">
-            <p className="font-serif text-2xl tracking-widest text-white italic opacity-95 sm:text-3xl md:text-5xl">
-              {config.events.akad.date}
+          {/* EDITORIAL CALENDAR NUMERAL LOCKUP matching video frame 00:05 */}
+          <div className="my-6 py-4 border-y border-[#d4af37]/40 max-w-xs mx-auto">
+            <p className="font-sans text-[11px] sm:text-xs font-bold tracking-[0.35em] text-stone-600 uppercase mb-1">
+              {dayName}
             </p>
-            <div className="flex items-center justify-center gap-3 md:gap-4">
-              <Sparkles className="text-accent h-3 w-3 animate-pulse md:h-4 md:w-4" />
-              <p className="font-sans text-accent text-[9px] font-semibold tracking-[0.25em] uppercase md:text-[13px]">
-                {config.hero.city}
-              </p>
-              <Sparkles className="text-accent h-3 w-3 animate-pulse md:h-4 md:w-4" />
+            <div className="font-serif text-5xl sm:text-6xl md:text-7xl font-bold text-stone-900 leading-none my-1 tracking-tight">
+              {dayNumber}
             </div>
+            <p className="font-sans text-[11px] sm:text-xs font-bold tracking-[0.35em] text-stone-600 uppercase mt-1">
+              {monthName} {yearNumber}
+            </p>
+            <p className="font-serif italic text-stone-500 text-xs mt-2">
+              {timeString}
+            </p>
           </div>
+
+          {/* Venue & Location */}
+          <div className="space-y-1.5 my-4">
+            <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 tracking-wide uppercase">
+              {config.venue.name || "The Oberoi Udaivilas"}
+            </h3>
+            <p className="font-serif italic text-stone-600 text-xs sm:text-sm">
+              {config.hero.city || "Udaipur, Rajasthan, India"}
+            </p>
+            <p className="font-sans text-[10px] tracking-[0.2em] font-semibold text-[#9e7241] uppercase pt-2">
+              Reception &amp; Celebrations to follow
+            </p>
+          </div>
+
+          {/* Bottom Flourish */}
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <div className="w-10 h-0.5 bg-[#d4af37]/40 rounded-full" />
+            <Sparkles className="w-3.5 h-3.5 text-[#d4af37]" />
+            <div className="w-10 h-0.5 bg-[#d4af37]/40 rounded-full" />
+          </div>
+
         </div>
 
-        <div className="animate-reveal frosted-glass mt-8 flex items-center justify-center gap-4 rounded-[1.5rem] border border-white/40 px-6 py-5 shadow-2xl [animation-delay:600ms] md:mt-16 md:gap-14 md:rounded-[2.2rem] md:px-10 md:py-8 dark:border-white/10">
-          {Object.entries(timeLeft).map(([label, value]) => (
-            <div
-              key={label}
-              className="flex min-w-[50px] flex-col items-center md:min-w-[80px]"
-            >
-              <span className="font-serif text-2xl leading-none font-bold tracking-tight text-slate-900 md:text-6xl dark:text-white">
-                {String(value).padStart(2, "0")}
-              </span>
-              <span className="font-sans text-accentDark dark:text-accent mt-1 text-[8px] font-bold tracking-[0.25em] uppercase md:mt-3 md:text-[11px]">
-                {label}
-              </span>
+        {/* Scroll Down Indicator */}
+        <div className="mt-6 text-center animate-bounce">
+          <button
+            onClick={handleScrollToCelebrations}
+            className="group inline-flex flex-col items-center text-stone-600 hover:text-stone-900 transition-colors"
+            title="Scroll to explore celebrations"
+          >
+            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#9e7241] mb-1">
+              Scroll to explore celebrations
+            </span>
+            <div className="w-9 h-9 rounded-full bg-white border border-[#d4af37]/40 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ChevronDown className="w-4 h-4 text-[#d4af37]" />
             </div>
-          ))}
+          </button>
         </div>
 
-        <button
-          onClick={handleScrollToContent}
-          className="group mt-12 flex flex-col items-center gap-3 text-white/60 transition-all duration-500 hover:text-white md:mt-20 md:gap-4"
-        >
-          <div className="group-hover:border-accent group-hover:bg-accent/10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 shadow-lg backdrop-blur-sm transition-all md:h-12 md:w-12">
-            <ChevronDown className="h-4 w-4 animate-bounce md:h-5 md:w-5" />
-          </div>
-          <span className="font-sans tracking-luxury text-[8px] font-bold uppercase opacity-75 group-hover:opacity-100 md:text-[9px]">
-            View Details
-          </span>
-        </button>
       </div>
+
     </section>
   );
 };

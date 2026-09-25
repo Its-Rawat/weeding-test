@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Hero from "./components/Hero";
+import CountdownSection from "./components/CountdownSection";
+import DressCodePalette from "./components/DressCodePalette";
+import VenueSection from "./components/VenueSection";
 import CoupleProfile from "./components/CoupleProfile";
 import EventDetails from "./components/EventDetails";
 import Gallery from "./components/Gallery";
@@ -137,9 +140,12 @@ const App: React.FC = () => {
       <Hero config={config} />
 
       <main className="relative z-10 space-y-0">
+        <CountdownSection config={config} />
+        <EventDetails config={config} />
+        <DressCodePalette />
+        <VenueSection config={config} />
         <CoupleProfile config={config} />
         <LoveStory config={config} />
-        <EventDetails config={config} />
         <Gallery config={config} />
         <RSVPForm config={config} />
         <Wishes config={config} />
@@ -147,7 +153,14 @@ const App: React.FC = () => {
       </main>
 
       <MusicPlayer url={config.music.url} />
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      <Navbar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onReopenEnvelope={() => {
+          setIsOpened(false);
+          window.scrollTo({ top: 0, behavior: "instant" });
+        }}
+      />
 
       <footer className="dark:bg-darkSurface relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-white px-6 transition-colors duration-1000">
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">

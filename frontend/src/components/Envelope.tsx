@@ -1,5 +1,5 @@
-import { Mail, MailOpen, Sparkles } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Sparkles, Mail, Heart, ChevronDown } from "lucide-react";
 import type { AppConfig } from "../types";
 
 interface EnvelopeProps {
@@ -8,124 +8,188 @@ interface EnvelopeProps {
 }
 
 const Envelope: React.FC<EnvelopeProps> = ({ onOpen, config }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isFullyRevealed, setIsFullyRevealed] = useState(false);
   const [guestName, setGuestName] = useState<string>("");
-  const [isAnimate, setIsAnimate] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const to = params.get("to");
     if (to) setGuestName(to);
-    setTimeout(() => setIsAnimate(true), 300);
   }, []);
 
-  const handleOpenClick = () => {
-    setIsExiting(true);
+  const handleOpenEnvelope = () => {
+    if (isOpen) return;
+    setIsOpen(true);
+
+    // Trigger music immediately on tap
+    window.dispatchEvent(new CustomEvent("play-wedding-music"));
+
+    // After flap opens and card slides out, smoothly transition into the main invitation scroll
     setTimeout(() => {
-      onOpen();
-    }, 800);
+      setIsFullyRevealed(true);
+      setTimeout(() => {
+        onOpen();
+      }, 600);
+    }, 1400);
   };
 
   return (
     <div
-      className={`bg-darkBg fixed inset-0 z-[2000] flex flex-col items-center overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 transition-all duration-1000 ease-in-out ${
-        isExiting ? "pointer-events-none scale-110 opacity-0" : "opacity-100"
+      className={`fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-[#151210]/95 backdrop-blur-md px-4 select-none transition-all duration-1000 ${
+        isFullyRevealed ? "opacity-0 pointer-events-none scale-105" : "opacity-100"
       }`}
-      style={{ WebkitOverflowScrolling: "touch" }}
+      style={{ perspective: "1200px" }}
     >
-      <div className="fixed inset-0 scale-110 pointer-events-none">
-        <img
-          src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop"
-          className="animate-subtle-zoom h-full w-full object-cover opacity-30"
-          alt="Wedding Backdrop"
-        />
-        <div className="from-darkBg/80 via-darkBg/20 to-darkBg/90 absolute inset-0 bg-gradient-to-b"></div>
-        <div className="absolute inset-0 backdrop-blur-[2px]"></div>
+      {/* Background subtle romantic bokeh lights */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-[#d4af37]/10 blur-3xl animate-pulse-soft" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#b73239]/10 blur-3xl animate-pulse-soft [animation-delay:2s]" />
       </div>
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="bg-accent/5 animate-pulse-soft absolute top-[10%] left-[5%] h-32 w-32 rounded-full blur-3xl"></div>
-        <div className="bg-accentDark/10 animate-pulse-soft absolute right-[5%] bottom-[10%] h-48 w-48 rounded-full blur-3xl [animation-delay:2s]"></div>
+
+      {/* Top Greeting Badge */}
+      <div className="relative z-10 mb-6 text-center animate-reveal">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 backdrop-blur-md shadow-sm mb-3">
+          <Sparkles className="w-3.5 h-3.5 text-[#d4af37] animate-pulse" />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#f4e7bd]">
+            You're Cordially Invited
+          </span>
+          <Sparkles className="w-3.5 h-3.5 text-[#d4af37] animate-pulse" />
+        </div>
+        <h1 className="font-serif text-2xl sm:text-3xl text-white font-medium tracking-wide">
+          {config.couple.bride.name} &amp; {config.couple.groom.name}
+        </h1>
+        {guestName && (
+          <p className="font-serif italic text-[#f4e7bd] text-sm mt-1">
+            Specially delivered for {guestName}
+          </p>
+        )}
       </div>
+
+      {/* 3D Envelope Container */}
       <div
-        className={`relative z-10 w-full max-w-xl transform my-auto py-6 sm:py-8 text-center transition-all duration-1000 ${
-          isAnimate ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        }`}
+        onClick={handleOpenEnvelope}
+        className="group relative cursor-pointer w-[320px] sm:w-[380px] md:w-[420px] h-[220px] sm:h-[260px] md:h-[280px] transition-transform duration-500 hover:scale-[1.02] active:scale-[0.99]"
+        style={{ perspective: "1200px" }}
       >
-        <div className="space-y-6 sm:space-y-8 md:space-y-10">
-          <div className="space-y-3 sm:space-y-4">
-            {/* Host Badge */}
-            <div className="flex items-center justify-center pb-1">
-              <a
-                href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-                className="group inline-flex items-center gap-2 rounded-full border border-accent/40 bg-black/50 px-4 py-1.5 text-[11px] sm:text-xs font-medium tracking-wider text-amber-200/90 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-accent hover:bg-black/75 hover:text-white"
-                title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
-              >
-                <Mail className="h-3.5 w-3.5 text-accent transition-transform group-hover:scale-110" />
-                <span>
-                  Host: <strong className="font-semibold text-white group-hover:text-accent transition-colors">Aditya Rawat</strong>
-                </span>
-                <span className="text-[10px] text-accent/80 font-mono">✉</span>
-              </a>
+        {/* Envelope Outer Shadow */}
+        <div className="absolute -inset-4 bg-gradient-to-b from-[#d4af37]/20 via-black/40 to-black/60 rounded-3xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity" />
+
+        {/* Envelope Body */}
+        <div className="relative w-full h-full rounded-2xl bg-gradient-to-b from-[#FAF5EE] to-[#F3EBE0] border border-[#d4af37]/40 shadow-2xl overflow-hidden flex flex-col justify-end">
+          
+          {/* Inner Envelope Lining with delicate palace & floral watercolor */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#FAF2E6] via-[#FFF9F2] to-[#FCEEE2] opacity-90">
+            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px]" />
+          </div>
+
+          {/* Invitation Card Inside (Slides up when opened) */}
+          <div
+            className={`absolute inset-x-3.5 bottom-3.5 h-[90%] bg-[#FFFDF9] rounded-xl border border-[#d4af37]/50 shadow-md p-4 flex flex-col items-center justify-between text-center transition-all duration-1000 ease-out ${
+              isOpen ? "-translate-y-[65%] shadow-2xl scale-[1.03]" : "translate-y-0"
+            }`}
+            style={{ zIndex: 10 }}
+          >
+            {/* Top Monogram Seal on Card */}
+            <div className="w-9 h-9 rounded-full border border-[#d4af37] flex items-center justify-center bg-white shadow-xs">
+              <span className="font-serif font-bold text-xs text-[#9e7241] tracking-tight">C&amp;X</span>
             </div>
 
-            <div className="flex items-center justify-center gap-3">
-              <div className="to-accent/40 h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent"></div>
-              <Sparkles className="text-accent/60 animate-spin-slow h-4 w-4 sm:h-5 sm:w-5" />
-              <div className="to-accent/40 h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent"></div>
-            </div>
-            <div className="space-y-1 sm:space-y-2 text-center">
-              <span className="font-sans block text-[10px] font-semibold tracking-[0.4em] text-accent/90 uppercase sm:text-[12px]">
-                The Wedding of
+            <div className="my-auto py-1">
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#9e7241] font-bold block mb-0.5">
+                Save The Date
               </span>
-              <h1 className="font-script text-5xl sm:text-7xl md:text-8xl leading-tight text-white text-center mx-auto flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 py-1 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
-                <span>{config.couple.bride.name}</span>
-                <span className="text-accent font-script text-4xl sm:text-6xl md:text-7xl mx-1.5 font-normal">
-                  &
-                </span>
-                <span>{config.couple.groom.name}</span>
-              </h1>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 tracking-tight leading-tight">
+                {config.couple.bride.name} &amp; {config.couple.groom.name}
+              </h3>
+              <p className="text-[10px] text-stone-600 mt-0.5 font-light">
+                {config.events.akad.date} • {config.hero.city}
+              </p>
+            </div>
+
+            <div className="w-12 h-0.5 bg-[#d4af37]/50 rounded-full" />
+          </div>
+
+          {/* Envelope Bottom Pocket (Front Face with V-cut folds) */}
+          <div 
+            className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-[#EDE2D3] to-[#F8EFE4] border-t border-[#d4af37]/30 shadow-inner flex flex-col justify-end p-4 text-center"
+            style={{ zIndex: 20 }}
+          >
+            {/* Calligraphy script matching video: "Request the pleasure of your company" */}
+            <div className="relative z-10 mb-2">
+              <p className="font-serif italic text-stone-700 text-xs sm:text-sm tracking-wide drop-shadow-xs">
+                Request the pleasure of your company
+              </p>
+              <p className="text-[9px] uppercase tracking-[0.2em] font-semibold text-[#9e7241] mt-0.5">
+                The Royal Celebration
+              </p>
             </div>
           </div>
-          <div className="group relative">
-            <div className="from-accent/20 to-accentDark/20 absolute -inset-1 rounded-[2.5rem] bg-gradient-to-r opacity-30 blur transition duration-1000 group-hover:opacity-60"></div>
-            <div className="frosted-glass relative space-y-4 sm:space-y-6 overflow-hidden rounded-[2.2rem] border border-white/20 p-6 sm:p-8 md:p-10 shadow-2xl dark:border-white/10">
-              <div className="relative z-10 space-y-2 text-center">
-                <p className="font-sans text-accentDark dark:text-accent text-[10px] font-bold tracking-[0.3em] uppercase transition-colors duration-500 sm:text-[11px]">
-                  Cordially Invited:
-                </p>
-                <div className="dark:via-accent/30 mx-auto h-[1px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-slate-400 to-transparent opacity-50"></div>
-              </div>
-              <div className="relative z-10 py-1 text-center">
-                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl tracking-tight break-words text-slate-900 italic drop-shadow-sm transition-colors duration-500 dark:text-white">
-                  {guestName || "Honored Guest"}
-                </h2>
-              </div>
-              <div className="relative z-10 text-center">
-                <p className="font-sans mx-auto max-w-sm text-[12px] sm:text-[13px] leading-relaxed font-normal text-slate-600 transition-colors duration-500 dark:text-slate-300">
-                  We joyfully invite you to celebrate our union as we begin our lifelong journey together.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col items-center justify-center gap-4 pt-2">
-            <button
-              onClick={handleOpenClick}
-              className="font-sans group text-primary hover:bg-accent hover:text-white relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-8 py-4 sm:px-10 sm:py-5 text-[11px] sm:text-[12px] font-bold tracking-[0.25em] uppercase shadow-[0_15px_40px_-10px_rgba(212,175,55,0.4)] transition-all duration-700 active:scale-95 animate-pulse hover:animate-none cursor-pointer"
+
+          {/* Envelope Top Triangular Flap (Folds open in 3D rotateX) */}
+          <div
+            className={`absolute inset-x-0 top-0 h-[55%] origin-top transition-transform duration-1000 ease-in-out ${
+              isOpen ? "rotate-x-180 pointer-events-none" : "rotate-x-0"
+            }`}
+            style={{
+              zIndex: isOpen ? 5 : 30,
+              transformStyle: "preserve-3d",
+              transform: isOpen ? "rotateX(180deg)" : "rotateX(0deg)",
+              transition: "transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          >
+            {/* Front of Flap with V-shape clip path */}
+            <div 
+              className="w-full h-full bg-gradient-to-b from-[#F2E7D9] to-[#E9DCcb] border-b border-[#d4af37]/50 shadow-md flex items-center justify-center relative"
+              style={{
+                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+              }}
             >
-              <div className="relative z-10 flex items-center gap-2.5">
-                <MailOpen className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-500 group-hover:scale-110" />
-                Open Invitation
-              </div>
-              <div className="bg-accent absolute inset-0 translate-y-full transition-transform duration-500 group-hover:translate-y-0"></div>
-            </button>
+              {/* Gold foiled border accent along the V */}
+              <div 
+                className="absolute inset-0 border-b-2 border-[#d4af37]/60 pointer-events-none"
+                style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+              />
+            </div>
           </div>
+
+          {/* Royal Wax Seal with C&X monogram in center (Tapping it triggers open) */}
+          <div
+            className={`absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-700 ${
+              isOpen ? "opacity-0 scale-50 pointer-events-none" : "opacity-100 scale-100"
+            }`}
+            style={{ zIndex: 40 }}
+          >
+            <div className="relative group/seal">
+              {/* Wax Seal Outer Glow */}
+              <div className="absolute -inset-2 rounded-full bg-[#d4af37]/40 blur-md animate-pulse" />
+
+              {/* 3D Wax Seal Medal */}
+              <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#E5C775] via-[#D4AF37] to-[#8C6B1C] p-0.5 shadow-[0_8px_25px_rgba(140,107,28,0.5)] flex items-center justify-center border-2 border-[#FFF6D6]">
+                <div className="w-full h-full rounded-full border border-[#8C6B1C]/60 flex flex-col items-center justify-center bg-gradient-to-br from-[#D4AF37] to-[#A37B24] text-white shadow-inner">
+                  <span className="font-serif font-bold text-xs sm:text-sm tracking-tight text-[#FFFDF4] drop-shadow">
+                    C &amp; X
+                  </span>
+                  <span className="text-[6px] uppercase tracking-widest text-[#FFF2C2] font-mono leading-none mt-0.5">
+                    SEAL
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        {/* Tap to Open Prompt */}
+        {!isOpen && (
+          <div className="mt-5 text-center animate-bounce">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#FFF4D0] text-xs font-semibold uppercase tracking-widest shadow-md">
+              <Mail className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span>Tap to Open Invitation</span>
+            </span>
+          </div>
+        )}
       </div>
-      <div className="pointer-events-none absolute inset-4 rounded-[2rem] border border-white/5 md:inset-8 md:rounded-[4rem]"></div>
-      <style>{`
-        .animate-spin-slow { animation: spin 8s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 };
