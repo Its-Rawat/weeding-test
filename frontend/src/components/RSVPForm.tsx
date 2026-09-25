@@ -108,16 +108,16 @@ const RSVPForm: React.FC<{ config: AppConfig }> = ({ config }) => {
   return (
     <section
       id="rsvp"
-      className="dark:bg-darkBg bg-white py-16 transition-colors duration-1000 md:py-40"
+      className="dark:bg-darkBg bg-[#FAF5EB] py-16 transition-colors duration-1000 md:py-36 border-t border-[#D4AF37]/20"
     >
       <div className="container mx-auto max-w-7xl px-4 md:px-6">
-        <div className="mb-12 space-y-3 text-center md:mb-24">
-          <Heart className="text-accentDark dark:text-accent mx-auto mb-2 h-5 w-5 animate-pulse" />
-          <h2 className="font-serif text-4xl tracking-tight text-slate-900 italic md:text-8xl dark:text-white">
+        <div className="mb-12 space-y-3 text-center md:mb-20">
+          <Heart className="text-[#8C1D24] dark:text-accent mx-auto mb-2 h-5 w-5 animate-pulse" />
+          <h2 className="font-serif text-4xl tracking-tight text-[#231C18] italic md:text-8xl dark:text-white">
             RSVP
           </h2>
-          <p className="tracking-luxury text-[9px] font-bold text-slate-400 uppercase md:text-[10px] dark:text-slate-500">
-            Kindly confirm your attendance
+          <p className="tracking-luxury text-[9px] font-bold text-[#8C6B1C] uppercase md:text-[11px] dark:text-slate-400">
+            Kindly confirm your auspicious presence
           </p>
         </div>
 
@@ -241,15 +241,15 @@ const RSVPForm: React.FC<{ config: AppConfig }> = ({ config }) => {
                               onClick={() =>
                                 setFormData({ ...formData, attendance: status })
                               }
-                              className={`tracking-editorial group flex items-center justify-between rounded-lg border px-5 py-3.5 text-[9px] font-bold uppercase transition-all md:rounded-2xl md:py-5 md:text-[11px] ${
+                              className={`tracking-editorial group flex items-center justify-between rounded-lg border px-5 py-3.5 text-[9px] font-bold uppercase transition-all md:rounded-2xl md:py-5 md:text-[11px] cursor-pointer ${
                                 formData.attendance === status
-                                  ? "bg-primary dark:text-primary border-primary text-white shadow-md dark:border-white dark:bg-white"
-                                  : "border-slate-100 text-slate-400 hover:bg-slate-50 dark:border-white/5 dark:hover:bg-white/5"
+                                  ? "bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] border-[#8C1D24] text-white shadow-md dark:border-accent dark:bg-accent"
+                                  : "border-[#D4AF37]/30 text-[#5A4D43] bg-[#FAF5EB] hover:bg-[#F3E7D5] dark:border-white/5 dark:hover:bg-white/5"
                               }`}
                             >
                               {getStatusLabel(status)}
                               {formData.attendance === status && (
-                                <CheckCircle2 className="h-3.5 w-3.5 md:h-5 md:w-5" />
+                                <CheckCircle2 className="h-3.5 w-3.5 md:h-5 md:w-5 text-[#FFE082]" />
                               )}
                             </button>
                           ))}
@@ -258,25 +258,25 @@ const RSVPForm: React.FC<{ config: AppConfig }> = ({ config }) => {
 
                       {formData.attendance === AttendanceStatus.HADIR && (
                         <div className="animate-reveal space-y-3">
-                          <p className="tracking-editorial mb-1 text-[8px] font-bold text-slate-400 uppercase md:text-[9px]">
+                          <p className="tracking-editorial mb-1 text-[8px] font-bold text-[#8C6B1C] uppercase md:text-[9px]">
                             Number of Guests (Max {maxGuests})
                           </p>
                           <div className="flex items-center gap-4">
                             <button
                               type="button"
                               onClick={() => handleGuestCount("dec")}
-                              className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:hover:bg-white/5"
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D4AF37]/40 bg-[#FAF5EB] text-[#231C18] transition-colors hover:bg-[#F0E3CF] disabled:opacity-30 dark:border-white/10 dark:hover:bg-white/5 cursor-pointer"
                               disabled={formData.guest_count <= 1}
                             >
                               <Minus className="h-4 w-4" />
                             </button>
-                            <div className="flex-1 border-b border-slate-100 pb-1 text-center font-serif text-xl italic md:text-2xl dark:border-white/5">
+                            <div className="flex-1 border-b border-[#D4AF37]/30 pb-1 text-center font-serif text-xl italic text-[#231C18] md:text-2xl dark:border-white/5">
                               {formData.guest_count} {formData.guest_count === 1 ? "Guest" : "Guests"}
                             </div>
                             <button
                               type="button"
                               onClick={() => handleGuestCount("inc")}
-                              className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:hover:bg-white/5"
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D4AF37]/40 bg-[#FAF5EB] text-[#231C18] transition-colors hover:bg-[#F0E3CF] disabled:opacity-30 dark:border-white/10 dark:hover:bg-white/5 cursor-pointer"
                               disabled={formData.guest_count >= maxGuests}
                             >
                               <Plus className="h-4 w-4" />
@@ -288,14 +288,14 @@ const RSVPForm: React.FC<{ config: AppConfig }> = ({ config }) => {
                       <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="bg-primary dark:bg-accentDark tracking-luxury group flex w-full items-center justify-center gap-3 rounded-xl py-3.5 text-[9px] font-bold text-white uppercase shadow-sm transition-all duration-700 hover:shadow-xl active:scale-95 disabled:opacity-50 md:rounded-3xl md:py-6 md:text-[11px]"
+                        className="bg-gradient-to-r from-[#8C1D24] via-[#A8232B] to-[#750D14] hover:from-[#750D14] hover:to-[#8C1D24] tracking-luxury group flex w-full items-center justify-center gap-3 rounded-xl py-3.5 text-[9px] font-bold text-white uppercase shadow-md transition-all duration-300 hover:shadow-xl active:scale-95 disabled:opacity-50 md:rounded-3xl md:py-6 md:text-[11px] cursor-pointer"
                       >
                         {isSubmitting
                           ? "Sending..."
                           : isNameLocked
                             ? "Update RSVP"
                             : "Confirm RSVP"}
-                        <Send className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 md:h-5 md:w-5" />
+                        <Send className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 md:h-5 md:w-5 text-[#FFE082]" />
                       </button>
                     </form>
                   </div>

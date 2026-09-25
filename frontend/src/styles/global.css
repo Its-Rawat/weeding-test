@@ -3,13 +3,16 @@
 @source "./**/*.{js,ts,jsx,tsx}";
 @variant dark (&:where(.dark, .dark *));
 @theme {
-  /* Aesthetic Luxury Wedding Palette */
-  --color-primary: #26211e;
-  --color-secondary: #ffffff;
-  --color-accent: #d4af37;
-  --color-accentDark: #9e7241;
-  --color-darkBg: #131110;
-  --color-darkSurface: #1e1a17;
+  /* Authentic Royal Indian Wedding Palette */
+  --color-primary: #231C18;
+  --color-secondary: #FAF5EB;
+  --color-accent: #D4AF37;
+  --color-accentDark: #8C6B1C;
+  --color-crimson: #8C1D24;
+  --color-crimsonDeep: #750D14;
+  --color-haldi: #D9822B;
+  --color-darkBg: #151111;
+  --color-darkSurface: #1F1718;
 
   /* Fonts: Calligraphy for Names, Elegant Serif for Titles, Clean Modern Sans for Details */
   --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
@@ -111,17 +114,17 @@
   *,
   ::before,
   ::after {
-    @apply border-gray-200 dark:border-white/10;
+    @apply border-[#D4AF37]/20 dark:border-white/10;
   }
 
   body {
-    @apply bg-secondary leading-relaxed text-slate-800 antialiased transition-colors duration-1000 ease-out;
+    @apply bg-[#FAF5EB] leading-relaxed text-[#2D2520] antialiased transition-colors duration-1000 ease-out;
     font-family: var(--font-sans);
   }
 
   /* Style spesifik saat Dark Mode aktif */
   .dark body {
-    @apply bg-darkBg text-slate-100;
+    @apply bg-darkBg text-[#FAF5EB];
   }
 
   h1,
@@ -140,7 +143,7 @@
   width: 100%;
   height: 100%;
   background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-  opacity: 0.015;
+  opacity: 0.02;
   pointer-events: none;
   z-index: 9999;
 }
@@ -149,20 +152,20 @@
 }
 
 .editorial-card {
-  @apply border border-slate-900/5 bg-white shadow-sm transition-all duration-700;
+  @apply border border-[#D4AF37]/30 bg-[#FFFDF9] shadow-[0_10px_35px_rgba(140,107,28,0.08)] transition-all duration-700;
 }
 .dark .editorial-card {
-  @apply bg-darkSurface border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.2)];
+  @apply bg-darkSurface border-[#D4AF37]/20 shadow-[0_10px_40px_rgba(0,0,0,0.4)];
 }
 
 .frosted-glass {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 253, 249, 0.94);
   backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.35);
 }
 .dark .frosted-glass {
-  background: rgba(26, 23, 21, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(31, 23, 24, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.25);
 }
 
 .reveal-active {

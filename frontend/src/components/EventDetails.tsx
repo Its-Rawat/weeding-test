@@ -112,84 +112,84 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
   };
 
   return (
-    <section id="event" className="py-16 sm:py-24 px-4 bg-[#FBF8F3]">
+    <section id="event" className="py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20">
       <div className="max-w-2xl mx-auto">
         
-        {/* Section Title matching video frame 00:07 */}
+        {/* Section Title */}
         <div className="text-center mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-1.5 text-xs text-[#9e7241] tracking-widest uppercase font-serif font-medium mb-1">
-            <span>🌸</span>
-            <span>Itinerary &amp; Functions</span>
-            <span>🌸</span>
+          <div className="inline-flex items-center gap-1.5 text-xs text-[#8C6B1C] tracking-widest uppercase font-serif font-medium mb-1">
+            <span>🪷</span>
+            <span>Itinerary &amp; Royal Functions</span>
+            <span>🪷</span>
           </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl text-stone-900 font-normal">
+          <h2 className="font-serif italic text-3xl sm:text-5xl text-[#231C18] font-normal">
             The Celebrations
           </h2>
-          <p className="font-sans text-xs text-stone-600 max-w-md mx-auto mt-2 leading-relaxed">
+          <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
             Please join us across three days of love, music, and sacred traditions at The Oberoi Udaivilas.
           </p>
-          <div className="w-16 h-0.5 bg-[#d4af37]/50 mx-auto mt-3 rounded-full" />
+          <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto mt-3 rounded-full" />
         </div>
 
-        {/* Ceremony Cards Stack matching video frame 00:07 */}
+        {/* Ceremony Cards Stack */}
         <div className="space-y-6 sm:space-y-8">
           {ceremonies.map((evt, idx) => (
             <div
               key={evt.id}
-              className="bg-white rounded-3xl border border-[#d4af37]/40 shadow-sm hover:shadow-md transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"
+              className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_8px_30px_rgba(140,107,28,0.08)] hover:shadow-lg transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"
             >
               {/* Top Accent Icon & Function Number */}
-              <div className="flex items-center justify-between border-b border-[#d4af37]/20 pb-3 mb-4">
-                <span className="text-2xl sm:text-3xl p-2 rounded-2xl bg-[#FAF5EE] border border-[#d4af37]/30 flex items-center justify-center">
+              <div className="flex items-center justify-between border-b border-[#D4AF37]/25 pb-3 mb-4">
+                <span className="text-2xl sm:text-3xl p-2 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/40 flex items-center justify-center">
                   {evt.illustration}
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#9e7241] font-bold bg-[#FAF5EE] px-2.5 py-1 rounded-full border border-[#d4af37]/30">
-                  Event 0{idx + 1}
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#8C1D24] font-bold bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#D4AF37]/40">
+                  Function 0{idx + 1}
                 </span>
               </div>
 
               {/* Ceremony Title */}
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#231C18] tracking-tight">
                 {evt.title}
               </h3>
-              <p className="text-xs sm:text-sm text-stone-600 font-serif italic mt-0.5 mb-4">
+              <p className="text-xs sm:text-sm text-[#8C6B1C] font-serif italic mt-0.5 mb-4">
                 "{evt.subtitle}"
               </p>
 
               {/* Date, Time & Venue Block */}
-              <div className="bg-[#FAF7F2] rounded-2xl p-4 border border-[#d4af37]/30 space-y-2 text-xs sm:text-sm text-stone-800 mb-4">
+              <div className="bg-[#FAF5EB] rounded-2xl p-4 border border-[#D4AF37]/35 space-y-2 text-xs sm:text-sm text-[#231C18] mb-4">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#d4af37] shrink-0" />
-                  <span className="font-semibold">{evt.dayDate}</span>
+                  <Calendar className="w-4 h-4 text-[#8C1D24] shrink-0" />
+                  <span className="font-semibold text-[#231C18]">{evt.dayDate}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#d4af37] shrink-0" />
-                  <span className="font-medium text-stone-700">{evt.time}</span>
+                  <Clock className="w-4 h-4 text-[#8C6B1C] shrink-0" />
+                  <span className="font-medium text-[#5A4D43]">{evt.time}</span>
                 </div>
-                <div className="flex items-start gap-2 pt-1 border-t border-[#d4af37]/20">
-                  <MapPin className="w-4 h-4 text-[#9e7241] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 pt-1 border-t border-[#D4AF37]/25">
+                  <MapPin className="w-4 h-4 text-[#8C1D24] shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold block">{evt.venueName}</span>
-                    <span className="text-[11px] text-stone-500 font-light block">{evt.venueAddress}</span>
+                    <span className="font-semibold block text-[#231C18]">{evt.venueName}</span>
+                    <span className="text-[11px] text-[#5A4D43] font-light block">{evt.venueAddress}</span>
                   </div>
                 </div>
               </div>
 
               {/* Dress Code Tag */}
               <div className="mb-5 flex items-center gap-2 text-xs">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-[#9e7241] bg-[#d4af37]/10 px-2 py-0.5 rounded border border-[#d4af37]/20 shrink-0">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8C6B1C] bg-[#D4AF37]/15 px-2.5 py-0.5 rounded border border-[#D4AF37]/30 shrink-0">
                   Attire
                 </span>
-                <span className="text-stone-700 font-medium italic truncate">{evt.dressCode}</span>
+                <span className="text-[#5A4D43] font-medium italic truncate">{evt.dressCode}</span>
               </div>
 
               {/* Action Buttons: Add to Calendar & Directions */}
               <div className="flex items-center gap-2 pt-1">
                 <button
                   onClick={() => handleAddToCalendar(evt)}
-                  className="flex-1 py-2.5 px-3 bg-[#FAF5EE] hover:bg-[#F3EBE0] text-stone-800 rounded-xl border border-[#d4af37]/50 text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors active:scale-98 shadow-xs"
+                  className="flex-1 py-2.5 px-3 bg-[#FAF5EB] hover:bg-[#F3E7D5] text-[#231C18] rounded-xl border border-[#D4AF37]/60 text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors active:scale-98 shadow-xs cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <Plus className="w-3.5 h-3.5 text-[#8C6B1C]" />
                   <span>Add to Calendar</span>
                 </button>
 
@@ -197,9 +197,9 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
                   href="https://maps.google.com/?q=The+Oberoi+Udaivilas+Udaipur"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2.5 px-4 bg-stone-900 hover:bg-black text-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors active:scale-98 shadow-xs"
+                  className="py-2.5 px-4 bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#9A1616] text-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-sm cursor-pointer"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <MapPin className="w-3.5 h-3.5 text-[#FFE082]" />
                   <span>Map</span>
                 </a>
               </div>

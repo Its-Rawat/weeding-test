@@ -53,19 +53,19 @@ const Gallery: React.FC<{ config: AppConfig }> = ({ config }) => {
   return (
     <section
       id="gallery"
-      className="dark:bg-darkBg bg-white py-24 transition-colors duration-1000 md:py-48"
+      className="dark:bg-darkBg bg-[#FAF5EB] py-24 transition-colors duration-1000 md:py-36 border-t border-[#D4AF37]/20"
     >
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="mb-20 space-y-4 text-center md:mb-32 md:space-y-8">
-          <div className="flex items-center justify-center gap-4 opacity-30">
-            <div className="bg-accentDark dark:bg-accent h-[1px] w-8 md:w-16"></div>
-            <ImageIcon className="h-5 w-5 md:h-8 md:w-8" />
-            <div className="bg-accentDark dark:bg-accent h-[1px] w-8 md:w-16"></div>
+        <div className="mb-20 space-y-4 text-center md:mb-28 md:space-y-6">
+          <div className="flex items-center justify-center gap-4 opacity-50">
+            <div className="bg-[#D4AF37] dark:bg-accent h-[1px] w-8 md:w-16"></div>
+            <ImageIcon className="h-5 w-5 md:h-7 md:w-7 text-[#8C1D24]" />
+            <div className="bg-[#D4AF37] dark:bg-accent h-[1px] w-8 md:w-16"></div>
           </div>
-          <h2 className="font-serif text-5xl tracking-tight text-slate-900 italic md:text-9xl dark:text-white">
+          <h2 className="font-serif text-5xl tracking-tight text-[#231C18] italic md:text-8xl dark:text-white">
             Our Gallery
           </h2>
-          <p className="tracking-luxury text-[10px] font-black text-balance text-slate-400 uppercase italic md:text-[13px] dark:text-slate-500">
+          <p className="tracking-luxury text-[10px] font-bold text-balance text-[#8C6B1C] uppercase italic md:text-[13px] dark:text-slate-400">
             Cherished moments captured along our lifelong journey of love
           </p>
         </div>
@@ -73,17 +73,17 @@ const Gallery: React.FC<{ config: AppConfig }> = ({ config }) => {
           {images.map((src, index) => (
             <div
               key={index}
-              className="group hover:shadow-accent/20 dark:bg-darkSurface relative cursor-pointer overflow-hidden rounded-[2rem] border border-slate-100 bg-slate-50 shadow-xl transition-all duration-700 hover:-translate-y-3 md:rounded-[3.5rem] dark:border-white/5"
+              className="group hover:shadow-[0_12px_40px_rgba(212,175,55,0.25)] dark:bg-darkSurface relative cursor-pointer overflow-hidden rounded-[2rem] border border-[#D4AF37]/40 bg-[#FFFDF9] shadow-md transition-all duration-700 hover:-translate-y-2 md:rounded-[3rem] dark:border-white/10"
               onClick={() => openLightbox(index)}
             >
               <img
                 src={src}
                 alt={`Wedding Moment ${index + 1}`}
-                className="h-auto w-full transform object-cover grayscale-[0.2] transition-transform duration-[1.5s] ease-out group-hover:scale-105 group-hover:grayscale-0"
+                className="h-auto w-full transform object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 loading="lazy"
               />
-              <div className="bg-primary/10 dark:bg-darkBg/40 absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-[1px] transition-opacity duration-500 group-hover:opacity-100">
-                <div className="flex h-14 w-14 scale-75 items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-2xl transition-transform duration-500 group-hover:scale-100 md:h-20 md:w-20">
+              <div className="bg-black/20 dark:bg-darkBg/40 absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-[1px] transition-opacity duration-500 group-hover:opacity-100">
+                <div className="flex h-14 w-14 scale-75 items-center justify-center rounded-full border border-white/50 bg-white/20 backdrop-blur-2xl transition-transform duration-500 group-hover:scale-100 md:h-18 md:w-18">
                   <Maximize2 className="h-6 w-6 text-white md:h-8 md:w-8" />
                 </div>
               </div>

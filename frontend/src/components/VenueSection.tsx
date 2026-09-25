@@ -7,27 +7,27 @@ export default function VenueSection({ config }: { config: AppConfig }) {
   const venueAddress = config.venue.address || "Haridas Ji Ki Magri, Udaipur, Rajasthan 313001, India";
 
   return (
-    <section id="venue" className="py-16 sm:py-24 px-4 bg-[#FBF8F3] border-t border-[#d4af37]/20">
+    <section id="venue" className="py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20">
       <div className="max-w-2xl mx-auto">
         
-        {/* Section Header matching video frame 00:09 */}
+        {/* Section Header */}
         <div className="text-center mb-10 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 text-xs text-[#9e7241] tracking-widest uppercase font-serif font-medium mb-1">
+          <div className="inline-flex items-center gap-1.5 text-xs text-[#8C6B1C] tracking-widest uppercase font-serif font-medium mb-1">
             <span>🏰</span>
             <span>Royal Destination</span>
             <span>🏰</span>
           </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl text-stone-900 font-normal">
+          <h2 className="font-serif italic text-3xl sm:text-5xl text-[#231C18] font-normal">
             The Venue
           </h2>
-          <p className="font-sans text-xs text-stone-600 max-w-md mx-auto mt-2 leading-relaxed">
+          <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
             Nestled on the tranquil banks of Lake Pichola, The Oberoi Udaivilas stands as an architectural marvel of courtyards, domes, and fountains.
           </p>
-          <div className="w-16 h-0.5 bg-[#d4af37]/50 mx-auto mt-3 rounded-full" />
+          <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto mt-3 rounded-full" />
         </div>
 
-        {/* Illustrated Venue Card matching video frame 00:09 */}
-        <div className="bg-white rounded-3xl border border-[#d4af37]/40 shadow-sm overflow-hidden p-6 sm:p-8">
+        {/* Illustrated Venue Card */}
+        <div className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_10px_35px_rgba(140,107,28,0.08)] overflow-hidden p-6 sm:p-8">
           
           {/* Architectural Venue Image */}
           <div className="relative rounded-2xl overflow-hidden shadow-inner h-64 sm:h-80 mb-6 group">
@@ -38,41 +38,41 @@ export default function VenueSection({ config }: { config: AppConfig }) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-widest bg-[#d4af37]/90 text-white mb-1">
-                Luxury Palace Sanctuary
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-widest bg-[#D4AF37] text-[#231C18] mb-1 font-sans">
+                Royal Palace Sanctuary
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold">{venueTitle}</h3>
-              <p className="text-xs text-stone-200 mt-0.5 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-[#d4af37]" />
+              <p className="text-xs text-stone-200 mt-0.5 flex items-center gap-1 font-serif italic">
+                <MapPin className="w-3.5 h-3.5 text-[#FFE082]" />
                 Lake Pichola, Udaipur, Rajasthan
               </p>
             </div>
           </div>
 
           {/* Details & Transit Info */}
-          <div className="space-y-4 text-xs sm:text-sm text-stone-700">
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#d4af37]/30 flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-[#9e7241] shrink-0 mt-0.5" />
+          <div className="space-y-4 text-xs sm:text-sm text-[#231C18]">
+            <div className="p-4 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/35 flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-[#8C1D24] shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold block text-stone-900">Address</span>
-                <span className="text-stone-600 leading-relaxed block">{venueAddress}</span>
+                <span className="font-bold block text-[#231C18]">Address</span>
+                <span className="text-[#5A4D43] leading-relaxed block">{venueAddress}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#d4af37]/30 flex items-center gap-3">
-                <Plane className="w-4 h-4 text-[#d4af37] shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/35 flex items-center gap-3">
+                <Plane className="w-4 h-4 text-[#8C6B1C] shrink-0" />
                 <div>
-                  <span className="font-bold block text-xs text-stone-900">Maharana Pratap Airport</span>
-                  <span className="text-[11px] text-stone-500">27 km (~45 mins by car)</span>
+                  <span className="font-bold block text-xs text-[#231C18]">Maharana Pratap Airport</span>
+                  <span className="text-[11px] text-[#5A4D43]">27 km (~45 mins by car)</span>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#d4af37]/30 flex items-center gap-3">
-                <Car className="w-4 h-4 text-[#d4af37] shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/35 flex items-center gap-3">
+                <Car className="w-4 h-4 text-[#8C6B1C] shrink-0" />
                 <div>
-                  <span className="font-bold block text-xs text-stone-900">Udaipur City Station</span>
-                  <span className="text-[11px] text-stone-500">8 km (~20 mins by car)</span>
+                  <span className="font-bold block text-xs text-[#231C18]">Udaipur City Station</span>
+                  <span className="text-[11px] text-[#5A4D43]">8 km (~20 mins by car)</span>
                 </div>
               </div>
             </div>
@@ -82,17 +82,17 @@ export default function VenueSection({ config }: { config: AppConfig }) {
                 href="https://maps.google.com/?q=The+Oberoi+Udaivilas+Udaipur"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 px-4 bg-stone-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all active:scale-98"
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#9A1616] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
               >
-                <Navigation className="w-4 h-4 text-[#d4af37]" />
+                <Navigation className="w-4 h-4 text-[#FFE082]" />
                 <span>Get Directions via Google Maps</span>
               </a>
 
               <a
                 href="tel:+919876543210"
-                className="py-3 px-4 bg-[#FAF5EE] hover:bg-[#F3EBE0] text-stone-800 text-xs font-semibold uppercase tracking-wider rounded-xl border border-[#d4af37]/50 flex items-center justify-center gap-2 transition-colors active:scale-98"
+                className="py-3 px-4 bg-[#FAF5EB] hover:bg-[#F3E7D5] text-[#231C18] text-xs font-semibold uppercase tracking-wider rounded-xl border border-[#D4AF37]/60 flex items-center justify-center gap-2 transition-colors active:scale-98 cursor-pointer"
               >
-                <Phone className="w-4 h-4 text-[#d4af37]" />
+                <Phone className="w-4 h-4 text-[#8C6B1C]" />
                 <span>Hospitality Desk</span>
               </a>
             </div>

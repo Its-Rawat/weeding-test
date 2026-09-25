@@ -67,9 +67,9 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onReopenEnvelope })
   ];
 
   const itemBaseClass =
-    "p-2.5 sm:p-3 rounded-full text-slate-700 dark:text-slate-200 hover:text-[#d4af37] dark:hover:text-[#d4af37] hover:bg-white/80 dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95";
+    "p-2.5 sm:p-3 rounded-full text-[#5A4D43] dark:text-slate-200 hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-[#FAF5EB] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
   const tooltipClass =
-    "absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-[#d4af37] text-white dark:text-slate-900 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap hidden md:block shadow-xl pointer-events-none";
+    "absolute -top-10 left-1/2 -translate-x-1/2 bg-[#231C18] dark:bg-[#D4AF37] text-white dark:text-[#231C18] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap hidden md:block shadow-xl pointer-events-none";
 
   return (
     <nav
@@ -77,7 +77,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onReopenEnvelope })
         isVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"
       }`}
     >
-      <div className="dark:bg-[#1a1715]/90 pointer-events-auto flex items-center justify-between gap-1 rounded-full border border-white/60 bg-[#FFFDF9]/90 p-1.5 shadow-[0_15px_40px_rgba(0,0,0,0.18)] backdrop-blur-2xl transition-colors duration-500 border-[#d4af37]/40">
+      <div className="dark:bg-[#1a1715]/90 pointer-events-auto flex items-center justify-between gap-1 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/95 p-1.5 shadow-[0_15px_40px_rgba(140,107,28,0.18)] backdrop-blur-2xl transition-colors duration-500">
         
         {/* Re-open Envelope Button */}
         {onReopenEnvelope && (
@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onReopenEnvelope })
             className={itemBaseClass}
             title="Re-open Invitation Envelope"
           >
-            <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-[#9e7241]" />
+            <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-[#8C6B1C]" />
             <span className={tooltipClass}>Re-open Envelope</span>
           </button>
         )}
@@ -100,10 +100,10 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onReopenEnvelope })
               <a
                 key={item.label}
                 href={item.href}
-                className="py-1.5 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-[#DFBE68] via-[#D4AF37] to-[#B89328] text-white shadow-md active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative"
+                className="py-1.5 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] text-white shadow-md active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer"
                 title={item.label}
               >
-                <item.icon className="h-3.5 w-3.5 text-white" />
+                <item.icon className="h-3.5 w-3.5 text-[#FFE082]" />
                 <span className="text-[10px] uppercase tracking-wider">{item.label}</span>
                 <span className={tooltipClass}>Confirm Attendance</span>
               </a>
