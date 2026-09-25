@@ -13,7 +13,7 @@ import GiftInfo from "./components/GiftInfo";
 import MusicPlayer from "./components/MusicPlayer";
 import Navbar from "./components/Navbar";
 import FloatingPetals from "./components/FloatingPetals";
-import Envelope from "./components/Envelope";
+import VideoLanding from "./components/VideoLanding";
 import InstallPrompt from "./components/InstallPrompt";
 import WeddingLoader from "./components/WeddingLoader";
 import { useConfig } from "./hooks/useConfig";
@@ -31,14 +31,13 @@ const App: React.FC = () => {
     return "light";
   });
 
-  const [isOpened, setIsOpened] = useState(false);
   const [minLoadingDone, setMinLoadingDone] = useState(false);
 
   useEffect(() => {
-    // Quick hand-off to immediate envelope unboxing
+    // Quick buffer completion for landing video
     const timer = setTimeout(() => {
       setMinLoadingDone(true);
-    }, 150);
+    }, 250);
     return () => clearTimeout(timer);
   }, []);
 
@@ -53,15 +52,11 @@ const App: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
-    if (!isOpened) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = "unset";
 
     const observerOptions = {
-      threshold: 0.1,
-      rootMargin: "0px 0px -100px 0px",
+      threshold: 0.08,
+      rootMargin: "0px 0px -60px 0px",
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -73,29 +68,22 @@ const App: React.FC = () => {
       });
     }, observerOptions);
 
-    if (isOpened) {
-      document.querySelectorAll("section").forEach((section) => {
-        section.classList.add(
-          "opacity-0",
-          "transition-all",
-          "duration-[1.5s]",
-          "ease-out"
-        );
-        observer.observe(section);
-      });
-    }
+    const sections = document.querySelectorAll("section:not(#video-hero)");
+    sections.forEach((section) => {
+      section.classList.add(
+        "opacity-0",
+        "transition-all",
+        "duration-[1.2s]",
+        "ease-out"
+      );
+      observer.observe(section);
+    });
 
     return () => observer.disconnect();
-  }, [isOpened]);
+  }, [minLoadingDone]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
-  const handleOpenInvitation = () => {
-    setIsOpened(true);
-    window.dispatchEvent(new CustomEvent("play-wedding-music"));
-    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const scrollToTop = () => {
@@ -115,30 +103,35 @@ const App: React.FC = () => {
   })();
 
   return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden">
-      {/* Floating Top Host Pill (Click to email Host Aditya Rawat) */}
-      {isOpened && (
-        <div className="fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
-          <a
-            href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-            className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/60 bg-[#FFFDF9]/95 dark:bg-darkSurface/90 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-medium tracking-wide text-[#231C18] dark:text-slate-100 shadow-[0_4px_20px_rgba(140,107,28,0.15)] backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-[#8C1D24] hover:shadow-[0_4px_25px_rgba(212,175,55,0.3)]"
-            title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
-          >
-            <Mail className="h-3.5 w-3.5 text-[#8C1D24] transition-transform group-hover:scale-110" />
-            <span>
-              Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong>
-            </span>
-            <span className="text-[10px] text-[#D4AF37] font-mono">✉</span>
-          </a>
-        </div>
-      )}
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
+      {/* Top Semi-Transparent Navigation Menu Bar with RSVP, Events, Sound, etc. */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
 
-      {!isOpened && <Envelope onOpen={handleOpenInvitation} config={config} />}
+      {/* Floating Host Attribution Pill (Aditya Rawat) */}
+      <div className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+        <a
+          href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/90 dark:bg-darkSurface/90 px-3 py-1 text-[10.5px] sm:text-[11px] font-medium tracking-wide text-[#231C18] dark:text-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.2)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#8C1D24]"
+          title="Click to email Host Aditya Rawat (adi2002rawat@gmail.com)"
+        >
+          <Mail className="h-3 w-3 text-[#8C1D24] transition-transform group-hover:scale-110" />
+          <span>
+            Host: <strong className="font-semibold text-[#8C1D24]">Aditya Rawat</strong>
+          </span>
+          <span className="text-[9px] text-[#D4AF37] font-mono">✉</span>
+        </a>
+      </div>
+
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
+      <VideoLanding config={config} />
 
       <InstallPrompt />
       <FloatingPetals />
+
+      {/* 2. FORMAL ARCHED INVITATION CARD */}
       <Hero config={config} />
 
+      {/* 3. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
         <CountdownSection config={config} />
         <EventDetails config={config} />
@@ -153,14 +146,6 @@ const App: React.FC = () => {
       </main>
 
       <MusicPlayer url={config.music.url} />
-      <Navbar
-        theme={theme}
-        toggleTheme={toggleTheme}
-        onReopenEnvelope={() => {
-          setIsOpened(false);
-          window.scrollTo({ top: 0, behavior: "instant" });
-        }}
-      />
 
       <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">

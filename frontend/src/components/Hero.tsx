@@ -24,7 +24,7 @@ const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
   const timeString = "AT FOUR-THIRTY IN THE AFTERNOON";
 
   return (
-    <section className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center py-8 sm:py-14 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] overflow-hidden">
+    <section id="invitation" className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center py-8 sm:py-14 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] overflow-hidden">
       
       {/* Subtle Background Glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
