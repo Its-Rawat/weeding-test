@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Hero from "./components/Hero";
 import CountdownSection from "./components/CountdownSection";
-import DressCodePalette from "./components/DressCodePalette";
 import VenueSection from "./components/VenueSection";
-import CoupleProfile from "./components/CoupleProfile";
 import EventDetails from "./components/EventDetails";
-import Gallery from "./components/Gallery";
-import LoveStory from "./components/LoveStory";
 import RSVPForm from "./components/RSVPForm";
-import Wishes from "./components/Wishes";
-import GiftInfo from "./components/GiftInfo";
 import MusicPlayer from "./components/MusicPlayer";
 import Navbar from "./components/Navbar";
 import FloatingPetals from "./components/FloatingPetals";
@@ -49,7 +43,7 @@ const App: React.FC = () => {
 
     // 1. Buffer the full-screen video
     const testVideo = document.createElement("video");
-    testVideo.src = "/wedding_invitation.mp4";
+    testVideo.src = "/Short_LandingPageVid.mp4";
     testVideo.preload = "auto";
     testVideo.muted = true;
 
@@ -190,14 +184,8 @@ const App: React.FC = () => {
       <main className="relative z-10 space-y-0">
         <CountdownSection config={config} />
         <EventDetails config={config} />
-        <DressCodePalette />
         <VenueSection config={config} />
-        <CoupleProfile config={config} />
-        <LoveStory config={config} />
-        <Gallery config={config} />
         <RSVPForm config={config} />
-        <Wishes config={config} />
-        <GiftInfo config={config} />
       </main>
 
       <MusicPlayer url={config.music.url} />

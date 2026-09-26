@@ -63,7 +63,7 @@ const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
               With the blessings of our parents
             </p>
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#8C6B1C] uppercase">
-              The Verma &amp; Wang Families
+              The Rawat &amp; Wang Families
             </p>
             <p className="font-serif text-xs sm:text-sm text-[#5A4D43] italic max-w-sm mx-auto leading-relaxed pt-1">
               Request the pleasure of your company at the celebration of the marriage of
@@ -110,10 +110,10 @@ const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
           {/* Venue & Location */}
           <div className="space-y-1.5 my-4">
             <h3 className="font-serif font-bold text-base sm:text-lg text-[#231C18] tracking-wide uppercase">
-              {config.venue.name || "The Oberoi Udaivilas"}
+              {config.venue.name || "The Club International"}
             </h3>
             <p className="font-serif italic text-[#8C6B1C] text-xs sm:text-sm">
-              {config.hero.city || "Lake Pichola, Udaipur, Rajasthan, India"}
+              {config.hero.city || "Sector 109, Palam Vihar, Gurgaon"}
             </p>
             <p className="font-serif italic text-[11px] font-semibold text-[#8C1D24] pt-2">
               Warmly Hosted by Aditya Rawat &amp; Family

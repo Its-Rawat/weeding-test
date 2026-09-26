@@ -10,6 +10,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
   useEffect(() => {
     const handleMusicState = (e: any) => {
@@ -60,7 +61,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
       <video
         ref={videoRef}
-        src="/wedding_invitation.mp4"
+        src="/Short_LandingPageVid.mp4"
         autoPlay
         loop
         muted={isMuted}

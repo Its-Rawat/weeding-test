@@ -49,7 +49,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config }) => {
           Countdown to the Royal Nuptials
         </h3>
         <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
-          Until We Say "I Do" At The Oberoi Udaivilas
+          Until We Celebrate Under The Mandap at The Club International, Gurgaon
         </p>
 
         {/* Minimalist 4-Box Grid */}

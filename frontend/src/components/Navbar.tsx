@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  Home,
   Mail,
   Calendar,
-  Palette,
   MapPin,
   Send,
   Volume2,
   VolumeX,
   Moon,
   Sun,
-  Video,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -55,10 +52,8 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
   };
 
   const navItems = [
-    { icon: Video, label: "Video", href: "#video-hero" },
     { icon: Mail, label: "Invitation", href: "#invitation" },
     { icon: Calendar, label: "Celebrations", href: "#event" },
-    { icon: Palette, label: "Dress Code", href: "#dress-code" },
     { icon: MapPin, label: "Venue", href: "#venue" },
     { icon: Send, label: "RSVP", href: "#rsvp", isRsvp: true },
   ];
