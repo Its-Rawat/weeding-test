@@ -17,6 +17,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -93,5 +94,37 @@ class GuestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.attendingCount").value(1));
+    }
+
+    @Test
+    void testBulkCreateAndDelete() throws Exception {
+        CreateGuestDto g1 = new CreateGuestDto();
+        g1.setName("Bulk Family 1");
+        g1.setType("FAMILY");
+        g1.setMembers(List.of("A", "B"));
+        g1.setAllowedEvents(List.of("MEHENDI", "WEDDING"));
+
+        CreateGuestDto g2 = new CreateGuestDto();
+        g2.setName("Bulk Person 2");
+        g2.setType("INDIVIDUAL");
+        g2.setAllowedEvents(List.of("RECEPTION"));
+
+        MvcResult bulkResult = mockMvc.perform(post("/api/guests/bulk")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(g1, g2))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andReturn();
+
+        String body = bulkResult.getResponse().getContentAsString();
+        Long g1Id = objectMapper.readTree(body).get(0).get("id").asLong();
+
+        // Delete g1
+        mockMvc.perform(delete("/api/guests/" + g1Id))
+                .andExpect(status().isNoContent());
+
+        // Verify g1 is gone
+        mockMvc.perform(get("/api/guests/" + g1Id))
+                .andExpect(status().isNotFound());
     }
 }

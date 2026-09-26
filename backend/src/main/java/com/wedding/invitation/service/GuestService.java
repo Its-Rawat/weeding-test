@@ -301,4 +301,26 @@ public class GuestService {
 
         return dto;
     }
+
+    @Transactional
+    public List<GuestResponseDto> createGuestsBulk(List<CreateGuestDto> dtos, HttpServletRequest request) {
+        if (dtos == null || dtos.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<GuestResponseDto> results = new ArrayList<>();
+        for (CreateGuestDto dto : dtos) {
+            if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
+                results.add(createGuest(dto, request));
+            }
+        }
+        return results;
+    }
+
+    @Transactional
+    public void deleteGuest(Long id) {
+        if (!guestRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Guest not found with ID: " + id);
+        }
+        guestRepository.deleteById(id);
+    }
 }

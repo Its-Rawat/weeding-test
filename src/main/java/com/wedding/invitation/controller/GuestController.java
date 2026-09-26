@@ -104,4 +104,26 @@ public class GuestController {
         GuestResponseDto response = guestService.updateGuestEvents(id, dto, request);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * POST /api/guests/bulk
+     * Bulk create multiple guests/families at once from Excel/JSON import.
+     */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<GuestResponseDto>> createGuestsBulk(
+            @RequestBody List<CreateGuestDto> dtos,
+            HttpServletRequest request) {
+        List<GuestResponseDto> response = guestService.createGuestsBulk(dtos, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * DELETE /api/guests/{id}
+     * Delete an invitation and its associated members.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
+        guestService.deleteGuest(id);
+        return ResponseEntity.noContent().build();
+    }
 }

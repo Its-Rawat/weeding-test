@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Admin & Guest Management Dashboard</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- SheetJS for Excel (.xlsx) Import/Export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --bg-cream: #FAF6EF;
+      --bg-card: #FFFFFF;
+      --primary-crimson: #8C1D24;
+      --primary-crimson-dark: #661016;
+      --primary-crimson-light: #FBECEE;
+      --accent-gold: #C59A3F;
+      --accent-gold-dark: #9F7925;
+      --accent-gold-light: #FDF7EA;
+      --accent-green: #2E7D32;
+      --accent-green-light: #E8F5E9;
+      --accent-orange: #E65100;
+      --accent-orange-light: #FFF3E0;
+      --text-main: #231C18;
+      --text-muted: #6B625B;
+      --text-light: #9E948C;
+      --border-color: #EBDDCF;
+      --border-focus: #C59A3F;
+      --shadow-sm: 0 2px 6px rgba(140, 29, 36, 0.05);
+      --shadow-md: 0 8px 24px rgba(140, 29, 36, 0.08);
+      --shadow-lg: 0 16px 40px rgba(140, 29, 36, 0.12);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Top Bar */
+    header.topbar {
+      background: linear-gradient(135deg, #1C0A0D 0%, #3B0E14 50%, #1C0A0D 100%);
+      color: #FFF;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--accent-gold);
+    }
+
+    .topbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent-gold) 0%, #E6C673 100%);
+      color: var(--primary-crimson-dark);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 0 15px rgba(197, 154, 63, 0.4);
+    }
+
+    .brand-title h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #FFF;
+    }
+
+    .brand-title p {
+      font-size: 0.8rem;
+      color: #E6C673;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .server-config {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(197, 154, 63, 0.4);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      gap: 0.6rem;
+    }
+
+    .server-config select, .server-config input {
+      background: transparent;
+      border: none;
+      color: #FFF;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .server-config select option {
+      background: #231C18;
+      color: #FFF;
+    }
+
+    .server-config input {
+      max-width: 170px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .status-badge:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #888;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .status-dot.online {
+      background: #00E676;
+      box-shadow: 0 0 10px #00E676;
+    }
+
+    .status-dot.offline {
+      background: #FF5252;
+      box-shadow: 0 0 10px #FF5252;
+    }
+
+    .btn-website {
+      color: #FFF;
+      background: rgba(197, 154, 63, 0.25);
+      border: 1px solid var(--accent-gold);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-website:hover {
+      background: var(--accent-gold);
+      color: var(--primary-crimson-dark);
+    }
+
+    /* Main Container */
+    main.container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem 3rem;
+      flex: 1;
+    }
+
+    /* KPI Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary-crimson);
+    }
+
+    .stat-card.gold::before { background: var(--accent-gold); }
+    .stat-card.green::before { background: var(--accent-green); }
+    .stat-card.orange::before { background: var(--accent-orange); }
+
+    .stat-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--primary-crimson-light);
+      color: var(--primary-crimson);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .stat-card.gold .stat-icon {
+      background: var(--accent-gold-light);
+      color: var(--accent-gold-dark);
+    }
+
+    .stat-card.green .stat-icon {
+      background: var(--accent-green-light);
+      color: var(--accent-green);
+    }
+
+    .stat-card.orange .stat-icon {
+      background: var(--accent-orange-light);
+      color: var(--accent-orange);
+    }
+
+    .stat-info h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-info .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: 'Cinzel', serif;
+    }
+
+    .stat-info .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    /* Event Breakdown Grid */
+    .events-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--primary-crimson);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .event-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .event-card {
+      border: 1px solid #EBE4D8;
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FCFAF6;
+      transition: all 0.2s ease;
+    }
+
+    .event-card:hover {
+      border-color: var(--accent-gold);
+      background: #FFF;
+    }
+
+    .event-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .event-date {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 0.2rem;
+    }
+
+    .event-count-badge {
+      background: var(--primary-crimson);
+      color: #FFF;
+      font-weight: 700;
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-family: 'Cinzel', serif;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 260px;
+      flex: 1;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.55rem 1rem 0.55rem 2.2rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+      background: #FCFAF6;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-gold);
+      background: #FFF;
+    }
+
+    .filter-select {
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: #FCFAF6;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .button-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary-crimson);
+      color: #FFF;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-crimson-dark);
+      box-shadow: 0 4px 12px rgba(140, 29, 36, 0.25);
+    }
+
+    .btn-gold {
+      background: var(--accent-gold);
+      color: #1C0A0D;
+    }
+
+    .btn-gold:hover {
+      background: var(--accent-gold-dark);
+      color: #FFF;
+      box-shadow: 0 4px 12px rgba(197, 154, 63, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: #F4EBE0;
+      border-color: var(--accent-gold);
+    }
+
+    .btn-excel {
+      background: #1D6F42;
+      color: #FFF;
+    }
+
+    .btn-excel:hover {
+      background: #145230;
+      box-shadow: 0 4px 12px rgba(29, 111, 66, 0.25);
+    }
+
+    /* Main Table Section */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      max-height: 700px;
+    }
+
+    table.guests-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    table.guests-table thead {
+      background: #F7EFE4;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    table.guests-table th {
+      padding: 0.9rem 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--primary-crimson);
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.guests-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    table.guests-table tbody tr:hover {
+      background-color: #FDFAF6;
+    }
+
+    /* Badges & Tags */
+    .type-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-pill);
+      display: inline-block;
+      margin-left: 0.4rem;
+    }
+
+    .type-badge.family {
+      background: #EDE7F6;
+      color: #512DA8;
+    }
+
+    .type-badge.individual {
+      background: #E1F5FE;
+      color: #0288D1;
+    }
+
+    .rsvp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .rsvp-badge.attending {
+      background: var(--accent-green-light);
+      color: var(--accent-green);
+    }
+
+    .rsvp-badge.not-attending {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    .rsvp-badge.pending {
+      background: var(--accent-orange-light);
+      color: var(--accent-orange);
+    }
+
+    .event-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin: 2px;
+      background: #F1ECE4;
+      color: #4A423B;
+      border: 1px solid #E2D9CC;
+    }
+
+    .event-tag.mehendi { background: #E8F5E9; color: #2E7D32; border-color: #C8E6C9; }
+    .event-tag.haldi { background: #FFF9C4; color: #F57F17; border-color: #FFF176; }
+    .event-tag.wedding { background: #FFEBEE; color: #C62828; border-color: #FFCDD2; }
+    .event-tag.reception { background: #F3E5F5; color: #7B1FA2; border-color: #E1BEE7; }
+
+    /* Members chip list */
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      max-width: 250px;
+    }
+
+    .member-item {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background: #F9F6F0;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .member-item .m-name {
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .token-box {
+      font-family: monospace;
+      font-size: 0.82rem;
+      background: #F5EFEB;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      color: var(--primary-crimson-dark);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .action-icons {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: #FFF;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--accent-gold-light);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold-dark);
+    }
+
+    .icon-btn.whatsapp:hover {
+      background: #25D366;
+      color: #FFF;
+      border-color: #25D366;
+    }
+
+    .icon-btn.delete:hover {
+      background: #FF5252;
+      color: #FFF;
+      border-color: #FF5252;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 6, 8, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFF;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--accent-gold);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-backdrop.show .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      background: #FBF6EE;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--primary-crimson);
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .form-group input[type="text"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px rgba(197, 154, 63, 0.15);
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      background: #FCFAF7;
+      padding: 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      accent-color: var(--primary-crimson);
+      width: 16px;
+      height: 16px;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      background: #FBF6EE;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    /* Dropzone for Bulk Upload */
+    .dropzone {
+      border: 2px dashed var(--accent-gold);
+      background: #FDFBF7;
+      border-radius: var(--radius);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      background: #FBF5E6;
+      border-color: var(--primary-crimson);
+    }
+
+    .dropzone i {
+      font-size: 3rem;
+      color: var(--accent-gold);
+      margin-bottom: 0.8rem;
+    }
+
+    .dropzone h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .dropzone p {
+      font-size: 0.82rem;
+      color: var(--text-light);
+    }
+
+    .preview-box {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .preview-table th, .preview-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #EAE3D5;
+      text-align: left;
+    }
+
+    .preview-table th {
+      background: #F5EEE2;
+      font-weight: 600;
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      width: 100%;
+      background: #E8E0D5;
+      border-radius: var(--radius-pill);
+      height: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-gold) 0%, var(--primary-crimson) 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: #1C0A0D;
+      color: #FFF;
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--accent-gold);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 3.5rem 1rem;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--border-color);
+    }
+
+    /* Loading overlay */
+    .loader-inline {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Health Bar -->
+  <header class="topbar">
+    <div class="topbar-content">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <div class="brand-title">
+          <h1>Wedding Invitation Admin</h1>
+          <p>Guest List & Attendance Control Center</p>
+        </div>
+      </div>
+
+      <div class="topbar-controls">
+        <!-- Backend API Server Selector -->
+        <div class="server-config">
+          <i class="fa-solid fa-server" style="color: var(--accent-gold); font-size: 0.85rem;"></i>
+          <select id="serverSelect" onchange="handleServerChange()">
+            <option value="https://weeding-test.onrender.com">Cloud (Render)</option>
+            <option value="http://localhost:8080">Localhost (:8080)</option>
+            <option value="custom">Custom URL...</option>
+          </select>
+          <input type="text" id="customServerUrl" placeholder="https://api..." style="display: none;" onchange="updateApiBaseUrl()" />
+        </div>
+
+        <!-- Live Server Status Indicator -->
+        <div class="status-badge" id="healthBadge" onclick="checkHealth(true)" title="Click to test connection">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Checking...</span>
+        </div>
+
+        <!-- Link to Website -->
+        <a href="https://weeding-test.onrender.com" target="_blank" class="btn-website" id="viewWebsiteBtn">
+          <span>Live Site</span>
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- KPI Metric Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Total Invitations</h3>
+          <div class="stat-value" id="statTotalInvites">0</div>
+          <div class="stat-sub" id="statInvitesSub">0 families, 0 individuals</div>
+        </div>
+      </div>
+
+      <div class="stat-card gold">
+        <div class="stat-icon">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Total Members</h3>
+          <div class="stat-value" id="statTotalMembers">0</div>
+          <div class="stat-sub">Across all invitations</div>
+        </div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Confirmed Attending</h3>
+          <div class="stat-value" id="statConfirmedMembers">0</div>
+          <div class="stat-sub" id="statConfirmedPercent">0% response confirmed</div>
+        </div>
+      </div>
+
+      <div class="stat-card orange">
+        <div class="stat-icon">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Awaiting Response</h3>
+          <div class="stat-value" id="statPendingInvites">0</div>
+          <div class="stat-sub">Invitations pending</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fa-solid fa-circle-xmark" style="color: #C62828;"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Declined</h3>
+          <div class="stat-value" id="statDeclinedInvites">0</div>
+          <div class="stat-sub">Invitations declined</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Celebration Breakdown Section -->
+    <section class="events-section">
+      <div class="section-title">
+        <i class="fa-solid fa-champagne-glasses"></i>
+        <span>Attendees by Celebration Event</span>
+      </div>
+      <div class="event-cards-grid">
+        <div class="event-card">
+          <div>
+            <div class="event-title">🌿 Mehendi Ceremony</div>
+            <div class="event-date">Friday, Dec 12 • 04:00 PM</div>
+          </div>
+          <div class="event-count-badge" id="countMehendi">0</div>
+        </div>
+
+        <div class="event-card">
+          <div>
+            <div class="event-title">💛 Haldi Utsav</div>
+            <div class="event-date">Saturday, Dec 13 • 10:00 AM</div>
+          </div>
+          <div class="event-count-badge" id="countHaldi">0</div>
+        </div>
+
+        <div class="event-card">
+          <div>
+            <div class="event-title">👑 Wedding (Shaadi)</div>
+            <div class="event-date">Sunday, Dec 14 • 06:00 PM</div>
+          </div>
+          <div class="event-count-badge" id="countWedding">0</div>
+        </div>
+
+        <div class="event-card">
+          <div>
+            <div class="event-title">✨ Royal Reception</div>
+            <div class="event-date">Monday, Dec 15 • 07:30 PM</div>
+          </div>
+          <div class="event-count-badge" id="countReception">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls & Action Toolbar -->
+    <section class="action-bar">
+      <div class="search-filter-group">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search family, guest name, or token..." oninput="filterGuests()" />
+        </div>
+
+        <select class="filter-select" id="eventFilter" onchange="filterGuests()">
+          <option value="ALL">All Celebrations</option>
+          <option value="MEHENDI">🌿 Mehendi Only</option>
+          <option value="HALDI">💛 Haldi Only</option>
+          <option value="WEDDING">👑 Wedding Only</option>
+          <option value="RECEPTION">✨ Reception Only</option>
+        </select>
+
+        <select class="filter-select" id="rsvpFilter" onchange="filterGuests()">
+          <option value="ALL">All RSVP Statuses</option>
+          <option value="ATTENDING">Confirmed Attending</option>
+          <option value="PENDING">Pending Response</option>
+          <option value="NOT_ATTENDING">Declined</option>
+        </select>
+
+        <select class="filter-select" id="statusFilter" onchange="filterGuests()">
+          <option value="ALL">All Invites</option>
+          <option value="ACTIVE">Active Only</option>
+          <option value="INACTIVE">Disabled / Inactive</option>
+        </select>
+      </div>
+
+      <div class="button-group">
+        <!-- Excel Export Button -->
+        <button class="btn btn-excel" onclick="exportToExcel()" title="Export attendee breakdown by person to Excel">
+          <i class="fa-solid fa-file-excel"></i>
+          <span>Export Excel</span>
+        </button>
+
+        <!-- Bulk Upload Button -->
+        <button class="btn btn-gold" onclick="openBulkModal()">
+          <i class="fa-solid fa-file-arrow-up"></i>
+          <span>Bulk Upload</span>
+        </button>
+
+        <!-- Add Single Guest Button -->
+        <button class="btn btn-primary" onclick="openAddGuestModal()">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Add Guest</span>
+        </button>
+
+        <!-- Refresh Button -->
+        <button class="btn btn-outline" onclick="loadGuests(true)" title="Reload guest list from server">
+          <i class="fa-solid fa-rotate-right" id="refreshIcon"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Attendees Table -->
+    <section class="table-container">
+      <div class="table-responsive">
+        <table class="guests-table">
+          <thead>
+            <tr>
+              <th>Guest / Family Name</th>
+              <th>Invited Celebrations</th>
+              <th>Family Members & Attendance</th>
+              <th>RSVP Status</th>
+              <th>Personalized Link & Token</th>
+              <th>Wishes / Notes</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="guestsTableBody">
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <p>Loading guest database...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD SINGLE GUEST -->
+  <div class="modal-backdrop" id="addGuestModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> Add New Guest / Family</h3>
+        <button class="modal-close" onclick="closeModal('addGuestModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addGuestForm" onsubmit="handleCreateGuest(event)">
+          <div class="form-group">
+            <label for="newGuestName">Family / Guest Name *</label>
+            <input type="text" id="newGuestName" placeholder="e.g. Sharma Family or Rahul Verma" required />
+          </div>
+
+          <div class="form-group">
+            <label>Guest Type</label>
+            <div style="display: flex; gap: 1.5rem; margin-top: 0.4rem;">
+              <label class="checkbox-label">
+                <input type="radio" name="guestType" value="FAMILY" checked onchange="toggleMemberField(true)" /> Family
+              </label>
+              <label class="checkbox-label">
+                <input type="radio" name="guestType" value="INDIVIDUAL" onchange="toggleMemberField(false)" /> Individual
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="membersGroup">
+            <label for="newGuestMembers">Family Member Names (comma separated)</label>
+            <textarea id="newGuestMembers" rows="2" placeholder="e.g. Rajesh Sharma, Sunita Sharma, Rahul Sharma"></textarea>
+            <small style="color: var(--text-light); font-size: 0.78rem;">Each member can be marked attending individually by the guest during RSVP.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Invited Wedding Celebrations</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="evMehendi" checked /> 🌿 Mehendi Ceremony
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="evHaldi" checked /> 💛 Haldi Utsav
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="evWedding" checked /> 👑 Wedding Ceremony
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="evReception" checked /> ✨ Royal Reception
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding-right: 0; padding-left: 0; margin-bottom: -0.5rem;">
+            <button type="button" class="btn btn-outline" onclick="closeModal('addGuestModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveGuestBtn">Create Invitation</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BULK EXCEL / CSV UPLOAD -->
+  <div class="modal-backdrop" id="bulkModal">
+    <div class="modal-card" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-arrow-up"></i> Bulk Upload Families & Guests</h3>
+        <button class="modal-close" onclick="closeModal('bulkModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Upload an Excel spreadsheet (<strong>.xlsx</strong>, <strong>.xls</strong>) or <strong>.csv</strong> with your families and invited celebrations.
+        </p>
+
+        <!-- Template Download Button -->
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.82rem; color: var(--text-light);">Need the correct column format?</span>
+          <button class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;" onclick="downloadSampleTemplate()">
+            <i class="fa-solid fa-download"></i> Download Sample Excel Template
+          </button>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('fileUploadInput').click()">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <h4>Click to browse or drag & drop Excel / CSV here</h4>
+          <p>Supported formats: .xlsx, .xls, .csv</p>
+          <input type="file" id="fileUploadInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleFileSelect(event)" />
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container" id="bulkProgressBar">
+          <div class="progress-bar-fill" id="bulkProgressFill"></div>
+        </div>
+
+        <!-- Preview Box -->
+        <div id="bulkPreviewContainer" style="display: none; margin-top: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="font-size: 0.88rem;" id="previewCountText">Parsed 0 Guests:</strong>
+            <span style="font-size: 0.78rem; color: var(--accent-green); font-weight: 600;">✓ Ready to Import</span>
+          </div>
+          <div class="preview-box">
+            <table class="preview-table">
+              <thead>
+                <tr>
+                  <th>Family / Guest Name</th>
+                  <th>Type</th>
+                  <th>Family Members</th>
+                  <th>Invited Celebrations</th>
+                </tr>
+              </thead>
+              <tbody id="previewTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding-right: 0; padding-left: 0; margin-top: 1rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('bulkModal')">Cancel</button>
+          <button type="button" class="btn btn-gold" id="importBtn" onclick="executeBulkImport()" disabled>
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import to Database
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT CELEBRATIONS -->
+  <div class="modal-backdrop" id="editEventsModal">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-check"></i> Edit Celebrations for Guest</h3>
+        <button class="modal-close" onclick="closeModal('editEventsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem;" id="editEventsGuestName"></p>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="editEvMehendi" /> 🌿 Mehendi Ceremony
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="editEvHaldi" /> 💛 Haldi Utsav
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="editEvWedding" /> 👑 Wedding Ceremony
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="editEvReception" /> ✨ Royal Reception
+          </label>
+        </div>
+        <div class="modal-footer" style="padding-right: 0; padding-left: 0; margin-top: 1rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('editEventsModal')">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveGuestEvents()">Update Celebrations</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Area -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic -->
+  <script>
+    // Configuration
+    let apiBaseUrl = localStorage.getItem('wedding_api_base_url') || 'https://weeding-test.onrender.com';
+    let allGuests = [];
+    let parsedBulkData = [];
+    let activeEditGuestId = null;
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      initServerSelect();
+      checkHealth();
+      loadGuests();
+      setupDragAndDrop();
+
+      // Periodic health check every 30 seconds
+      setInterval(() => checkHealth(false), 30000);
+    });
+
+    // Handle Server Selector
+    function initServerSelect() {
+      const select = document.getElementById('serverSelect');
+      const customInput = document.getElementById('customServerUrl');
+
+      if (apiBaseUrl === 'https://weeding-test.onrender.com' || apiBaseUrl === 'http://localhost:8080') {
+        select.value = apiBaseUrl;
+        customInput.style.display = 'none';
+      } else {
+        select.value = 'custom';
+        customInput.style.display = 'inline-block';
+        customInput.value = apiBaseUrl;
+      }
+      updateWebsiteLink();
+    }
+
+    function handleServerChange() {
+      const select = document.getElementById('serverSelect');
+      const customInput = document.getElementById('customServerUrl');
+
+      if (select.value === 'custom') {
+        customInput.style.display = 'inline-block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        apiBaseUrl = select.value;
+        localStorage.setItem('wedding_api_base_url', apiBaseUrl);
+        updateWebsiteLink();
+        checkHealth(true);
+        loadGuests(true);
+      }
+    }
+
+    function updateApiBaseUrl() {
+      const customInput = document.getElementById('customServerUrl');
+      if (customInput.value.trim()) {
+        apiBaseUrl = customInput.value.trim().replace(/\/+$/, '');
+        localStorage.setItem('wedding_api_base_url', apiBaseUrl);
+        updateWebsiteLink();
+        checkHealth(true);
+        loadGuests(true);
+      }
+    }
+
+    function updateWebsiteLink() {
+      const link = document.getElementById('viewWebsiteBtn');
+      link.href = apiBaseUrl;
+    }
+
+    // Health Check
+    async function checkHealth(notify = false) {
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      const startTime = performance.now();
+
+      statusText.textContent = "Connecting...";
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/health`, { method: 'GET' });
+        const latency = Math.round(performance.now() - startTime);
+
+        if (resp.ok) {
+          statusDot.className = 'status-dot online';
+          statusText.textContent = `Online (${latency}ms)`;
+          if (notify) showToast(`Server online! Latency: ${latency}ms`, 'success');
+        } else {
+          statusDot.className = 'status-dot offline';
+          statusText.textContent = `Error ${resp.status}`;
+          if (notify) showToast(`Server returned status ${resp.status}`, 'error');
+        }
+      } catch (err) {
+        statusDot.className = 'status-dot offline';
+        statusText.textContent = 'Disconnected';
+        if (notify) showToast(`Failed to connect to ${apiBaseUrl}`, 'error');
+      }
+    }
+
+    // Load Guests
+    async function loadGuests(notify = false) {
+      const tbody = document.getElementById('guestsTableBody');
+      const refreshIcon = document.getElementById('refreshIcon');
+      refreshIcon.classList.add('fa-spin');
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/guests`, { method: 'GET' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        
+        allGuests = await resp.json();
+        renderDashboard(allGuests);
+        if (notify) showToast(`Loaded ${allGuests.length} guest invitations`, 'success');
+      } catch (err) {
+        console.error('Error loading guests:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #FF5252;"></i>
+                <p>Could not connect to API server at <code>${apiBaseUrl}</code></p>
+                <button class="btn btn-outline" style="margin-top: 1rem;" onclick="loadGuests(true)">
+                  <i class="fa-solid fa-rotate-right"></i> Retry Connection
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        if (notify) showToast('Failed to load guest list. Check server status.', 'error');
+      } finally {
+        refreshIcon.classList.remove('fa-spin');
+      }
+    }
+
+    // Render Stats & Table
+    function renderDashboard(guests) {
+      computeStats(guests);
+      renderTable(guests);
+    }
+
+    function computeStats(guests) {
+      let totalInvites = guests.length;
+      let familyCount = 0;
+      let individualCount = 0;
+      let totalMembers = 0;
+      let confirmedMembers = 0;
+      let pendingInvites = 0;
+      let declinedInvites = 0;
+
+      let mehendiCount = 0;
+      let haldiCount = 0;
+      let weddingCount = 0;
+      let receptionCount = 0;
+
+      guests.forEach(g => {
+        if (g.type === 'INDIVIDUAL') {
+          individualCount++;
+        } else {
+          familyCount++;
+        }
+
+        const members = g.members || [];
+        const memCount = members.length > 0 ? members.length : 1;
+        totalMembers += memCount;
+
+        // Attending members calculation
+        let attendingInGroup = 0;
+        if (g.rsvpStatus === 'ATTENDING') {
+          if (members.length > 0) {
+            members.forEach(m => {
+              if (m.attending) attendingInGroup++;
+            });
+            if (attendingInGroup === 0) attendingInGroup = members.length;
+          } else {
+            attendingInGroup = 1;
+          }
+          confirmedMembers += attendingInGroup;
+
+          // Event counts based on allowed celebrations
+          const allowed = g.allowedEvents || [];
+          if (allowed.includes('MEHENDI')) mehendiCount += attendingInGroup;
+          if (allowed.includes('HALDI')) haldiCount += attendingInGroup;
+          if (allowed.includes('WEDDING')) weddingCount += attendingInGroup;
+          if (allowed.includes('RECEPTION')) receptionCount += attendingInGroup;
+
+        } else if (g.rsvpStatus === 'NOT_ATTENDING') {
+          declinedInvites++;
+        } else {
+          pendingInvites++;
+        }
+      });
+
+      document.getElementById('statTotalInvites').textContent = totalInvites;
+      document.getElementById('statInvitesSub').textContent = `${familyCount} families, ${individualCount} individuals`;
+      document.getElementById('statTotalMembers').textContent = totalMembers;
+      document.getElementById('statConfirmedMembers').textContent = confirmedMembers;
+      
+      const percent = totalMembers > 0 ? Math.round((confirmedMembers / totalMembers) * 100) : 0;
+      document.getElementById('statConfirmedPercent').textContent = `${percent}% member attendance confirmed`;
+      document.getElementById('statPendingInvites').textContent = pendingInvites;
+      document.getElementById('statDeclinedInvites').textContent = declinedInvites;
+
+      document.getElementById('countMehendi').textContent = mehendiCount;
+      document.getElementById('countHaldi').textContent = haldiCount;
+      document.getElementById('countWedding').textContent = weddingCount;
+      document.getElementById('countReception').textContent = receptionCount;
+    }
+
+    function renderTable(guests) {
+      const tbody = document.getElementById('guestsTableBody');
+
+      if (!guests || guests.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <i class="fa-solid fa-users-slash"></i>
+                <p>No invitations found matching current filters.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = guests.map(g => {
+        const typeClass = g.type === 'FAMILY' ? 'family' : 'individual';
+        const typeLabel = g.type === 'FAMILY' ? 'Family' : 'Individual';
+
+        let rsvpClass = 'pending';
+        let rsvpLabel = '⏳ Pending';
+        if (g.rsvpStatus === 'ATTENDING') {
+          rsvpClass = 'attending';
+          rsvpLabel = '✓ Confirmed';
+        } else if (g.rsvpStatus === 'NOT_ATTENDING') {
+          rsvpClass = 'not-attending';
+          rsvpLabel = '✕ Declined';
+        }
+
+        // Allowed events tags
+        const allowedEvents = g.allowedEvents || [];
+        const eventsHtml = allowedEvents.map(ev => {
+          const evLower = ev.toLowerCase();
+          const icons = { mehendi: '🌿', haldi: '💛', wedding: '👑', reception: '✨' };
+          return `<span class="event-tag ${evLower}">${icons[evLower] || ''} ${ev}</span>`;
+        }).join('') || '<span style="color: var(--text-light); font-size: 0.75rem;">None</span>';
+
+        // Members list
+        const members = g.members || [];
+        let membersHtml = '';
+        if (members.length > 0) {
+          membersHtml = members.map(m => `
+            <div class="member-item">
+              <span class="m-name" title="${escapeHtml(m.name)}">${escapeHtml(m.name)}</span>
+              <span style="font-size: 0.72rem; font-weight: 600;">
+                ${m.attending ? '<span style="color: var(--accent-green);">✓ Coming</span>' : '<span style="color: var(--text-light);">✕ No</span>'}
+              </span>
+            </div>
+          `).join('');
+        } else {
+          membersHtml = `<span style="font-size: 0.78rem; color: var(--text-light);">${escapeHtml(g.name)} (1)</span>`;
+        }
+
+        const rsvpLink = g.rsvpLink || `${apiBaseUrl}/rsvp/${g.token}`;
+        const encodedMsg = encodeURIComponent(`Namaste ${g.name}! We joyfully invite you to our wedding celebrations. Please find your personal RSVP link here: ${rsvpLink}`);
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">
+                ${escapeHtml(g.name)}
+                <span class="type-badge ${typeClass}">${typeLabel}</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 3px;">
+                Added: ${new Date(g.createdAt || Date.now()).toLocaleDateString()}
+                ${g.status === 'INACTIVE' ? '<span style="color: #FF5252; font-weight: 600;"> (Disabled)</span>' : ''}
+              </div>
+            </td>
+            <td>
+              <div style="max-width: 200px;">
+                ${eventsHtml}
+                <div style="margin-top: 4px;">
+                  <button class="btn btn-outline" style="font-size: 0.7rem; padding: 0.15rem 0.45rem;" onclick="openEditEventsModal(${g.id}, '${escapeHtml(g.name)}', ${JSON.stringify(allowedEvents).replace(/"/g, '&quot;')})">
+                    <i class="fa-solid fa-pen"></i> Edit Celebrations
+                  </button>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="members-list">
+                ${membersHtml}
+              </div>
+            </td>
+            <td>
+              <span class="rsvp-badge ${rsvpClass}">${rsvpLabel}</span>
+              ${g.respondedAt ? `<div style="font-size: 0.72rem; color: var(--text-light); margin-top: 4px;">At: ${new Date(g.respondedAt).toLocaleDateString()}</div>` : ''}
+            </td>
+            <td>
+              <div class="token-box">
+                <i class="fa-solid fa-key" style="color: var(--accent-gold);"></i>
+                <span>${escapeHtml(g.token)}</span>
+              </div>
+              <div style="margin-top: 6px; display: flex; gap: 0.35rem;">
+                <button class="icon-btn" title="Copy RSVP Link" onclick="copyToClipboard('${rsvpLink}', 'RSVP Link copied!')">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+                <a href="https://wa.me/?text=${encodedMsg}" target="_blank" class="icon-btn whatsapp" title="Share via WhatsApp">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </a>
+                <a href="${rsvpLink}" target="_blank" class="icon-btn" title="Open RSVP page in new tab">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </td>
+            <td>
+              <div style="max-width: 220px; font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
+                ${g.message ? `"${escapeHtml(g.message)}"` : '<span style="color: var(--text-light); font-style: normal;">—</span>'}
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <div class="action-icons" style="justify-content: flex-end;">
+                <button class="icon-btn" title="${g.status === 'ACTIVE' ? 'Disable Invitation' : 'Activate Invitation'}" onclick="toggleGuestStatus(${g.id}, '${g.status}')">
+                  <i class="fa-solid ${g.status === 'ACTIVE' ? 'fa-toggle-on' : 'fa-toggle-off'}" style="color: ${g.status === 'ACTIVE' ? 'var(--accent-green)' : '#999'}; font-size: 1.1rem;"></i>
+                </button>
+                <button class="icon-btn delete" title="Delete Invitation" onclick="deleteGuestInvitation(${g.id}, '${escapeHtml(g.name)}')">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Filter Logic
+    function filterGuests() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const eventVal = document.getElementById('eventFilter').value;
+      const rsvpVal = document.getElementById('rsvpFilter').value;
+      const statusVal = document.getElementById('statusFilter').value;
+
+      const filtered = allGuests.filter(g => {
+        // Search filter
+        if (search) {
+          const nameMatch = (g.name || '').toLowerCase().includes(search);
+          const tokenMatch = (g.token || '').toLowerCase().includes(search);
+          const memberMatch = (g.members || []).some(m => (m.name || '').toLowerCase().includes(search));
+          if (!nameMatch && !tokenMatch && !memberMatch) return false;
+        }
+
+        // Event filter
+        if (eventVal !== 'ALL') {
+          if (!g.allowedEvents || !g.allowedEvents.includes(eventVal)) return false;
+        }
+
+        // RSVP status filter
+        if (rsvpVal !== 'ALL') {
+          if (g.rsvpStatus !== rsvpVal) return false;
+        }
+
+        // Active status filter
+        if (statusVal !== 'ALL') {
+          if (g.status !== statusVal) return false;
+        }
+
+        return true;
+      });
+
+      renderTable(filtered);
+    }
+
+    // ==========================================
+    // EXCEL EXPORT (Detailed Attendee Breakdown)
+    // ==========================================
+    function exportToExcel() {
+      if (!allGuests || allGuests.length === 0) {
+        showToast('No guests available to export', 'error');
+        return;
+      }
+
+      showToast('Generating Excel report...', 'info');
+
+      // SHEET 1: Attendee Details (By Person)
+      // Person Name | Family / Group | Type | Attendance Status | Mehendi | Haldi | Wedding | Reception | Token | Link | Wishes
+      const attendeesData = [];
+      allGuests.forEach(g => {
+        const allowed = g.allowedEvents || [];
+        const isAttending = g.rsvpStatus === 'ATTENDING';
+        const isDeclined = g.rsvpStatus === 'NOT_ATTENDING';
+        const isPending = !isAttending && !isDeclined;
+
+        const members = (g.members && g.members.length > 0) ? g.members : [{ name: g.name, attending: isAttending }];
+
+        members.forEach(m => {
+          let personAttendance = 'Pending';
+          if (isDeclined) {
+            personAttendance = 'Declined';
+          } else if (isAttending) {
+            personAttendance = m.attending ? 'Attending' : 'Not Attending';
+          }
+
+          const personWillCome = isAttending && m.attending;
+
+          attendeesData.push({
+            "Person Name": m.name,
+            "Family / Group Name": g.name,
+            "Guest Type": g.type || 'FAMILY',
+            "Attendance Status": personAttendance,
+            "Mehendi (Dec 12)": allowed.includes('MEHENDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Haldi (Dec 13)": allowed.includes('HALDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Wedding (Dec 14)": allowed.includes('WEDDING') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Reception (Dec 15)": allowed.includes('RECEPTION') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "RSVP Token": g.token,
+            "RSVP Link": g.rsvpLink || `${apiBaseUrl}/rsvp/${g.token}`,
+            "Wishes / Message": g.message || "",
+            "Responded Date": g.respondedAt ? new Date(g.respondedAt).toLocaleDateString() : ""
+          });
+        });
+      });
+
+      // SHEET 2: Family Invitation Summary
+      const summaryData = allGuests.map(g => {
+        const members = g.members || [];
+        const attendingCount = members.filter(m => m.attending).length;
+
+        return {
+          "Family / Guest Name": g.name,
+          "Type": g.type,
+          "RSVP Status": g.rsvpStatus,
+          "Attending Count": g.rsvpStatus === 'ATTENDING' ? (attendingCount || members.length || 1) : 0,
+          "Total Members": members.length > 0 ? members.length : 1,
+          "Invited Celebrations": (g.allowedEvents || []).join(', '),
+          "Members List": members.map(m => m.name).join(', '),
+          "Token": g.token,
+          "RSVP Link": g.rsvpLink || `${apiBaseUrl}/rsvp/${g.token}`,
+          "Invitation Status": g.status,
+          "Guest Message": g.message || "",
+          "Created Date": g.createdAt ? new Date(g.createdAt).toLocaleDateString() : ""
+        };
+      });
+
+      // Build Workbook with SheetJS
+      const wb = XLSX.utils.book_new();
+
+      const wsAttendees = XLSX.utils.json_to_sheet(attendeesData);
+      const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+
+      // Auto column widths
+      const setColWidths = (ws, data) => {
+        if (!data || data.length === 0) return;
+        const keys = Object.keys(data[0]);
+        ws['!cols'] = keys.map(k => {
+          let maxLen = k.length;
+          data.forEach(row => {
+            const val = row[k] ? String(row[k]) : '';
+            if (val.length > maxLen) maxLen = val.length;
+          });
+          return { wch: Math.min(Math.max(maxLen + 3, 12), 45) };
+        });
+      };
+
+      setColWidths(wsAttendees, attendeesData);
+      setColWidths(wsSummary, summaryData);
+
+      XLSX.utils.book_append_sheet(wb, wsAttendees, "Attendees By Person");
+      XLSX.utils.book_append_sheet(wb, wsSummary, "Family Invitations");
+
+      // Download file
+      const fileName = `Wedding_Attendees_Master_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+
+      showToast(`Exported ${attendeesData.length} attendees to ${fileName}!`, 'success');
+    }
+
+    // ==========================================
+    // BULK UPLOAD (Excel / CSV)
+    // ==========================================
+    function openBulkModal() {
+      parsedBulkData = [];
+      document.getElementById('fileUploadInput').value = '';
+      document.getElementById('bulkPreviewContainer').style.display = 'none';
+      document.getElementById('importBtn').disabled = true;
+      document.getElementById('bulkProgressBar').style.display = 'none';
+      document.getElementById('bulkProgressFill').style.width = '0%';
+      openModal('bulkModal');
+    }
+
+    function setupDragAndDrop() {
+      const dropzone = document.getElementById('dropzone');
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          processSpreadsheetFile(files[0]);
+        }
+      });
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        processSpreadsheetFile(files[0]);
+      }
+    }
+
+    function processSpreadsheetFile(file) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheetName];
+          const jsonRows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+          if (!jsonRows || jsonRows.length === 0) {
+            showToast('Uploaded spreadsheet appears to be empty', 'error');
+            return;
+          }
+
+          // Parse rows into standard format
+          parsedBulkData = jsonRows.map(row => {
+            // Find name column
+            const name = (row['Family / Guest Name'] || row['Family Name'] || row['Name'] || row['Guest Name'] || Object.values(row)[0] || '').toString().trim();
+            
+            // Find type column
+            let type = (row['Type'] || row['Guest Type'] || 'FAMILY').toString().trim().toUpperCase();
+            if (type !== 'INDIVIDUAL') type = 'FAMILY';
+
+            // Find members column
+            const membersRaw = (row['Family Members'] || row['Members'] || row['Family Members (Comma separated)'] || '').toString().trim();
+            const members = membersRaw ? membersRaw.split(',').map(m => m.trim()).filter(m => m.length > 0) : [];
+
+            // Find celebrations column
+            const eventsRaw = (row['Invited Celebrations'] || row['Events'] || row['Celebrations'] || 'MEHENDI, HALDI, WEDDING, RECEPTION').toString().trim().toUpperCase();
+            let events = [];
+            if (eventsRaw) {
+              const allEvents = ['MEHENDI', 'HALDI', 'WEDDING', 'RECEPTION'];
+              events = allEvents.filter(ev => eventsRaw.includes(ev));
+            }
+            if (events.length === 0) {
+              events = ['MEHENDI', 'HALDI', 'WEDDING', 'RECEPTION'];
+            }
+
+            return { name, type, members, allowedEvents: events };
+          }).filter(g => g.name.length > 0);
+
+          if (parsedBulkData.length === 0) {
+            showToast('No valid guest names found in spreadsheet', 'error');
+            return;
+          }
+
+          // Render Preview
+          renderBulkPreview(parsedBulkData);
+          document.getElementById('importBtn').disabled = false;
+          showToast(`Parsed ${parsedBulkData.length} invitations from spreadsheet!`, 'info');
+
+        } catch (err) {
+          console.error(err);
+          showToast('Failed to parse spreadsheet file', 'error');
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderBulkPreview(data) {
+      const container = document.getElementById('bulkPreviewContainer');
+      const tbody = document.getElementById('previewTableBody');
+      const countText = document.getElementById('previewCountText');
+
+      countText.textContent = `Parsed ${data.length} Invitations:`;
+
+      tbody.innerHTML = data.slice(0, 15).map(row => `
+        <tr>
+          <td><strong>${escapeHtml(row.name)}</strong></td>
+          <td><span class="type-badge ${row.type.toLowerCase()}">${row.type}</span></td>
+          <td>${row.members.length > 0 ? escapeHtml(row.members.join(', ')) : '<em style="color:#888;">None specified</em>'}</td>
+          <td>${row.allowedEvents.join(', ')}</td>
+        </tr>
+      `).join('');
+
+      if (data.length > 15) {
+        tbody.innerHTML += `<tr><td colspan="4" style="text-align: center; color: var(--text-light);">... and ${data.length - 15} more rows</td></tr>`;
+      }
+
+      container.style.display = 'block';
+    }
+
+    // Execute Bulk Import to Backend
+    async function executeBulkImport() {
+      if (!parsedBulkData || parsedBulkData.length === 0) return;
+
+      const importBtn = document.getElementById('importBtn');
+      const progressBar = document.getElementById('bulkProgressBar');
+      const progressFill = document.getElementById('bulkProgressFill');
+
+      importBtn.disabled = true;
+      importBtn.innerHTML = '<span class="loader-inline"></span> Importing...';
+      progressBar.style.display = 'block';
+      progressFill.style.width = '15%';
+
+      try {
+        // Try calling the bulk endpoint POST /api/guests/bulk
+        const resp = await fetch(`${apiBaseUrl}/api/guests/bulk`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(parsedBulkData)
+        });
+
+        if (resp.ok) {
+          progressFill.style.width = '100%';
+          showToast(`Successfully uploaded ${parsedBulkData.length} invitations!`, 'success');
+          closeModal('bulkModal');
+          await loadGuests(false);
+          return;
+        }
+
+        // Fallback: Upload sequentially if bulk endpoint is not yet restarted on live server
+        console.warn('Bulk endpoint returned non-200, uploading one by one as fallback...');
+        let successCount = 0;
+
+        for (let i = 0; i < parsedBulkData.length; i++) {
+          const item = parsedBulkData[i];
+          try {
+            await fetch(`${apiBaseUrl}/api/guests`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(item)
+            });
+            successCount++;
+          } catch (e) {
+            console.error('Failed to import row', item, e);
+          }
+          const pct = Math.round(((i + 1) / parsedBulkData.length) * 100);
+          progressFill.style.width = `${pct}%`;
+        }
+
+        showToast(`Imported ${successCount} of ${parsedBulkData.length} guests!`, 'success');
+        closeModal('bulkModal');
+        await loadGuests(false);
+
+      } catch (err) {
+        console.error('Import error:', err);
+        showToast('Error uploading invitations to server', 'error');
+      } finally {
+        importBtn.disabled = false;
+        importBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Import to Database';
+      }
+    }
+
+    // Download Sample Excel Template
+    function downloadSampleTemplate() {
+      const sampleRows = [
+        {
+          "Family / Guest Name": "Sharma Family",
+          "Type": "FAMILY",
+          "Family Members (Comma separated)": "Rajesh Sharma, Sunita Sharma, Rahul Sharma",
+          "Invited Celebrations": "MEHENDI, HALDI, WEDDING, RECEPTION"
+        },
+        {
+          "Family / Guest Name": "Amitabh Kapoor",
+          "Type": "INDIVIDUAL",
+          "Family Members (Comma separated)": "",
+          "Invited Celebrations": "WEDDING, RECEPTION"
+        },
+        {
+          "Family / Guest Name": "Verma Household",
+          "Type": "FAMILY",
+          "Family Members (Comma separated)": "Vikram Verma, Neha Verma",
+          "Invited Celebrations": "HALDI, WEDDING, RECEPTION"
+        },
+        {
+          "Family / Guest Name": "Priya Nair",
+          "Type": "INDIVIDUAL",
+          "Family Members (Comma separated)": "",
+          "Invited Celebrations": "RECEPTION"
+        }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(sampleRows);
+      ws['!cols'] = [
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 45 },
+        { wch: 40 }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Guest Template");
+      XLSX.writeFile(wb, "Wedding_Guest_Upload_Template.xlsx");
+      showToast("Downloaded Wedding_Guest_Upload_Template.xlsx", "info");
+    }
+
+    // ==========================================
+    // SINGLE GUEST CREATION
+    // ==========================================
+    function openAddGuestModal() {
+      document.getElementById('addGuestForm').reset();
+      toggleMemberField(true);
+      openModal('addGuestModal');
+    }
+
+    function toggleMemberField(isFamily) {
+      document.getElementById('membersGroup').style.display = isFamily ? 'block' : 'none';
+    }
+
+    async function handleCreateGuest(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveGuestBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="loader-inline"></span> Creating...';
+
+      const name = document.getElementById('newGuestName').value.trim();
+      const type = document.querySelector('input[name="guestType"]:checked').value;
+      const membersRaw = document.getElementById('newGuestMembers').value.trim();
+      
+      const members = membersRaw ? membersRaw.split(',').map(m => m.trim()).filter(m => m.length > 0) : [];
+      
+      const allowedEvents = [];
+      if (document.getElementById('evMehendi').checked) allowedEvents.push('MEHENDI');
+      if (document.getElementById('evHaldi').checked) allowedEvents.push('HALDI');
+      if (document.getElementById('evWedding').checked) allowedEvents.push('WEDDING');
+      if (document.getElementById('evReception').checked) allowedEvents.push('RECEPTION');
+
+      const payload = { name, type, members, allowedEvents };
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/guests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        const result = await resp.json();
+        showToast(`Invitation created for ${result.name}! Token: ${result.token}`, 'success');
+        closeModal('addGuestModal');
+        await loadGuests(false);
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to create guest. Check connection.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Create Invitation';
+      }
+    }
+
+    // ==========================================
+    // EDIT CELEBRATIONS PER GUEST
+    // ==========================================
+    function openEditEventsModal(id, name, allowedEvents) {
+      activeEditGuestId = id;
+      document.getElementById('editEventsGuestName').textContent = `Celebrations for: ${name}`;
+
+      document.getElementById('editEvMehendi').checked = allowedEvents.includes('MEHENDI');
+      document.getElementById('editEvHaldi').checked = allowedEvents.includes('HALDI');
+      document.getElementById('editEvWedding').checked = allowedEvents.includes('WEDDING');
+      document.getElementById('editEvReception').checked = allowedEvents.includes('RECEPTION');
+
+      openModal('editEventsModal');
+    }
+
+    async function saveGuestEvents() {
+      if (!activeEditGuestId) return;
+
+      const allowedEvents = [];
+      if (document.getElementById('editEvMehendi').checked) allowedEvents.push('MEHENDI');
+      if (document.getElementById('editEvHaldi').checked) allowedEvents.push('HALDI');
+      if (document.getElementById('editEvWedding').checked) allowedEvents.push('WEDDING');
+      if (document.getElementById('editEvReception').checked) allowedEvents.push('RECEPTION');
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/guests/${activeEditGuestId}/events`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ allowedEvents })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        showToast('Updated celebrations successfully!', 'success');
+        closeModal('editEventsModal');
+        await loadGuests(false);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to update celebrations', 'error');
+      }
+    }
+
+    // ==========================================
+    // TOGGLE STATUS (ACTIVE / INACTIVE)
+    // ==========================================
+    async function toggleGuestStatus(id, currentStatus) {
+      const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/guests/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        showToast(`Invitation is now ${newStatus.toLowerCase()}`, 'info');
+        await loadGuests(false);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to update invitation status', 'error');
+      }
+    }
+
+    // ==========================================
+    // DELETE INVITATION
+    // ==========================================
+    async function deleteGuestInvitation(id, name) {
+      if (!confirm(`Are you sure you want to permanently delete invitation for "${name}"?`)) return;
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/guests/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!resp.ok && resp.status !== 404) throw new Error(`HTTP ${resp.status}`);
+
+        showToast(`Deleted invitation for ${name}`, 'info');
+        await loadGuests(false);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to delete invitation', 'error');
+      }
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // Clipboard Copy Helper
+    function copyToClipboard(text, msg = 'Copied to clipboard!') {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg, 'success');
+      }).catch(() => {
+        showToast('Failed to copy', 'error');
+      });
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+
+      let icon = 'fa-circle-info';
+      let borderCol = 'var(--accent-gold)';
+
+      if (type === 'success') {
+        icon = 'fa-circle-check';
+        borderCol = 'var(--accent-green)';
+      } else if (type === 'error') {
+        icon = 'fa-triangle-exclamation';
+        borderCol = '#FF5252';
+      }
+
+      toast.style.borderLeftColor = borderCol;
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>
