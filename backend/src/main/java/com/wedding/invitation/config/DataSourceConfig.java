@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.util.Base64;
 
 @Configuration
@@ -38,12 +39,7 @@ public class DataSourceConfig {
         // If running in test profile or explicit H2 datasource
         if (url.contains(":h2:")) {
             log.info("Using H2 DataSource for testing/local: {}", url);
-            HikariConfig h2Config = new HikariConfig();
-            h2Config.setJdbcUrl(url);
-            h2Config.setUsername(user.isEmpty() ? "sa" : user);
-            h2Config.setPassword(pass);
-            h2Config.setDriverClassName("org.h2.Driver");
-            return new HikariDataSource(h2Config);
+            return createH2DataSource(url, user.isEmpty() ? "sa" : user, pass);
         }
 
         // If empty or non-JDBC postgres:// URL injected by Render, default to Aiven MySQL
@@ -59,7 +55,7 @@ public class DataSourceConfig {
             pass = new String(Base64.getDecoder().decode(DEFAULT_AIVEN_PASS_B64), StandardCharsets.UTF_8);
         }
 
-        log.info("Configuring Production DataSource: user={}", user);
+        log.info("Attempting to connect to Primary Cloud Database (user: {})...", user);
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
@@ -74,10 +70,32 @@ public class DataSourceConfig {
 
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(2);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
-        config.setMaxLifetime(1800000);
+        config.setConnectionTimeout(15000);
+        config.setInitializationFailTimeout(1);
 
-        return new HikariDataSource(config);
+        try {
+            HikariDataSource ds = new HikariDataSource(config);
+            // Verify connection works immediately
+            try (Connection conn = ds.getConnection()) {
+                log.info("Successfully connected to Cloud Database!");
+                return ds;
+            }
+        } catch (Exception ex) {
+            log.warn("================================================================================");
+            log.warn("WARNING: Could not connect to primary cloud database: {}", ex.getMessage());
+            log.warn("Engaging automatic failover to local persistent H2 database so website stays ONLINE!");
+            log.warn("================================================================================");
+            return createH2DataSource("jdbc:h2:file:./database/weddingdb;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE", "sa", "");
+        }
+    }
+
+    private HikariDataSource createH2DataSource(String url, String user, String pass) {
+        HikariConfig h2Config = new HikariConfig();
+        h2Config.setJdbcUrl(url);
+        h2Config.setUsername(user.isEmpty() ? "sa" : user);
+        h2Config.setPassword(pass);
+        h2Config.setDriverClassName("org.h2.Driver");
+        h2Config.setMaximumPoolSize(5);
+        return new HikariDataSource(h2Config);
     }
 }
