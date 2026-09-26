@@ -61,7 +61,7 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
       <video
         ref={videoRef}
-        src="/Short_LandingPageVid.mp4"
+        src="/Short_LandingPageVid.mp4?v=firstnames"
         autoPlay
         loop
         muted={isMuted}

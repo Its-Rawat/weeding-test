@@ -43,7 +43,7 @@ const App: React.FC = () => {
 
     // 1. Buffer the full-screen video
     const testVideo = document.createElement("video");
-    testVideo.src = "/Short_LandingPageVid.mp4";
+    testVideo.src = "/Short_LandingPageVid.mp4?v=firstnames";
     testVideo.preload = "auto";
     testVideo.muted = true;
 
