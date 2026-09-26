@@ -40,7 +40,7 @@ public class GuestInvitation {
     private String message;
 
     @Column(length = 255)
-    private String allowedEvents = "MEHENDI,HALDI,WEDDING,RECEPTION";
+    private String allowedEvents = "MEHENDI,HALDI,WEDDING";
 
     private LocalDateTime respondedAt;
 
@@ -182,7 +182,7 @@ public class GuestInvitation {
 
     public List<String> getAllowedEventsList() {
         if (allowedEvents == null || allowedEvents.trim().isEmpty()) {
-            return List.of("MEHENDI", "HALDI", "WEDDING", "RECEPTION");
+            return List.of("MEHENDI", "HALDI", "WEDDING");
         }
         return java.util.Arrays.stream(allowedEvents.split(","))
                 .map(String::trim)
@@ -193,7 +193,7 @@ public class GuestInvitation {
 
     public void setAllowedEventsList(List<String> events) {
         if (events == null || events.isEmpty()) {
-            this.allowedEvents = "MEHENDI,HALDI,WEDDING,RECEPTION";
+            this.allowedEvents = "MEHENDI,HALDI,WEDDING";
         } else {
             this.allowedEvents = events.stream()
                     .map(String::trim)

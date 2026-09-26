@@ -90,11 +90,11 @@ public class GuestController {
     /**
      * PATCH /api/guests/{id}/events
      * Enable/disable specific celebrations for a guest or family:
-     * { "allowedEvents": ["MEHENDI", "HALDI", "WEDDING", "RECEPTION"] }
+     * { "allowedEvents": ["MEHENDI", "HALDI", "WEDDING"] }
      * or:
-     * { "allowedEvents": ["WEDDING", "RECEPTION"] }
+     * { "allowedEvents": ["HALDI", "WEDDING"] }
      * or:
-     * { "allowedEvents": ["RECEPTION"] }
+     * { "allowedEvents": ["WEDDING"] }
      */
     @PatchMapping("/{id}/events")
     public ResponseEntity<GuestResponseDto> updateGuestEvents(

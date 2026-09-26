@@ -14,24 +14,25 @@ const normalizeEvent = (e: string): string => {
   if (upper.includes("MEH")) return "MEHENDI";
   if (upper.includes("HALD")) return "HALDI";
   if (upper.includes("WED") || upper.includes("PHERA") || upper.includes("BARAAT")) return "WEDDING";
-  if (upper.includes("RECEP") || upper.includes("DINNER") || upper.includes("BANQUET")) return "RECEPTION";
   return upper;
 };
 
 const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, guestName }) => {
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
-  // Core royal celebrations matching the Gurgaon 14 & 15 February 2027 itinerary
+  const sharedAddress = "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
+
+  // The 3 royal celebrations matching the Gurgaon 14 & 15 February 2027 itinerary
   const ceremonies = [
     {
       id: 1,
       key: "MEHENDI",
       title: "Mehendi Ceremony",
       subtitle: "Adorning hands with henna, music & sweet celebration",
-      dayDate: "Saturday, 14 February 2027",
+      dayDate: "Sunday, 14 February 2027",
       time: "04:00 PM onwards",
       venueName: "Royal Courtyard, The Club International",
-      venueAddress: "Sector 109, Palam Vihar, Gurgaon, Haryana 122017",
+      venueAddress: sharedAddress,
       dressCode: "Vibrant Mehndi Greens & Pastel Florals",
       desc: "Welcoming our beloved guests as Chandrika adorns bridal henna, accompanied by live folk rhythms, traditional bangles artisan, and gourmet chaat stations.",
       illustration: "🌿",
@@ -43,10 +44,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       key: "HALDI",
       title: "Haldi Ceremony",
       subtitle: "A splash of sunshine, laughter & turmeric blessings",
-      dayDate: "Sunday, 15 February 2027",
+      dayDate: "Monday, 15 February 2027",
       time: "10:00 AM onwards",
       venueName: "Poolside Pavilion, The Club International",
-      venueAddress: "Sector 109, Palam Vihar, Gurgaon, Haryana 122017",
+      venueAddress: sharedAddress,
       dressCode: "Sunny Yellows, Ochre & Marigold Orange",
       desc: "An auspicious ceremony of turmeric paste blessings for Chandrika & Xudong, accompanied by celebratory dhol beats and a shower of fresh marigold and rose petals.",
       illustration: "🌼",
@@ -58,30 +59,15 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       key: "WEDDING",
       title: "Wedding Ceremony (Baraat & Sacred Pheras)",
       subtitle: "The sacred vows of love under the holy mandap",
-      dayDate: "Sunday, 15 February 2027",
+      dayDate: "Monday, 15 February 2027",
       time: "Baraat: 07:00 PM • Pheras: 08:30 PM",
       venueName: "The Grand Mandap, The Club International",
-      venueAddress: "Sector 109, Palam Vihar, Gurgaon, Haryana 122017",
+      venueAddress: sharedAddress,
       dressCode: "Traditional Banarasi Silks & Regal Sherwanis",
       desc: "Xudong arrives with joyful baraat procession, followed by Chandrika's grand bridal entrance and the sacred seven pheras around the holy agni.",
       illustration: "🔥",
       startIso: "2027-02-15T19:00:00+05:30",
       endIso: "2027-02-15T22:00:00+05:30",
-    },
-    {
-      id: 4,
-      key: "RECEPTION",
-      title: "Royal Reception & Dinner Banquet",
-      subtitle: "Feast, celebratory toasts, dancing & joyous memories",
-      dayDate: "Sunday, 15 February 2027",
-      time: "09:30 PM onwards",
-      venueName: "Grand Ballroom & Lawns, The Club International",
-      venueAddress: "Sector 109, Palam Vihar, Gurgaon, Haryana 122017",
-      dressCode: "Royal Festive Elegance / Formal Evening",
-      desc: "An imperial celebratory banquet in honor of the newlyweds Chandrika & Xudong with music, gourmet feast, and blessings.",
-      illustration: "🥂",
-      startIso: "2027-02-15T21:30:00+05:30",
-      endIso: "2027-02-15T23:59:00+05:30",
     },
   ];
 
@@ -200,7 +186,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
                 </button>
 
                 <a
-                  href="https://maps.google.com/?q=The+Oberoi+Udaivilas+Udaipur"
+                  href={`https://maps.google.com/?q=${encodeURIComponent(evt.venueName + " " + evt.venueAddress)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="py-2.5 px-4 bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#9A1616] text-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-sm cursor-pointer"

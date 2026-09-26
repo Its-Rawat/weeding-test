@@ -12,7 +12,7 @@ public class CreateGuestDto {
 
     private List<String> members; // optional list of family member names
 
-    private List<String> allowedEvents; // optional list e.g. ["MEHENDI", "HALDI", "WEDDING", "RECEPTION"]
+    private List<String> allowedEvents; // optional list e.g. ["MEHENDI", "HALDI", "WEDDING"]
 
     public CreateGuestDto() {
     }

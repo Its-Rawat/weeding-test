@@ -54,7 +54,7 @@ public class GuestService {
         if (dto.getAllowedEvents() != null && !dto.getAllowedEvents().isEmpty()) {
             guest.setAllowedEventsList(dto.getAllowedEvents());
         } else {
-            guest.setAllowedEventsList(List.of("MEHENDI", "HALDI", "WEDDING", "RECEPTION"));
+            guest.setAllowedEventsList(List.of("MEHENDI", "HALDI", "WEDDING"));
         }
 
         // Add family members if provided

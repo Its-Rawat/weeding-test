@@ -4,7 +4,7 @@ import type { AppConfig } from "../types";
 
 export default function VenueSection({ config }: { config: AppConfig }) {
   const venueTitle = config.venue.name || "The Club International";
-  const venueAddress = config.venue.address || "The Club, International City, Sector 109, B3 Ln, Babupur Village, Palam Vihar, Gurgaon, Haryana 122017";
+  const venueAddress = config.venue.address || "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
 
   return (
     <section id="venue" className="py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20">

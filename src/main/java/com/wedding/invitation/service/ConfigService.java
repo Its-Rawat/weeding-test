@@ -32,29 +32,21 @@ public class ConfigService {
         DEFAULT_CONFIG.put("GROOM_INSTAGRAM", "xudong_w");
         DEFAULT_CONFIG.put("GROOM_IMAGE", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop");
 
-        DEFAULT_CONFIG.put("VENUE_NAME", "The Grand Crystal Ballroom");
-        DEFAULT_CONFIG.put("VENUE_ADDRESS", "88 Harmony Boulevard, Crystal Bay");
-        DEFAULT_CONFIG.put("VENUE_LAT", "1.2838");
-        DEFAULT_CONFIG.put("VENUE_LNG", "103.8591");
+        DEFAULT_CONFIG.put("VENUE_NAME", "The Club International");
+        DEFAULT_CONFIG.put("VENUE_ADDRESS", "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)");
+        DEFAULT_CONFIG.put("VENUE_LAT", "28.5134");
+        DEFAULT_CONFIG.put("VENUE_LNG", "77.0275");
 
-        DEFAULT_CONFIG.put("AKAD_TITLE", "Wedding Ceremony");
-        DEFAULT_CONFIG.put("AKAD_DAY", "Saturday");
-        DEFAULT_CONFIG.put("AKAD_DATE", "24 October 2026");
-        DEFAULT_CONFIG.put("AKAD_START", "10:00");
-        DEFAULT_CONFIG.put("AKAD_END", "12:30");
-        DEFAULT_CONFIG.put("AKAD_ISO_START", "2026-10-24T10:00:00+08:00");
-        DEFAULT_CONFIG.put("AKAD_ISO_END", "2026-10-24T12:30:00+08:00");
-
-        DEFAULT_CONFIG.put("RESEPSI_TITLE", "Reception & Celebration Banquet");
-        DEFAULT_CONFIG.put("RESEPSI_DAY", "Saturday");
-        DEFAULT_CONFIG.put("RESEPSI_DATE", "24 October 2026");
-        DEFAULT_CONFIG.put("RESEPSI_START", "18:30");
-        DEFAULT_CONFIG.put("RESEPSI_END", "22:30");
-        DEFAULT_CONFIG.put("RESEPSI_ISO_START", "2026-10-24T18:30:00+08:00");
-        DEFAULT_CONFIG.put("RESEPSI_ISO_END", "2026-10-24T22:30:00+08:00");
+        DEFAULT_CONFIG.put("AKAD_TITLE", "Wedding Ceremony (Baraat & Pheras)");
+        DEFAULT_CONFIG.put("AKAD_DAY", "Monday");
+        DEFAULT_CONFIG.put("AKAD_DATE", "15 February 2027");
+        DEFAULT_CONFIG.put("AKAD_START", "19:00");
+        DEFAULT_CONFIG.put("AKAD_END", "22:00");
+        DEFAULT_CONFIG.put("AKAD_ISO_START", "2027-02-15T19:00:00+05:30");
+        DEFAULT_CONFIG.put("AKAD_ISO_END", "2027-02-15T22:00:00+05:30");
 
         DEFAULT_CONFIG.put("HERO_IMAGE", "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop");
-        DEFAULT_CONFIG.put("HERO_CITY", "Grand Crystal Ballroom, Crystal Bay");
+        DEFAULT_CONFIG.put("HERO_CITY", "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)");
         DEFAULT_CONFIG.put("MUSIC_URL", "https://www.bensound.com/bensound-music/bensound-forever.mp3");
         DEFAULT_CONFIG.put("RSVP_MAX_GUESTS", "10");
 

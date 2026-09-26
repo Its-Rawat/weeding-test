@@ -5,9 +5,10 @@ import type { AppConfig } from "../types";
 interface HeroProps {
   config: AppConfig;
   personalizedGuestName?: string | null;
+  allowedEvents?: string[] | null;
 }
 
-const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName }) => {
+const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName, allowedEvents }) => {
   const [guestName, setGuestName] = useState<string | null>(personalizedGuestName || null);
 
   useEffect(() => {
@@ -24,13 +25,19 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName }) => {
     document.getElementById("event")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Extract day name, day number, month and year
-  const eventDate = config.events.akad.startDateTime;
-  const dayName = config.events.akad.day || "Saturday";
-  const dayNumber = String(eventDate.getDate()).padStart(2, "0");
-  const monthName = eventDate.toLocaleString("en-US", { month: "long" }).toUpperCase();
-  const yearNumber = eventDate.getFullYear();
-  const timeString = "AT FOUR-THIRTY IN THE AFTERNOON";
+  // If a person is attending 14th Feb Mehendi ceremony then only they should see 14 & 15 February, else only 15th Feb
+  const hasMehendi = Boolean(
+    allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+  );
+
+  const dayLabel = hasMehendi ? "SUNDAY & MONDAY" : "MONDAY";
+  const dateNumeral = hasMehendi ? "14 & 15" : "15";
+  const monthYearLabel = "FEBRUARY 2027";
+  const timeString = hasMehendi
+    ? "CELEBRATIONS COMMENCE AT 04:00 PM"
+    : "SACRED CEREMONY AT 07:00 PM";
+
+  const sharedAddress = "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
 
   return (
     <section id="invitation" className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center py-8 sm:py-14 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] overflow-hidden">
@@ -103,13 +110,13 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName }) => {
           {/* EDITORIAL CALENDAR NUMERAL LOCKUP matching video frame 00:05 */}
           <div className="my-6 py-4 border-y border-[#D4AF37]/50 max-w-xs mx-auto">
             <p className="font-sans text-[11px] sm:text-xs font-bold tracking-[0.35em] text-[#8C6B1C] uppercase mb-1">
-              {dayName}
+              {dayLabel}
             </p>
             <div className="font-serif text-5xl sm:text-6xl md:text-7xl font-bold text-[#231C18] leading-none my-1 tracking-tight">
-              {dayNumber}
+              {dateNumeral}
             </div>
             <p className="font-sans text-[11px] sm:text-xs font-bold tracking-[0.35em] text-[#8C6B1C] uppercase mt-1">
-              {monthName} {yearNumber}
+              {monthYearLabel}
             </p>
             <p className="font-serif italic text-[#5A4D43] text-xs mt-2">
               {timeString}
@@ -119,10 +126,10 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName }) => {
           {/* Venue & Location */}
           <div className="space-y-1.5 my-4">
             <h3 className="font-serif font-bold text-base sm:text-lg text-[#231C18] tracking-wide uppercase">
-              {config.venue.name || "The Club International"}
+              The Club International
             </h3>
-            <p className="font-serif italic text-[#8C6B1C] text-xs sm:text-sm">
-              {config.hero.city || "Sector 109, Palam Vihar, Gurgaon"}
+            <p className="font-serif italic text-[#8C6B1C] text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
+              {sharedAddress}
             </p>
             <p className="font-serif italic text-[11px] font-semibold text-[#8C1D24] pt-2">
               Warmly Hosted by Aditya Rawat &amp; Family

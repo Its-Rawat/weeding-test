@@ -1079,7 +1079,7 @@
         <div class="event-card">
           <div>
             <div class="event-title">🌿 Mehendi Ceremony</div>
-            <div class="event-date">Friday, Dec 12 • 04:00 PM</div>
+            <div class="event-date">Sunday, Feb 14 • 04:00 PM</div>
           </div>
           <div class="event-count-badge" id="countMehendi">0</div>
         </div>
@@ -1087,25 +1087,17 @@
         <div class="event-card">
           <div>
             <div class="event-title">💛 Haldi Utsav</div>
-            <div class="event-date">Saturday, Dec 13 • 10:00 AM</div>
+            <div class="event-date">Monday, Feb 15 • 10:00 AM</div>
           </div>
           <div class="event-count-badge" id="countHaldi">0</div>
         </div>
 
         <div class="event-card">
           <div>
-            <div class="event-title">👑 Wedding (Shaadi)</div>
-            <div class="event-date">Sunday, Dec 14 • 06:00 PM</div>
+            <div class="event-title">👑 Wedding Ceremony (Pheras)</div>
+            <div class="event-date">Monday, Feb 15 • 07:00 PM</div>
           </div>
           <div class="event-count-badge" id="countWedding">0</div>
-        </div>
-
-        <div class="event-card">
-          <div>
-            <div class="event-title">✨ Royal Reception</div>
-            <div class="event-date">Monday, Dec 15 • 07:30 PM</div>
-          </div>
-          <div class="event-count-badge" id="countReception">0</div>
         </div>
       </div>
     </section>
@@ -1123,7 +1115,6 @@
           <option value="MEHENDI">🌿 Mehendi Only</option>
           <option value="HALDI">💛 Haldi Only</option>
           <option value="WEDDING">👑 Wedding Only</option>
-          <option value="RECEPTION">✨ Reception Only</option>
         </select>
 
         <select class="filter-select" id="rsvpFilter" onchange="filterGuests()">
@@ -1241,9 +1232,6 @@
               <label class="checkbox-label">
                 <input type="checkbox" id="evWedding" checked /> 👑 Wedding Ceremony
               </label>
-              <label class="checkbox-label">
-                <input type="checkbox" id="evReception" checked /> ✨ Royal Reception
-              </label>
             </div>
           </div>
 
@@ -1338,9 +1326,6 @@
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="editEvWedding" /> 👑 Wedding Ceremony
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="editEvReception" /> ✨ Royal Reception
           </label>
         </div>
         <div class="modal-footer" style="padding-right: 0; padding-left: 0; margin-top: 1rem;">
@@ -1502,7 +1487,6 @@
       let mehendiCount = 0;
       let haldiCount = 0;
       let weddingCount = 0;
-      let receptionCount = 0;
 
       guests.forEach(g => {
         if (g.type === 'INDIVIDUAL') {
@@ -1533,7 +1517,6 @@
           if (allowed.includes('MEHENDI')) mehendiCount += attendingInGroup;
           if (allowed.includes('HALDI')) haldiCount += attendingInGroup;
           if (allowed.includes('WEDDING')) weddingCount += attendingInGroup;
-          if (allowed.includes('RECEPTION')) receptionCount += attendingInGroup;
 
         } else if (g.rsvpStatus === 'NOT_ATTENDING') {
           declinedInvites++;
@@ -1555,7 +1538,6 @@
       document.getElementById('countMehendi').textContent = mehendiCount;
       document.getElementById('countHaldi').textContent = haldiCount;
       document.getElementById('countWedding').textContent = weddingCount;
-      document.getElementById('countReception').textContent = receptionCount;
     }
 
     function renderTable(guests) {
@@ -1758,10 +1740,9 @@
             "Family / Group Name": g.name,
             "Guest Type": g.type || 'FAMILY',
             "Attendance Status": personAttendance,
-            "Mehendi (Dec 12)": allowed.includes('MEHENDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
-            "Haldi (Dec 13)": allowed.includes('HALDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
-            "Wedding (Dec 14)": allowed.includes('WEDDING') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
-            "Reception (Dec 15)": allowed.includes('RECEPTION') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Mehendi (Feb 14)": allowed.includes('MEHENDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Haldi (Feb 15)": allowed.includes('HALDI') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
+            "Wedding (Feb 15)": allowed.includes('WEDDING') ? (personWillCome ? "Attending" : (isDeclined ? "Declined" : "Invited")) : "Not Invited",
             "RSVP Token": g.token,
             "RSVP Link": g.rsvpLink || `${apiBaseUrl}/rsvp/${g.token}`,
             "Wishes / Message": g.message || "",
@@ -1901,14 +1882,14 @@
             const members = membersRaw ? membersRaw.split(',').map(m => m.trim()).filter(m => m.length > 0) : [];
 
             // Find celebrations column
-            const eventsRaw = (row['Invited Celebrations'] || row['Events'] || row['Celebrations'] || 'MEHENDI, HALDI, WEDDING, RECEPTION').toString().trim().toUpperCase();
+            const eventsRaw = (row['Invited Celebrations'] || row['Events'] || row['Celebrations'] || 'MEHENDI, HALDI, WEDDING').toString().trim().toUpperCase();
             let events = [];
             if (eventsRaw) {
-              const allEvents = ['MEHENDI', 'HALDI', 'WEDDING', 'RECEPTION'];
+              const allEvents = ['MEHENDI', 'HALDI', 'WEDDING'];
               events = allEvents.filter(ev => eventsRaw.includes(ev));
             }
             if (events.length === 0) {
-              events = ['MEHENDI', 'HALDI', 'WEDDING', 'RECEPTION'];
+              events = ['MEHENDI', 'HALDI', 'WEDDING'];
             }
 
             return { name, type, members, allowedEvents: events };
@@ -2025,25 +2006,25 @@
           "Family / Guest Name": "Sharma Family",
           "Type": "FAMILY",
           "Family Members (Comma separated)": "Rajesh Sharma, Sunita Sharma, Rahul Sharma",
-          "Invited Celebrations": "MEHENDI, HALDI, WEDDING, RECEPTION"
+          "Invited Celebrations": "MEHENDI, HALDI, WEDDING"
         },
         {
           "Family / Guest Name": "Amitabh Kapoor",
           "Type": "INDIVIDUAL",
           "Family Members (Comma separated)": "",
-          "Invited Celebrations": "WEDDING, RECEPTION"
+          "Invited Celebrations": "WEDDING"
         },
         {
           "Family / Guest Name": "Verma Household",
           "Type": "FAMILY",
           "Family Members (Comma separated)": "Vikram Verma, Neha Verma",
-          "Invited Celebrations": "HALDI, WEDDING, RECEPTION"
+          "Invited Celebrations": "HALDI, WEDDING"
         },
         {
           "Family / Guest Name": "Priya Nair",
           "Type": "INDIVIDUAL",
           "Family Members (Comma separated)": "",
-          "Invited Celebrations": "RECEPTION"
+          "Invited Celebrations": "MEHENDI, HALDI, WEDDING"
         }
       ];
 
@@ -2090,7 +2071,6 @@
       if (document.getElementById('evMehendi').checked) allowedEvents.push('MEHENDI');
       if (document.getElementById('evHaldi').checked) allowedEvents.push('HALDI');
       if (document.getElementById('evWedding').checked) allowedEvents.push('WEDDING');
-      if (document.getElementById('evReception').checked) allowedEvents.push('RECEPTION');
 
       const payload = { name, type, members, allowedEvents };
 
@@ -2127,7 +2107,6 @@
       document.getElementById('editEvMehendi').checked = allowedEvents.includes('MEHENDI');
       document.getElementById('editEvHaldi').checked = allowedEvents.includes('HALDI');
       document.getElementById('editEvWedding').checked = allowedEvents.includes('WEDDING');
-      document.getElementById('editEvReception').checked = allowedEvents.includes('RECEPTION');
 
       openModal('editEventsModal');
     }
@@ -2139,7 +2118,6 @@
       if (document.getElementById('editEvMehendi').checked) allowedEvents.push('MEHENDI');
       if (document.getElementById('editEvHaldi').checked) allowedEvents.push('HALDI');
       if (document.getElementById('editEvWedding').checked) allowedEvents.push('WEDDING');
-      if (document.getElementById('editEvReception').checked) allowedEvents.push('RECEPTION');
 
       try {
         const resp = await fetch(`${apiBaseUrl}/api/guests/${activeEditGuestId}/events`, {

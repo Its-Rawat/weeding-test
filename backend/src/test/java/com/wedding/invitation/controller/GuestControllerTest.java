@@ -36,12 +36,12 @@ class GuestControllerTest {
 
     @Test
     void testGuestCelebrationsLifecycle() throws Exception {
-        // 1. Create a guest family with specific celebrations (Wedding & Reception only)
+        // 1. Create a guest family with specific celebrations (Haldi & Wedding only)
         CreateGuestDto createDto = new CreateGuestDto();
         createDto.setName("Rawat Royal Family");
         createDto.setType("FAMILY");
         createDto.setMembers(List.of("Aditya Rawat", "Meena Rawat"));
-        createDto.setAllowedEvents(List.of("WEDDING", "RECEPTION"));
+        createDto.setAllowedEvents(List.of("HALDI", "WEDDING"));
 
         MvcResult createResult = mockMvc.perform(post("/api/guests")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -50,7 +50,7 @@ class GuestControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.token").isString())
                 .andExpect(jsonPath("$.allowedEvents", hasSize(2)))
-                .andExpect(jsonPath("$.allowedEvents", hasItems("WEDDING", "RECEPTION")))
+                .andExpect(jsonPath("$.allowedEvents", hasItems("HALDI", "WEDDING")))
                 .andReturn();
 
         String responseBody = createResult.getResponse().getContentAsString();
@@ -63,24 +63,24 @@ class GuestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Rawat Royal Family"))
                 .andExpect(jsonPath("$.allowedEvents", hasSize(2)))
-                .andExpect(jsonPath("$.allowedEvents", hasItems("WEDDING", "RECEPTION")));
+                .andExpect(jsonPath("$.allowedEvents", hasItems("HALDI", "WEDDING")));
 
-        // 3. Update celebrations via PATCH /api/guests/{id}/events to include Haldi too
+        // 3. Update celebrations via PATCH /api/guests/{id}/events to include Mehendi too
         UpdateGuestEventsDto eventsDto = new UpdateGuestEventsDto();
-        eventsDto.setAllowedEvents(List.of("HALDI", "WEDDING", "RECEPTION"));
+        eventsDto.setAllowedEvents(List.of("MEHENDI", "HALDI", "WEDDING"));
 
         mockMvc.perform(patch("/api/guests/" + guestId + "/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(eventsDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.allowedEvents", hasSize(3)))
-                .andExpect(jsonPath("$.allowedEvents", hasItems("HALDI", "WEDDING", "RECEPTION")));
+                .andExpect(jsonPath("$.allowedEvents", hasItems("MEHENDI", "HALDI", "WEDDING")));
 
         // 4. Verify public invitation reflects the updated celebrations
         mockMvc.perform(get("/api/rsvp/" + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.allowedEvents", hasSize(3)))
-                .andExpect(jsonPath("$.allowedEvents", hasItems("HALDI", "WEDDING", "RECEPTION")));
+                .andExpect(jsonPath("$.allowedEvents", hasItems("MEHENDI", "HALDI", "WEDDING")));
 
         // 5. Submit personalized RSVP
         SubmitPersonalizedRsvpDto rsvpDto = new SubmitPersonalizedRsvpDto();
@@ -107,7 +107,7 @@ class GuestControllerTest {
         CreateGuestDto g2 = new CreateGuestDto();
         g2.setName("Bulk Person 2");
         g2.setType("INDIVIDUAL");
-        g2.setAllowedEvents(List.of("RECEPTION"));
+        g2.setAllowedEvents(List.of("HALDI"));
 
         MvcResult bulkResult = mockMvc.perform(post("/api/guests/bulk")
                         .contentType(MediaType.APPLICATION_JSON)

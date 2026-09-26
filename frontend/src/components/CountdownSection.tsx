@@ -4,9 +4,10 @@ import type { AppConfig } from "../types";
 
 interface CountdownProps {
   config: AppConfig;
+  allowedEvents?: string[] | null;
 }
 
-const CountdownSection: React.FC<CountdownProps> = ({ config }) => {
+const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -14,8 +15,13 @@ const CountdownSection: React.FC<CountdownProps> = ({ config }) => {
     seconds: 0,
   });
 
+  const hasMehendi = Boolean(
+    allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+  );
+
   useEffect(() => {
-    const target = config.events.akad.startDateTime.getTime();
+    // 15 February 2027 at 19:00 IST (Wedding Ceremony)
+    const target = new Date("2027-02-15T19:00:00+05:30").getTime();
 
     const updateCountdown = () => {
       const distance = target - new Date().getTime();
@@ -32,7 +38,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config }) => {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, [config.events.akad.startDateTime]);
+  }, []);
 
   return (
     <section id="countdown" className="py-12 sm:py-16 px-4 bg-[#FAF5EB] text-center border-y border-[#D4AF37]/30">
@@ -49,7 +55,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config }) => {
           Countdown to the Royal Nuptials
         </h3>
         <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
-          Until We Celebrate Under The Mandap at The Club International, Gurgaon
+          Until We Celebrate Under The Mandap • {hasMehendi ? "14 & 15 February 2027" : "15 February 2027"}
         </p>
 
         {/* Minimalist 4-Box Grid */}

@@ -199,13 +199,11 @@ const App: React.FC = () => {
     return <WeddingLoader progress={bufferProgress} />;
   }
 
-  const footerDate = (() => {
-    const d = config.events.akad.startDateTime;
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day} • ${month} • ${year}`;
-  })();
+  const hasMehendi = Boolean(
+    allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+  );
+
+  const footerDate = hasMehendi ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
@@ -219,11 +217,15 @@ const App: React.FC = () => {
       <FloatingPetals />
 
       {/* 3. FORMAL ARCHED INVITATION CARD */}
-      <Hero config={config} personalizedGuestName={personalizedGuestName} />
+      <Hero
+        config={config}
+        personalizedGuestName={personalizedGuestName}
+        allowedEvents={allowedEvents}
+      />
 
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
-        <CountdownSection config={config} />
+        <CountdownSection config={config} allowedEvents={allowedEvents} />
         <EventDetails
           config={config}
           allowedEvents={allowedEvents}

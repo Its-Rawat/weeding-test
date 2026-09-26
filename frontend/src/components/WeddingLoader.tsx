@@ -33,7 +33,7 @@ export const WeddingLoader: React.FC<WeddingLoaderProps> = ({
           <span>卐</span>
         </div>
         <p className="text-[10.5px] tracking-[0.3em] uppercase font-sans text-[#8C6B1C] font-semibold mb-6">
-          The Royal Wedding • Udaipur
+          The Club International, Gurugram
         </p>
 
         {/* Minimal Luxury Gold Progress Bar */}

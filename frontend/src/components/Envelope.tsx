@@ -246,10 +246,10 @@ const Envelope: React.FC<EnvelopeProps> = ({ onOpen, config }) => {
               <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent my-1" />
 
               <p className="font-serif text-[11px] sm:text-xs text-[#2D2520] tracking-wide mt-1">
-                Saturday, 28th November 2026
+                14 &amp; 15 February 2027
               </p>
               <p className="font-royal text-[9.5px] uppercase tracking-widest text-[#8C6B1C] font-semibold">
-                The Oberoi Udaivilas • Udaipur
+                The Club International, Gurugram
               </p>
             </div>
 
@@ -383,7 +383,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ onOpen, config }) => {
       {/* BOTTOM SUBTITLE */}
       <footer className="absolute bottom-2 sm:bottom-4 inset-x-0 flex flex-col items-center pointer-events-none z-10">
         <span className="text-[11px] text-[#8C6B1C] font-serif italic tracking-wide">
-          {brideName} &amp; {groomName} • 28 November 2026 • The Oberoi Udaivilas
+          {brideName} &amp; {groomName} • 14 &amp; 15 February 2027 • The Club International, Gurugram
         </span>
       </footer>
 
