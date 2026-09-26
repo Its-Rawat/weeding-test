@@ -1,0 +1,481 @@
+================================================================================
+WEDDING PERSONALIZED RSVP SYSTEM - POSTMAN API GUIDE & DOCUMENTATION
+================================================================================
+Wedding of Chandrika & Xudong
+Host: Aditya Rawat & Family
+Live Deployment URL: https://weeding-test.onrender.com
+Local Development URL: http://localhost:8080
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. SYSTEM OVERVIEW & ARCHITECTURE
+2. QUICK START: IMPORTING THE PRE-CONFIGURED POSTMAN COLLECTION
+3. MANUAL POSTMAN SETUP (STEP-BY-STEP)
+4. COMPLETE API REFERENCE
+   - 4.1 Admin: Create Family Guest (POST /api/guests)
+   - 4.2 Admin: Create Individual Guest (POST /api/guests)
+   - 4.3 Admin: Get Guest by ID (GET /api/guests/{id})
+   - 4.4 Admin: List All Guests (GET /api/guests)
+   - 4.5 Admin: Update Guest & Members (PUT /api/guests/{id})
+   - 4.6 Admin: Soft-Disable / Enable Invitation (PATCH /api/guests/{id}/status)
+   - 4.7 Public: Get Invitation by Token (GET /api/rsvp/{token})
+   - 4.8 Public: Submit Attendance (Joyfully Accept) (POST /api/rsvp/{token})
+   - 4.9 Public: Submit Decline (Regretfully Decline) (POST /api/rsvp/{token})
+5. COMPLETE END-TO-END WORKFLOW (HOW TO USE)
+6. ERROR CODES & TROUBLESHOOTING
+
+================================================================================
+1. SYSTEM OVERVIEW & ARCHITECTURE
+================================================================================
+This personalized RSVP system gives every invited guest or family a unique,
+cryptographically secure 12-character random token.
+
+Key Features:
+- Secure URLs: Guest URLs look like:
+  https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ
+- No database IDs, phone numbers, or guest names are exposed in the link.
+- Zero Login: Guests do not need passwords, accounts, or email verification.
+- Family Attendance: Family invitations include individual checkboxes for every
+  family member so each person's attendance is tracked accurately.
+- Personalized Welcome: When opened on a phone or desktop, the page warmly
+  welcomes the guest by name at the top of the royal invitation arch.
+- Manual Code Entry: Guests who open the main homepage can click
+  "Have a personalized invitation code?" and enter their 12-character token.
+
+================================================================================
+2. QUICK START: IMPORTING THE PRE-CONFIGURED POSTMAN COLLECTION
+================================================================================
+A ready-to-use Postman collection is already included in your project root:
+File: Wedding_Personalized_RSVP.postman_collection.json
+
+To import it into Postman:
+1. Open Postman.
+2. Click the "Import" button (top left corner).
+3. Drag and drop the file `Wedding_Personalized_RSVP.postman_collection.json`
+   (or click "files" and browse to your DIDI_Wedding folder).
+4. Click "Import".
+5. The collection "Wedding Invitation - Personalized RSVP System API" is ready!
+6. By default, it uses the live URL:
+   {{baseUrl}} = https://weeding-test.onrender.com
+7. The test script in "Add Guest (Family)" automatically stores the generated
+   token and ID into variables `{{guestToken}}` and `{{guestId}}` so you can run
+   subsequent requests immediately without copy-pasting!
+
+================================================================================
+3. MANUAL POSTMAN SETUP (STEP-BY-STEP)
+================================================================================
+If you prefer to configure Postman manually:
+
+Step 1: Create an Environment in Postman
+- Click "Environments" on the left sidebar.
+- Click "+" (Create Environment) and name it "Wedding Production".
+- Add the following variables:
+  * baseUrl    : https://weeding-test.onrender.com
+  * guestId    : 1
+  * guestToken : 0qasLjTBkVcZ
+- Click "Save" and select "Wedding Production" in the top-right environment dropdown.
+
+Step 2: Required Headers
+- For all POST, PUT, and PATCH requests, make sure to add:
+  Header: Content-Type
+  Value:  application/json
+
+- For GET requests, no special headers are required.
+
+================================================================================
+4. COMPLETE API REFERENCE
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1 Admin: Create Family Guest
+--------------------------------------------------------------------------------
+Creates a new guest family entry, creates individual records for each member,
+and automatically generates a secure 12-character alphanumeric token.
+
+- Method: POST
+- URL: {{baseUrl}}/api/guests
+- Header: Content-Type: application/json
+
+Request Body (raw JSON):
+{
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "members": [
+    "Rajesh Sharma",
+    "Sunita Sharma",
+    "Rahul Sharma"
+  ]
+}
+
+Expected Response (200 OK):
+{
+  "id": 1,
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "token": "0qasLjTBkVcZ",
+  "rsvpLink": "https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ",
+  "status": "ACTIVE",
+  "rsvpStatus": "PENDING",
+  "members": [
+    {
+      "id": 1,
+      "name": "Rajesh Sharma",
+      "attending": false
+    },
+    {
+      "id": 2,
+      "name": "Sunita Sharma",
+      "attending": false
+    },
+    {
+      "id": 3,
+      "name": "Rahul Sharma",
+      "attending": false
+    }
+  ],
+  "message": null,
+  "respondedAt": null,
+  "createdAt": "2026-09-26T17:13:20.677"
+}
+
+Notes:
+- Copy the "rsvpLink" value and send it directly to the family!
+
+--------------------------------------------------------------------------------
+4.2 Admin: Create Individual Guest
+--------------------------------------------------------------------------------
+Creates an invitation for a single guest without family members.
+
+- Method: POST
+- URL: {{baseUrl}}/api/guests
+- Header: Content-Type: application/json
+
+Request Body (raw JSON):
+{
+  "name": "Dr. Ananya Verma",
+  "type": "INDIVIDUAL"
+}
+
+Expected Response (200 OK):
+{
+  "id": 2,
+  "name": "Dr. Ananya Verma",
+  "type": "INDIVIDUAL",
+  "token": "xK92mLpQa8Zb",
+  "rsvpLink": "https://weeding-test.onrender.com/rsvp/xK92mLpQa8Zb",
+  "status": "ACTIVE",
+  "rsvpStatus": "PENDING",
+  "members": [],
+  "message": null,
+  "respondedAt": null,
+  "createdAt": "2026-09-26T17:15:00.000"
+}
+
+--------------------------------------------------------------------------------
+4.3 Admin: Get Guest by Database ID
+--------------------------------------------------------------------------------
+Fetches the full invitation status, attendance counts, member details, and
+messages left by the guest.
+
+- Method: GET
+- URL: {{baseUrl}}/api/guests/1
+- Header: None needed
+
+Expected Response (200 OK):
+{
+  "id": 1,
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "token": "0qasLjTBkVcZ",
+  "rsvpLink": "https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ",
+  "status": "ACTIVE",
+  "rsvpStatus": "ATTENDING",
+  "members": [
+    {
+      "id": 1,
+      "name": "Rajesh Sharma",
+      "attending": true
+    },
+    {
+      "id": 2,
+      "name": "Sunita Sharma",
+      "attending": true
+    },
+    {
+      "id": 3,
+      "name": "Rahul Sharma",
+      "attending": false
+    }
+  ],
+  "message": "Congratulations Chandrika & Xudong! Wishing you endless happiness! ❤️",
+  "respondedAt": "2026-09-26T17:13:38.963",
+  "createdAt": "2026-09-26T17:13:20.677"
+}
+
+--------------------------------------------------------------------------------
+4.4 Admin: List All Guests
+--------------------------------------------------------------------------------
+Returns an array of all registered invitations, ordered by newest first.
+
+- Method: GET
+- URL: {{baseUrl}}/api/guests
+- Header: None needed
+
+Expected Response (200 OK):
+[
+  {
+    "id": 2,
+    "name": "Dr. Ananya Verma",
+    "type": "INDIVIDUAL",
+    "token": "xK92mLpQa8Zb",
+    "rsvpLink": "https://weeding-test.onrender.com/rsvp/xK92mLpQa8Zb",
+    "status": "ACTIVE",
+    "rsvpStatus": "PENDING",
+    "members": [],
+    "message": null,
+    "respondedAt": null,
+    "createdAt": "2026-09-26T17:15:00.000"
+  },
+  {
+    "id": 1,
+    "name": "Sharma Family",
+    "type": "FAMILY",
+    "token": "0qasLjTBkVcZ",
+    "rsvpLink": "https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ",
+    "status": "ACTIVE",
+    "rsvpStatus": "ATTENDING",
+    "members": [
+      { "id": 1, "name": "Rajesh Sharma", "attending": true },
+      { "id": 2, "name": "Sunita Sharma", "attending": true },
+      { "id": 3, "name": "Rahul Sharma", "attending": false }
+    ],
+    "message": "Congratulations Chandrika & Xudong! Wishing you endless happiness! ❤️",
+    "respondedAt": "2026-09-26T17:13:38.963",
+    "createdAt": "2026-09-26T17:13:20.677"
+  }
+]
+
+--------------------------------------------------------------------------------
+4.5 Admin: Update Guest & Members
+--------------------------------------------------------------------------------
+Updates the name, type, or list of members for an existing invitation without
+changing the unique 12-character token or the guest link.
+
+- Method: PUT
+- URL: {{baseUrl}}/api/guests/1
+- Header: Content-Type: application/json
+
+Request Body (raw JSON):
+{
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "members": [
+    "Rajesh Sharma",
+    "Sunita Sharma"
+  ]
+}
+
+Expected Response (200 OK):
+{
+  "id": 1,
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "token": "0qasLjTBkVcZ",
+  "rsvpLink": "https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ",
+  "status": "ACTIVE",
+  "rsvpStatus": "PENDING",
+  "members": [
+    { "id": 4, "name": "Rajesh Sharma", "attending": false },
+    { "id": 5, "name": "Sunita Sharma", "attending": false }
+  ],
+  "message": null,
+  "respondedAt": null,
+  "createdAt": "2026-09-26T17:13:20.677"
+}
+
+--------------------------------------------------------------------------------
+4.6 Admin: Soft-Disable / Enable Invitation
+--------------------------------------------------------------------------------
+Allows you to disable an invitation link without deleting the record. When a
+guest visits an INACTIVE link, the website informs them that the invitation
+is no longer active and gives them a button to contact the host.
+
+- Method: PATCH
+- URL: {{baseUrl}}/api/guests/1/status
+- Header: Content-Type: application/json
+
+To Disable:
+Request Body (raw JSON):
+{
+  "status": "INACTIVE"
+}
+
+To Re-Enable:
+Request Body (raw JSON):
+{
+  "status": "ACTIVE"
+}
+
+Expected Response (200 OK):
+{
+  "id": 1,
+  "name": "Sharma Family",
+  "status": "INACTIVE",
+  ...
+}
+
+--------------------------------------------------------------------------------
+4.7 Public: Get Invitation by Token
+--------------------------------------------------------------------------------
+This endpoint is accessed publicly by the website when a guest visits their
+personalized link (e.g., /rsvp/0qasLjTBkVcZ). It returns only public fields
+(no internal IDs or sensitive data).
+
+- Method: GET
+- URL: {{baseUrl}}/api/rsvp/0qasLjTBkVcZ
+- Header: None needed
+
+Expected Response (200 OK):
+{
+  "name": "Sharma Family",
+  "type": "FAMILY",
+  "status": "ACTIVE",
+  "rsvpStatus": "PENDING",
+  "members": [
+    {
+      "name": "Rajesh Sharma",
+      "attending": false
+    },
+    {
+      "name": "Sunita Sharma",
+      "attending": false
+    },
+    {
+      "name": "Rahul Sharma",
+      "attending": false
+    }
+  ],
+  "message": null
+}
+
+Error Cases:
+- Token doesn't exist: HTTP 404 (Not Found)
+- Token is INACTIVE: Returns "status": "INACTIVE"
+
+--------------------------------------------------------------------------------
+4.8 Public: Submit Attendance (Joyfully Accept)
+--------------------------------------------------------------------------------
+Submits the guest's RSVP decision, marked as ATTENDING, along with the array of
+attending family members and an optional heartfelt blessing message.
+
+- Method: POST
+- URL: {{baseUrl}}/api/rsvp/0qasLjTBkVcZ
+- Header: Content-Type: application/json
+
+Request Body (raw JSON):
+{
+  "rsvpStatus": "ATTENDING",
+  "attendingMembers": [
+    "Rajesh Sharma",
+    "Sunita Sharma"
+  ],
+  "message": "Heartiest congratulations Chandrika & Xudong! Wishing you endless happiness! ❤️"
+}
+
+Expected Response (200 OK):
+{
+  "success": true,
+  "message": "Thank you! Your RSVP has been joyfully recorded.",
+  "name": "Sharma Family",
+  "rsvpStatus": "ATTENDING",
+  "attendingCount": 2,
+  "respondedAt": "2026-09-26T17:13:38.963"
+}
+
+--------------------------------------------------------------------------------
+4.9 Public: Submit Decline (Regretfully Decline)
+--------------------------------------------------------------------------------
+Submits the guest's RSVP decision when they are unable to attend.
+
+- Method: POST
+- URL: {{baseUrl}}/api/rsvp/0qasLjTBkVcZ
+- Header: Content-Type: application/json
+
+Request Body (raw JSON):
+{
+  "rsvpStatus": "NOT_ATTENDING",
+  "message": "Sending our warmest love and blessings from afar!"
+}
+
+Expected Response (200 OK):
+{
+  "success": true,
+  "message": "Thank you for letting us know. We will miss you!",
+  "name": "Sharma Family",
+  "rsvpStatus": "NOT_ATTENDING",
+  "attendingCount": 0,
+  "respondedAt": "2026-09-26T17:20:00.000"
+}
+
+================================================================================
+5. COMPLETE END-TO-END WORKFLOW (HOW TO USE)
+================================================================================
+
+Step 1: Open Postman
+- Select "POST Add Guest (Family)" from the collection.
+- Fill in the family name and member list in the JSON body.
+- Click "Send".
+
+Step 2: Copy the Generated Link
+- Look at the JSON response:
+  "rsvpLink": "https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ"
+- Copy this link.
+
+Step 3: Send to the Guest
+- Paste the link in WhatsApp, SMS, or print a QR code:
+  "Dear Sharma Family, we warmly invite you to the wedding of Chandrika & Xudong!
+   Please view your personal invitation and confirm your presence here:
+   https://weeding-test.onrender.com/rsvp/0qasLjTBkVcZ"
+
+Step 4: Guest Experience
+- When the guest taps the link on mobile or desktop:
+  1. The wedding invitation arch shows: "Warmly welcoming Sharma Family ❤️"
+  2. The RSVP section shows their dedicated card.
+  3. They click "Joyfully Accept ❤️".
+  4. Checkboxes appear for Rajesh, Sunita, and Rahul.
+  5. They check the members who can make it, write a warm wish, and hit Confirm.
+  6. A royal confirmation screen thanks them and records their response.
+
+Step 5: Check Attendance in Postman
+- Whenever you want to check who has responded, run:
+  GET {{baseUrl}}/api/guests
+- You will see the live status (ATTENDING, NOT_ATTENDING, or PENDING) and
+  the exact names of family members attending.
+
+================================================================================
+6. ERROR CODES & TROUBLESHOOTING
+================================================================================
+1. HTTP 400 (Bad Request):
+   - Cause: Missing "name" field or invalid JSON syntax.
+   - Solution: Ensure the "name" field is non-empty and your JSON is valid.
+     Make sure the Header "Content-Type: application/json" is included.
+
+2. HTTP 404 (Not Found):
+   - Cause: The 12-character token does not exist in the database, or an invalid
+     guest ID was requested.
+   - Solution: Verify the token or ID by running GET /api/guests.
+
+3. HTTP 403 (Forbidden):
+   - Cause: The invitation was soft-disabled (status is INACTIVE).
+   - Solution: Use PATCH /api/guests/{id}/status with {"status": "ACTIVE"} to re-enable.
+
+4. Free Tier Sleep Delay (Render):
+   - If no traffic has arrived for ~15 minutes, Render may take 30-50 seconds to
+     wake up the container on the first request. Subsequent requests are fast.
+
+================================================================================
+Generated for Aditya Rawat
+Chandrika & Xudong Wedding Invitation System
+Date: September 2026
+================================================================================
