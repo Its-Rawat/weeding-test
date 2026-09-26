@@ -30,22 +30,31 @@ const App: React.FC = () => {
   const [allowedEvents, setAllowedEvents] = useState<string[] | null>(null);
 
   useEffect(() => {
-    const token = extractTokenFromUrl();
-    if (token) {
-      personalizedRsvpService
-        .getInvitation(token)
-        .then((inv) => {
-          if (inv && inv.name) {
-            setPersonalizedGuestName(inv.name);
-          }
-          if (inv && inv.allowedEvents) {
-            setAllowedEvents(inv.allowedEvents);
-          }
-        })
-        .catch(() => {
-          // Fallback or ignore if invalid token
-        });
-    }
+    const syncTokenData = () => {
+      const token = extractTokenFromUrl();
+      if (token) {
+        personalizedRsvpService
+          .getInvitation(token)
+          .then((inv) => {
+            if (inv && inv.name) {
+              setPersonalizedGuestName(inv.name);
+            }
+            if (inv && inv.allowedEvents) {
+              setAllowedEvents(inv.allowedEvents);
+            }
+          })
+          .catch(() => {
+            // Fallback or ignore if invalid token
+          });
+      } else {
+        setPersonalizedGuestName(null);
+        setAllowedEvents(null);
+      }
+    };
+
+    syncTokenData();
+    window.addEventListener("popstate", syncTokenData);
+    return () => window.removeEventListener("popstate", syncTokenData);
   }, []);
 
   const [theme, setTheme] = useState<"light" | "dark">(() => {
