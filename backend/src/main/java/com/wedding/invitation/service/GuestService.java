@@ -51,6 +51,12 @@ public class GuestService {
 
         GuestInvitation guest = new GuestInvitation(dto.getName().trim(), type, token);
 
+        if (dto.getAllowedEvents() != null && !dto.getAllowedEvents().isEmpty()) {
+            guest.setAllowedEventsList(dto.getAllowedEvents());
+        } else {
+            guest.setAllowedEventsList(List.of("MEHENDI", "HALDI", "WEDDING", "RECEPTION"));
+        }
+
         // Add family members if provided
         if (dto.getMembers() != null && !dto.getMembers().isEmpty()) {
             for (String memberName : dto.getMembers()) {
@@ -104,6 +110,23 @@ public class GuestService {
             }
         }
 
+        if (dto.getAllowedEvents() != null) {
+            guest.setAllowedEventsList(dto.getAllowedEvents());
+        }
+
+        GuestInvitation saved = guestRepository.save(guest);
+        return mapToResponseDto(saved, request);
+    }
+
+    @Transactional
+    public GuestResponseDto updateGuestEvents(Long id, UpdateGuestEventsDto dto, HttpServletRequest request) {
+        GuestInvitation guest = guestRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guest not found with ID: " + id));
+
+        if (dto != null && dto.getAllowedEvents() != null) {
+            guest.setAllowedEventsList(dto.getAllowedEvents());
+        }
+
         GuestInvitation saved = guestRepository.save(guest);
         return mapToResponseDto(saved, request);
     }
@@ -147,6 +170,7 @@ public class GuestService {
                 .map(m -> new PublicInvitationDto.PublicMemberDto(m.getName(), m.isAttending()))
                 .collect(Collectors.toList());
         dto.setMembers(memberDtos);
+        dto.setAllowedEvents(guest.getAllowedEventsList());
 
         return dto;
     }
@@ -273,6 +297,7 @@ public class GuestService {
                 .map(m -> new GuestResponseDto.MemberDto(m.getId(), m.getName(), m.isAttending()))
                 .collect(Collectors.toList());
         dto.setMembers(memberDtos);
+        dto.setAllowedEvents(guest.getAllowedEventsList());
 
         return dto;
     }

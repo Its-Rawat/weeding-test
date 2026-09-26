@@ -7,6 +7,7 @@ public class UpdateGuestDto {
     private String name;
     private String type; // "FAMILY" or "INDIVIDUAL"
     private List<String> members;
+    private List<String> allowedEvents;
 
     public UpdateGuestDto() {
     }
@@ -15,6 +16,13 @@ public class UpdateGuestDto {
         this.name = name;
         this.type = type;
         this.members = members;
+    }
+
+    public UpdateGuestDto(String name, String type, List<String> members, List<String> allowedEvents) {
+        this.name = name;
+        this.type = type;
+        this.members = members;
+        this.allowedEvents = allowedEvents;
     }
 
     public String getName() {
@@ -39,5 +47,13 @@ public class UpdateGuestDto {
 
     public void setMembers(List<String> members) {
         this.members = members;
+    }
+
+    public List<String> getAllowedEvents() {
+        return allowedEvents;
+    }
+
+    public void setAllowedEvents(List<String> allowedEvents) {
+        this.allowedEvents = allowedEvents;
     }
 }

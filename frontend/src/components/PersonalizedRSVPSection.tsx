@@ -320,6 +320,21 @@ export const PersonalizedRSVPSection: React.FC<PersonalizedRSVPProps> = ({ token
               <p className="font-serif italic text-base sm:text-lg text-[#5A4D43] max-w-lg mx-auto leading-relaxed">
                 We would be deeply honored and delighted to celebrate this special occasion with you.
               </p>
+              {invitation.allowedEvents && invitation.allowedEvents.length > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-[#8C6B1C] mr-1">
+                    Invited Functions:
+                  </span>
+                  {invitation.allowedEvents.map((evt) => (
+                    <span
+                      key={evt}
+                      className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FAF5EB] border border-[#D4AF37]/60 text-[#8C1D24] shadow-2xs"
+                    >
+                      {evt.charAt(0).toUpperCase() + evt.slice(1).toLowerCase()}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="w-20 h-0.5 bg-[#D4AF37]/60 mx-auto rounded-full mt-2" />
             </div>
 

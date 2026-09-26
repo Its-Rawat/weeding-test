@@ -10,6 +10,7 @@ export interface PublicInvitation {
   rsvpStatus: "PENDING" | "ATTENDING" | "NOT_ATTENDING";
   members: PublicMember[];
   message?: string;
+  allowedEvents?: string[];
 }
 
 export interface SubmitRsvpPayload {

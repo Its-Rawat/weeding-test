@@ -93,6 +93,45 @@
           "response": []
         },
         {
+          "name": "Add Guest (Custom Celebrations)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set(\"guestId\", res.id);",
+                  "if (res.token) pm.collectionVariables.set(\"guestToken\", res.token);",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gupta Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Manoj Gupta\",\n    \"Kavita Gupta\"\n  ],\n  \"allowedEvents\": [\n    \"WEDDING\",\n    \"RECEPTION\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates a guest invitation enabled ONLY for specific celebrations (e.g. Wedding and Reception only). Valid values: MEHENDI, HALDI, WEDDING, RECEPTION."
+          },
+          "response": []
+        },
+        {
           "name": "Get Guest by ID",
           "request": {
             "method": "GET",
@@ -132,14 +171,37 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Sharma Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Rajesh Sharma\",\n    \"Sunita Sharma\"\n  ]\n}"
+              "raw": "{\n  \"name\": \"Sharma Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Rajesh Sharma\",\n    \"Sunita Sharma\"\n  ],\n  \"allowedEvents\": [\n    \"MEHENDI\",\n    \"HALDI\",\n    \"WEDDING\",\n    \"RECEPTION\"\n  ]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/guests/{{guestId}}",
               "host": ["{{baseUrl}}"],
               "path": ["api", "guests", "{{guestId}}"]
             },
-            "description": "Updates guest name, type, and members without changing the unique token."
+            "description": "Updates guest name, type, members, and allowed celebrations without changing the unique token."
+          },
+          "response": []
+        },
+        {
+          "name": "Enable / Disable Celebrations (Toggle Events)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"allowedEvents\": [\n    \"WEDDING\",\n    \"RECEPTION\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}", "events"]
+            },
+            "description": "Enables or disables specific celebration events for this guest or family. Valid values: MEHENDI, HALDI, WEDDING, RECEPTION. Pass the array of celebrations to enable; any omitted celebrations will be hidden on their personalized website."
           },
           "response": []
         },
@@ -261,9 +323,9 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:8080",
+      "value": "https://weeding-test.onrender.com",
       "type": "string",
-      "description": "Set to http://localhost:8080 for local testing, or https://chandrika-xudong.onrender.com for production."
+      "description": "Set to https://weeding-test.onrender.com for live production, or http://localhost:8080 for local testing."
     },
     {
       "key": "guestId",

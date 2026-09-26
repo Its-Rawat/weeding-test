@@ -86,4 +86,22 @@ public class GuestController {
         GuestResponseDto response = guestService.updateGuestStatus(id, dto.getStatus(), request);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * PATCH /api/guests/{id}/events
+     * Enable/disable specific celebrations for a guest or family:
+     * { "allowedEvents": ["MEHENDI", "HALDI", "WEDDING", "RECEPTION"] }
+     * or:
+     * { "allowedEvents": ["WEDDING", "RECEPTION"] }
+     * or:
+     * { "allowedEvents": ["RECEPTION"] }
+     */
+    @PatchMapping("/{id}/events")
+    public ResponseEntity<GuestResponseDto> updateGuestEvents(
+            @PathVariable Long id,
+            @RequestBody UpdateGuestEventsDto dto,
+            HttpServletRequest request) {
+        GuestResponseDto response = guestService.updateGuestEvents(id, dto, request);
+        return ResponseEntity.ok(response);
+    }
 }

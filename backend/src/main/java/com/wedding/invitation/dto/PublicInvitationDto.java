@@ -10,6 +10,7 @@ public class PublicInvitationDto {
     private String rsvpStatus;
     private List<PublicMemberDto> members;
     private String message;
+    private List<String> allowedEvents;
 
     public static class PublicMemberDto {
         private String name;
@@ -89,5 +90,13 @@ public class PublicInvitationDto {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public List<String> getAllowedEvents() {
+        return allowedEvents;
+    }
+
+    public void setAllowedEvents(List<String> allowedEvents) {
+        this.allowedEvents = allowedEvents;
     }
 }

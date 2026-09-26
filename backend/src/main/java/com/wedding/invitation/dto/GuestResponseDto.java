@@ -14,6 +14,7 @@ public class GuestResponseDto {
     private String rsvpStatus;
     private List<MemberDto> members;
     private String message;
+    private List<String> allowedEvents;
     private LocalDateTime respondedAt;
     private LocalDateTime createdAt;
 
@@ -145,5 +146,13 @@ public class GuestResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<String> getAllowedEvents() {
+        return allowedEvents;
+    }
+
+    public void setAllowedEvents(List<String> allowedEvents) {
+        this.allowedEvents = allowedEvents;
     }
 }

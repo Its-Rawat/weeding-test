@@ -39,6 +39,9 @@ public class GuestInvitation {
     @Column(length = 2000)
     private String message;
 
+    @Column(length = 255)
+    private String allowedEvents = "MEHENDI,HALDI,WEDDING,RECEPTION";
+
     private LocalDateTime respondedAt;
 
     @Column(nullable = false, updatable = false)
@@ -167,5 +170,36 @@ public class GuestInvitation {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getAllowedEvents() {
+        return allowedEvents;
+    }
+
+    public void setAllowedEvents(String allowedEvents) {
+        this.allowedEvents = allowedEvents;
+    }
+
+    public List<String> getAllowedEventsList() {
+        if (allowedEvents == null || allowedEvents.trim().isEmpty()) {
+            return List.of("MEHENDI", "HALDI", "WEDDING", "RECEPTION");
+        }
+        return java.util.Arrays.stream(allowedEvents.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(String::toUpperCase)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public void setAllowedEventsList(List<String> events) {
+        if (events == null || events.isEmpty()) {
+            this.allowedEvents = "MEHENDI,HALDI,WEDDING,RECEPTION";
+        } else {
+            this.allowedEvents = events.stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(String::toUpperCase)
+                    .collect(java.util.stream.Collectors.joining(","));
+        }
     }
 }

@@ -27,6 +27,7 @@ const extractTokenFromUrl = (): string | null => {
 const App: React.FC = () => {
   const { config, loading } = useConfig();
   const [personalizedGuestName, setPersonalizedGuestName] = useState<string | null>(null);
+  const [allowedEvents, setAllowedEvents] = useState<string[] | null>(null);
 
   useEffect(() => {
     const token = extractTokenFromUrl();
@@ -36,6 +37,9 @@ const App: React.FC = () => {
         .then((inv) => {
           if (inv && inv.name) {
             setPersonalizedGuestName(inv.name);
+          }
+          if (inv && inv.allowedEvents) {
+            setAllowedEvents(inv.allowedEvents);
           }
         })
         .catch(() => {
@@ -211,7 +215,11 @@ const App: React.FC = () => {
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
         <CountdownSection config={config} />
-        <EventDetails config={config} />
+        <EventDetails
+          config={config}
+          allowedEvents={allowedEvents}
+          guestName={personalizedGuestName}
+        />
         <VenueSection config={config} />
         <RSVPForm config={config} />
       </main>

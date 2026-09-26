@@ -3,13 +3,29 @@ import { Calendar, Clock, MapPin, Sparkles, Plus, ExternalLink, Check } from "lu
 import type { AppConfig } from "../types";
 import { generateGoogleCalendarUrl } from "../utils/calendarUtils";
 
-const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
+interface EventDetailsProps {
+  config: AppConfig;
+  allowedEvents?: string[] | null;
+  guestName?: string | null;
+}
+
+const normalizeEvent = (e: string): string => {
+  const upper = e.trim().toUpperCase();
+  if (upper.includes("MEH")) return "MEHENDI";
+  if (upper.includes("HALD")) return "HALDI";
+  if (upper.includes("WED") || upper.includes("PHERA") || upper.includes("BARAAT")) return "WEDDING";
+  if (upper.includes("RECEP") || upper.includes("DINNER") || upper.includes("BANQUET")) return "RECEPTION";
+  return upper;
+};
+
+const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, guestName }) => {
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   // Core royal celebrations matching the Gurgaon 14 & 15 February 2027 itinerary
   const ceremonies = [
     {
       id: 1,
+      key: "MEHENDI",
       title: "Mehendi Ceremony",
       subtitle: "Adorning hands with henna, music & sweet celebration",
       dayDate: "Saturday, 14 February 2027",
@@ -24,6 +40,7 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
     },
     {
       id: 2,
+      key: "HALDI",
       title: "Haldi Ceremony",
       subtitle: "A splash of sunshine, laughter & turmeric blessings",
       dayDate: "Sunday, 15 February 2027",
@@ -38,6 +55,7 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
     },
     {
       id: 3,
+      key: "WEDDING",
       title: "Wedding Ceremony (Baraat & Sacred Pheras)",
       subtitle: "The sacred vows of love under the holy mandap",
       dayDate: "Sunday, 15 February 2027",
@@ -52,6 +70,7 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
     },
     {
       id: 4,
+      key: "RECEPTION",
       title: "Royal Reception & Dinner Banquet",
       subtitle: "Feast, celebratory toasts, dancing & joyous memories",
       dayDate: "Sunday, 15 February 2027",
@@ -65,6 +84,15 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
       endIso: "2027-02-15T23:59:00+05:30",
     },
   ];
+
+  const normalizedAllowed =
+    allowedEvents && allowedEvents.length > 0
+      ? allowedEvents.map(normalizeEvent)
+      : null;
+
+  const displayCeremonies = normalizedAllowed
+    ? ceremonies.filter((c) => normalizedAllowed.includes(c.key))
+    : ceremonies;
 
   const handleAddToCalendar = (evt: typeof ceremonies[0]) => {
     const calendarEvent = {
@@ -97,15 +125,21 @@ const EventDetails: React.FC<{ config: AppConfig }> = ({ config }) => {
           <h2 className="font-serif italic text-3xl sm:text-5xl text-[#231C18] font-normal">
             The Celebrations
           </h2>
-          <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
-            Please join us across three days of love, music, and sacred traditions at The Oberoi Udaivilas.
-          </p>
+          {guestName && normalizedAllowed ? (
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFFDF9] border border-[#D4AF37] text-xs sm:text-sm font-serif font-medium text-[#8C1D24] shadow-xs mt-3">
+              <span>✨ Sacred Itinerary specially curated for <strong className="font-bold">{guestName}</strong></span>
+            </div>
+          ) : (
+            <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
+              Please join us across two joyous days of love, music, and sacred traditions.
+            </p>
+          )}
           <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto mt-3 rounded-full" />
         </div>
 
         {/* Ceremony Cards Stack */}
         <div className="space-y-6 sm:space-y-8">
-          {ceremonies.map((evt, idx) => (
+          {displayCeremonies.map((evt, idx) => (
             <div
               key={evt.id}
               className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_8px_30px_rgba(140,107,28,0.08)] hover:shadow-lg transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"

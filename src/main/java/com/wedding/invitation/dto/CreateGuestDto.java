@@ -12,6 +12,8 @@ public class CreateGuestDto {
 
     private List<String> members; // optional list of family member names
 
+    private List<String> allowedEvents; // optional list e.g. ["MEHENDI", "HALDI", "WEDDING", "RECEPTION"]
+
     public CreateGuestDto() {
     }
 
@@ -19,6 +21,13 @@ public class CreateGuestDto {
         this.name = name;
         this.type = type;
         this.members = members;
+    }
+
+    public CreateGuestDto(String name, String type, List<String> members, List<String> allowedEvents) {
+        this.name = name;
+        this.type = type;
+        this.members = members;
+        this.allowedEvents = allowedEvents;
     }
 
     public String getName() {
@@ -43,5 +52,13 @@ public class CreateGuestDto {
 
     public void setMembers(List<String> members) {
         this.members = members;
+    }
+
+    public List<String> getAllowedEvents() {
+        return allowedEvents;
+    }
+
+    public void setAllowedEvents(List<String> allowedEvents) {
+        this.allowedEvents = allowedEvents;
     }
 }
