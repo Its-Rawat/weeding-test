@@ -1,0 +1,279 @@
+{
+  "info": {
+    "_postman_id": "7f88e14b-51dc-4962-bf23-8ccb9de0f0d2",
+    "name": "Wedding Invitation - Personalized RSVP System API",
+    "description": "API collection for Chandrika & Xudong's Royal Wedding Personalized RSVP System.\n\n### Workflow:\n1. Use **Add Guest (Family)** or **Add Guest (Individual)** to create a guest entry. The response returns a unique, unguessable 12-character token and a formatted `rsvpLink`.\n2. The test script automatically saves `id` as `{{guestId}}` and `token` as `{{guestToken}}`.\n3. Send the `rsvpLink` to the guest (via WhatsApp, SMS, or QR code).\n4. The guest opens `https://domain.com/rsvp/{token}` to view their personalized card and submit attendance.\n5. You can update members or soft-disable invitations using the update/patch endpoints at any time.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Admin Guest Management",
+      "description": "Endpoints used to create and manage wedding guests and families.",
+      "item": [
+        {
+          "name": "Add Guest (Family)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) {",
+                  "    pm.collectionVariables.set(\"guestId\", res.id);",
+                  "}",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set(\"guestToken\", res.token);",
+                  "}",
+                  "pm.test(\"Status code is 200/201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test(\"Returns 12-char secure token\", function () {",
+                  "    pm.expect(res.token).to.have.lengthOf(12);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sharma Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Rajesh Sharma\",\n    \"Sunita Sharma\",\n    \"Rahul Sharma\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates a family invitation with individual member names and auto-generates a 12-character random secure token."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Guest (Individual)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set(\"guestId\", res.id);",
+                  "if (res.token) pm.collectionVariables.set(\"guestToken\", res.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Ananya Verma\",\n  \"type\": \"INDIVIDUAL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates an individual invitation (without member list)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Guest by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}"]
+            },
+            "description": "Retrieves the guest details, status, member list, and RSVP link for a specific guest ID."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Guests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Returns all registered guests and families, their RSVP status, and attending counts."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Guest",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sharma Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Rajesh Sharma\",\n    \"Sunita Sharma\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}"]
+            },
+            "description": "Updates guest name, type, and members without changing the unique token."
+          },
+          "response": []
+        },
+        {
+          "name": "Disable Invitation (Soft Disable)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"INACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}", "status"]
+            },
+            "description": "Soft disables an invitation so visitors cannot submit RSVPs with this link."
+          },
+          "response": []
+        },
+        {
+          "name": "Enable Invitation (Reactivate)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}", "status"]
+            },
+            "description": "Reactivates an inactive invitation link."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Public Guest Flow (/rsvp/:token)",
+      "description": "Public endpoints accessed by wedding guests via their token. Requires no login or database IDs.",
+      "item": [
+        {
+          "name": "Get Invitation by Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Fetches public greeting information, guest name, family members, and current RSVP status."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit RSVP (Joyfully Accept)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvpStatus\": \"ATTENDING\",\n  \"attendingMembers\": [\n    \"Rajesh Sharma\",\n    \"Sunita Sharma\"\n  ],\n  \"message\": \"Heartiest congratulations Chandrika and Xudong! Wishing you a lifetime of joy and laughter together! ❤️\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Submits attendance confirmation, selection of attending members, and optional warm wishes for the couple."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit RSVP (Regretfully Decline)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvpStatus\": \"NOT_ATTENDING\",\n  \"message\": \"Sending our warmest love and blessings to Chandrika and Xudong from afar!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Declines attendance with an optional blessing."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Set to http://localhost:8080 for local testing, or https://chandrika-xudong.onrender.com for production."
+    },
+    {
+      "key": "guestId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "guestToken",
+      "value": "7Kx92LmPq8Za",
+      "type": "string"
+    }
+  ]
+}

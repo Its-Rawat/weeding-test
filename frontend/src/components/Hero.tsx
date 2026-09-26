@@ -2,13 +2,22 @@ import React, { useState, useEffect } from "react";
 import { ChevronDown, Sparkles, Calendar, MapPin, Heart } from "lucide-react";
 import type { AppConfig } from "../types";
 
-const Hero: React.FC<{ config: AppConfig }> = ({ config }) => {
-  const [guestName, setGuestName] = useState<string | null>(null);
+interface HeroProps {
+  config: AppConfig;
+  personalizedGuestName?: string | null;
+}
+
+const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName }) => {
+  const [guestName, setGuestName] = useState<string | null>(personalizedGuestName || null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setGuestName(params.get("to"));
-  }, []);
+    if (personalizedGuestName) {
+      setGuestName(personalizedGuestName);
+    } else {
+      const params = new URLSearchParams(window.location.search);
+      setGuestName(params.get("to"));
+    }
+  }, [personalizedGuestName]);
 
   const handleScrollToCelebrations = () => {
     document.getElementById("countdown")?.scrollIntoView({ behavior: "smooth" }) ||

@@ -12,9 +12,37 @@ import InstallPrompt from "./components/InstallPrompt";
 import WeddingLoader from "./components/WeddingLoader";
 import { useConfig } from "./hooks/useConfig";
 import { Heart, Quote, Mail } from "lucide-react";
+import { personalizedRsvpService } from "./services/personalizedRsvpService";
+
+const extractTokenFromUrl = (): string | null => {
+  if (typeof window === "undefined") return null;
+  const match = window.location.pathname.match(/\/rsvp\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1] && match[1].toLowerCase() !== "stats") {
+    return match[1];
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.get("token") || params.get("rsvp") || null;
+};
 
 const App: React.FC = () => {
   const { config, loading } = useConfig();
+  const [personalizedGuestName, setPersonalizedGuestName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = extractTokenFromUrl();
+    if (token) {
+      personalizedRsvpService
+        .getInvitation(token)
+        .then((inv) => {
+          if (inv && inv.name) {
+            setPersonalizedGuestName(inv.name);
+          }
+        })
+        .catch(() => {
+          // Fallback or ignore if invalid token
+        });
+    }
+  }, []);
 
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
@@ -178,7 +206,7 @@ const App: React.FC = () => {
       <FloatingPetals />
 
       {/* 3. FORMAL ARCHED INVITATION CARD */}
-      <Hero config={config} />
+      <Hero config={config} personalizedGuestName={personalizedGuestName} />
 
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
