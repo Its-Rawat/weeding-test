@@ -154,21 +154,21 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
   return (
     <section
       id="rsvp"
-      className="bg-[#F8F9FA] dark:bg-[#12151A] text-[#1E242B] dark:text-[#F8F9FA] py-16 sm:py-24 transition-colors duration-700 border-t border-[#D4AF37]/25 relative"
+      className="bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] py-16 sm:py-24 transition-colors duration-1000 border-t border-[#D4AF37]/30 relative"
     >
       <div className="container mx-auto max-w-3xl px-4 sm:px-6">
         {/* Section Header */}
         <div className="mb-10 text-center sm:mb-14 space-y-2">
-          <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFFFFF] dark:bg-[#1A1F26] border border-[#D4AF37]/40 shadow-xs mb-1">
-            <Heart className="text-[#8C1D24] dark:text-[#E2A76F] h-3.5 w-3.5 fill-[#8C1D24]/20 animate-pulse" />
-            <span className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#967836] dark:text-[#D4AF37] uppercase">
+          <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs mb-1">
+            <Heart className="text-[#8C1D24] dark:text-accent h-3.5 w-3.5 fill-[#8C1D24]/20 animate-pulse" />
+            <span className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#8C6B1C] dark:text-accent uppercase">
               Join Our Auspicious Celebration
             </span>
           </div>
-          <h2 className="font-serif italic text-4xl sm:text-6xl text-[#1E242B] dark:text-white font-normal tracking-tight">
+          <h2 className="font-serif italic text-4xl sm:text-6xl text-[#231C18] dark:text-white font-normal tracking-tight">
             RSVP
           </h2>
-          <p className="font-serif italic text-xs sm:text-sm text-[#4B5563] dark:text-slate-300 max-w-md mx-auto leading-relaxed">
+          <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-400 max-w-md mx-auto leading-relaxed">
             Your loving presence and divine blessings will make our wedding day truly unforgettable.
           </p>
           <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto rounded-full mt-2" />
@@ -179,12 +179,12 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
         {/* ------------------------------------------------------------------ */}
         {token ? (
           <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1A1F26] border border-[#D4AF37]/40 shadow-xs">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#8C1D24] dark:text-[#D4AF37]" />
-                <span className="font-serif italic text-xs sm:text-sm text-[#1E242B] dark:text-slate-200">
+                <span className="font-serif italic text-xs sm:text-sm text-[#231C18] dark:text-slate-200">
                   Personalized Code Active:{" "}
-                  <code className="font-mono font-bold text-[#8C1D24] dark:text-[#FFE082] bg-[#F8F9FA] dark:bg-[#12151A] px-2 py-0.5 rounded border border-[#D4AF37]/40">
+                  <code className="font-mono font-bold text-[#8C1D24] bg-[#FAF5EB] dark:bg-darkBg px-2 py-0.5 rounded border border-[#D4AF37]/40">
                     {token}
                   </code>
                 </span>
@@ -192,7 +192,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
               <button
                 type="button"
                 onClick={handleClearToken}
-                className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#967836] hover:text-[#8C1D24] dark:text-[#D4AF37] dark:hover:text-white hover:underline cursor-pointer ml-auto transition-colors"
+                className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B1C] hover:text-[#8C1D24] dark:text-accent dark:hover:text-white hover:underline cursor-pointer ml-auto transition-colors"
               >
                 <RefreshCcw className="w-3 h-3" />
                 <span>Switch to Open Form</span>
@@ -207,8 +207,8 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
           /* ------------------------------------------------------------------ */
           <div className="max-w-2xl mx-auto">
             {/* VIP / Family Invitation Banner */}
-            <div className="mb-6 p-3 sm:p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1A1F26] border border-[#D4AF37]/35 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-              <div className="flex items-center gap-2.5 text-xs text-[#4B5563] dark:text-slate-300">
+            <div className="mb-6 p-3 sm:p-4 rounded-2xl bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/40 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5 text-xs text-[#5A4D43] dark:text-slate-300">
                 <KeyRound className="w-4 h-4 text-[#8C1D24] dark:text-[#D4AF37] shrink-0" />
                 <span>
                   Received a private invitation link or family code?
@@ -217,7 +217,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
               <button
                 type="button"
                 onClick={() => setShowTokenModal(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#252B35] border border-[#D4AF37]/50 text-[11px] font-bold uppercase tracking-wider text-[#967836] dark:text-[#D4AF37] hover:text-[#8C1D24] transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] dark:hover:bg-white/10 border border-[#D4AF37]/60 text-[11px] font-bold uppercase tracking-wider text-[#8C6B1C] dark:text-accent hover:text-[#8C1D24] transition-all cursor-pointer"
               >
                 <span>Enter Code</span>
                 <ArrowRight className="w-3 h-3" />
@@ -225,9 +225,9 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
             </div>
 
             {/* Direct RSVP Card Container */}
-            <div className="relative bg-[#FFFFFF] dark:bg-[#1A1F26] rounded-3xl border border-[#D4AF37]/45 shadow-[0_15px_45px_rgba(0,0,0,0.06)] dark:shadow-[0_15px_45px_rgba(0,0,0,0.4)] p-6 sm:p-10 transition-all duration-300 overflow-hidden">
+            <div className="relative bg-[#FFFDF9] dark:bg-darkSurface rounded-3xl border border-[#D4AF37]/60 shadow-[0_15px_45px_rgba(140,107,28,0.1)] dark:shadow-[0_15px_45px_rgba(0,0,0,0.4)] p-6 sm:p-10 transition-all duration-300 overflow-hidden">
               {/* Inner Soft Accent Line */}
-              <div className="absolute inset-2.5 rounded-2xl border border-[#D4AF37]/20 pointer-events-none" />
+              <div className="absolute inset-2.5 rounded-2xl border border-[#D4AF37]/25 pointer-events-none" />
 
               {isSuccess ? (
                 /* =========================================================
@@ -242,12 +242,12 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                     <span className="inline-block px-3 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-widest bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
                       RSVP Confirmed
                     </span>
-                    <h3 className="font-serif italic text-3xl sm:text-4xl font-bold text-[#1E242B] dark:text-white">
+                    <h3 className="font-serif italic text-3xl sm:text-4xl font-bold text-[#231C18] dark:text-white">
                       {attendance === "hadir"
                         ? "Joyfully Confirmed! ❤️"
                         : "Response Received"}
                     </h3>
-                    <p className="font-serif italic text-sm sm:text-base text-[#4B5563] dark:text-slate-300 max-w-md mx-auto leading-relaxed">
+                    <p className="font-serif italic text-sm sm:text-base text-[#5A4D43] dark:text-slate-300 max-w-md mx-auto leading-relaxed">
                       {attendance === "hadir" ? (
                         <>
                           Thank you, <strong className="font-semibold text-[#8C1D24] dark:text-[#FFE082]">{guestName}</strong>! We are deeply honored and cannot wait to celebrate the wedding festivities with you.
@@ -261,20 +261,20 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                   </div>
 
                   {attendance === "hadir" && (
-                    <div className="p-4 sm:p-5 rounded-2xl bg-[#F8F9FA] dark:bg-[#12151A] border border-[#D4AF37]/40 max-w-md mx-auto text-left space-y-3">
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF5EB] dark:bg-darkBg border border-[#D4AF37]/40 max-w-md mx-auto text-left space-y-3">
                       <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-2">
-                        <span className="font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider flex items-center gap-1.5">
                           <Users className="w-4 h-4 text-[#8C1D24]" />
                           Party Size
                         </span>
-                        <span className="text-xs font-bold text-[#1E242B] dark:text-white bg-[#FFFFFF] dark:bg-[#1A1F26] px-2.5 py-0.5 rounded-full border border-[#D4AF37]/40">
+                        <span className="text-xs font-bold text-[#231C18] dark:text-white bg-[#FFFDF9] dark:bg-darkSurface px-2.5 py-0.5 rounded-full border border-[#D4AF37]/40">
                           {guestCount} {guestCount === 1 ? "Guest" : "Guests"}
                         </span>
                       </div>
 
                       {selectedEvents.length > 0 && (
                         <div className="space-y-1.5">
-                          <span className="font-sans text-[10px] font-bold text-[#4B5563] dark:text-slate-400 uppercase tracking-wider block">
+                          <span className="font-sans text-[10px] font-bold text-[#5A4D43] dark:text-slate-400 uppercase tracking-wider block">
                             Joining Functions:
                           </span>
                           <div className="flex flex-wrap gap-1.5">
@@ -283,7 +283,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                             ).map((e) => (
                               <span
                                 key={e.id}
-                                className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-[#FFFFFF] dark:bg-[#1A1F26] border border-[#D4AF37]/50 text-[#8C1D24] dark:text-[#FFE082]"
+                                className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 text-[#8C1D24] dark:text-[#FFE082]"
                               >
                                 {e.label}
                               </span>
@@ -293,7 +293,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                       )}
 
                       {message && (
-                        <div className="pt-2 border-t border-[#D4AF37]/20 text-xs italic text-[#4B5563] dark:text-slate-300">
+                        <div className="pt-2 border-t border-[#D4AF37]/20 text-xs italic text-[#5A4D43] dark:text-slate-300">
                           "{message}"
                         </div>
                       )}
@@ -307,7 +307,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                         href={GOOGLE_CALENDAR_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
+                        className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer border border-[#FFD54F]/70"
                       >
                         <Calendar className="w-4 h-4 text-[#FFE082]" />
                         <span>Add to Google Calendar</span>
@@ -318,9 +318,9 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#202731] border border-[#D4AF37]/50 text-xs font-semibold text-[#1E242B] dark:text-slate-200 uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] dark:hover:bg-white/10 border border-[#D4AF37]/60 text-xs font-semibold text-[#231C18] dark:text-slate-200 uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
-                      <RefreshCcw className="w-3.5 h-3.5 text-[#967836]" />
+                      <RefreshCcw className="w-3.5 h-3.5 text-[#8C6B1C]" />
                       <span>Update Response</span>
                     </button>
                   </div>
@@ -332,7 +332,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                 <form onSubmit={handleDirectSubmit} className="space-y-6">
                   {/* Step 1: Joyfully Attending vs Regretfully Decline */}
                   <div>
-                    <label className="block text-center font-serif text-base sm:text-lg font-medium text-[#1E242B] dark:text-white mb-3">
+                    <label className="block text-center font-serif text-base sm:text-lg font-medium text-[#231C18] dark:text-white mb-3">
                       Will you be joining our wedding festivities?
                     </label>
 
@@ -342,8 +342,8 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                         onClick={() => setAttendance("hadir")}
                         className={`p-4 rounded-2xl border-2 flex items-center justify-center gap-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                           attendance === "hadir"
-                            ? "bg-gradient-to-r from-[#8C1D24] to-[#A8232B] border-[#FFD54F] text-white shadow-md scale-102"
-                            : "bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#202731] border-[#D4AF37]/40 text-[#4B5563] dark:text-slate-300"
+                            ? "bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] border-[#FFD54F] text-white shadow-md scale-102"
+                            : "bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] dark:hover:bg-white/10 border-[#D4AF37]/50 text-[#5A4D43] dark:text-slate-300"
                         }`}
                       >
                         <Heart
@@ -361,8 +361,8 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                         onClick={() => setAttendance("tidak_hadir")}
                         className={`p-4 rounded-2xl border-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                           attendance === "tidak_hadir"
-                            ? "bg-[#1E242B] dark:bg-[#0D1015] border-[#967836] text-white shadow-md scale-102"
-                            : "bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#202731] border-[#D4AF37]/40 text-[#4B5563] dark:text-slate-300"
+                            ? "bg-[#231C18] border-[#231C18] text-white shadow-md scale-102"
+                            : "bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] dark:hover:bg-white/10 border-[#D4AF37]/50 text-[#5A4D43] dark:text-slate-300"
                         }`}
                       >
                         <span>Regretfully Decline</span>
@@ -373,34 +373,34 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                   {/* Step 2: Guest Details (Name & Phone) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5 text-left">
-                      <label className="block font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider">
+                      <label className="block font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider">
                         Full Name / Family Name <span className="text-[#8C1D24]">*</span>
                       </label>
                       <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#967836] dark:text-slate-400" />
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C6B1C] dark:text-slate-400" />
                         <input
                           type="text"
                           required
                           value={guestName}
                           onChange={(e) => setGuestName(e.target.value)}
                           placeholder="e.g. Ramesh Sharma & Family"
-                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D4AF37]/40 bg-[#F8F9FA] dark:bg-[#12151A] text-xs sm:text-sm text-[#1E242B] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all"
+                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D4AF37]/50 bg-[#FAF5EB] dark:bg-darkBg text-xs sm:text-sm text-[#231C18] dark:text-white placeholder:text-[#9A8B80] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1.5 text-left">
-                      <label className="block font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider">
+                      <label className="block font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider">
                         WhatsApp / Phone Number
                       </label>
                       <div className="relative">
-                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#967836] dark:text-slate-400" />
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C6B1C] dark:text-slate-400" />
                         <input
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="+91 98765 43210"
-                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D4AF37]/40 bg-[#F8F9FA] dark:bg-[#12151A] text-xs sm:text-sm text-[#1E242B] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all"
+                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D4AF37]/50 bg-[#FAF5EB] dark:bg-darkBg text-xs sm:text-sm text-[#231C18] dark:text-white placeholder:text-[#9A8B80] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all"
                         />
                       </div>
                     </div>
@@ -408,31 +408,31 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
 
                   {/* Step 3: Attending Specifics (Guest Counter + Functions Checklist) */}
                   {attendance === "hadir" && (
-                    <div className="space-y-5 animate-reveal pt-2 border-t border-[#D4AF37]/25">
+                    <div className="space-y-5 animate-reveal pt-2 border-t border-[#D4AF37]/30">
                       {/* Guest Count Stepper */}
-                      <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#12151A] border border-[#D4AF37]/35 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="p-4 rounded-2xl bg-[#FAF5EB] dark:bg-darkBg border border-[#D4AF37]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="text-left">
-                          <span className="font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider block">
+                          <span className="font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider block">
                             Number of Guests Attending
                           </span>
-                          <span className="text-xs text-[#4B5563] dark:text-slate-400">
+                          <span className="text-xs text-[#5A4D43] dark:text-slate-400">
                             Including yourself and companions
                           </span>
                         </div>
 
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center bg-[#FFFFFF] dark:bg-[#1A1F26] rounded-xl border border-[#D4AF37]/50 p-1 shadow-xs">
+                          <div className="flex items-center bg-[#FFFDF9] dark:bg-darkSurface rounded-xl border border-[#D4AF37]/50 p-1 shadow-xs">
                             <button
                               type="button"
                               onClick={() =>
                                 setGuestCount((c) => Math.max(1, c - 1))
                               }
-                              className="w-8 h-8 rounded-lg bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#2A3340] text-[#1E242B] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
+                              className="w-8 h-8 rounded-lg bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] text-[#231C18] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
                               title="Decrease count"
                             >
                               <Minus className="w-3.5 h-3.5" />
                             </button>
-                            <span className="w-10 text-center font-bold text-sm text-[#1E242B] dark:text-white">
+                            <span className="w-10 text-center font-bold text-sm text-[#231C18] dark:text-white">
                               {guestCount}
                             </span>
                             <button
@@ -440,7 +440,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                               onClick={() =>
                                 setGuestCount((c) => Math.min(10, c + 1))
                               }
-                              className="w-8 h-8 rounded-lg bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#2A3340] text-[#1E242B] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
+                              className="w-8 h-8 rounded-lg bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] text-[#231C18] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
                               title="Increase count"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -457,7 +457,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                                 className={`w-7 h-7 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                                   guestCount === num
                                     ? "bg-[#8C1D24] text-white shadow-xs"
-                                    : "bg-[#FFFFFF] dark:bg-[#1A1F26] text-[#4B5563] dark:text-slate-300 border border-[#D4AF37]/40 hover:bg-[#EAEAEA]"
+                                    : "bg-[#FFFDF9] dark:bg-darkSurface text-[#5A4D43] dark:text-slate-300 border border-[#D4AF37]/40 hover:bg-[#F3E7D5]"
                                 }`}
                               >
                                 {num}
@@ -470,10 +470,10 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                       {/* Ceremonies Attending Selection */}
                       <div className="text-left space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider">
+                          <span className="font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider">
                             Which functions will you attend?
                           </span>
-                          <span className="text-[10px] text-[#4B5563] dark:text-slate-400">
+                          <span className="text-[10px] text-[#5A4D43] dark:text-slate-400">
                             Select all that apply
                           </span>
                         </div>
@@ -487,8 +487,8 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                                 onClick={() => toggleEvent(evt.id)}
                                 className={`p-3 rounded-xl border transition-all cursor-pointer select-none text-left flex flex-col justify-between ${
                                   isSelected
-                                    ? "bg-[#F8F9FA] dark:bg-[#12151A] border-[#8C1D24] dark:border-[#D4AF37] ring-1 ring-[#8C1D24]/30 shadow-xs"
-                                    : "bg-[#FFFFFF] dark:bg-[#1A1F26] border-[#D4AF37]/35 text-[#64748B] opacity-75 hover:opacity-100"
+                                    ? "bg-[#FFFDF9] dark:bg-darkSurface border-[#8C1D24] dark:border-[#D4AF37] ring-1 ring-[#8C1D24]/40 shadow-xs"
+                                    : "bg-[#FAF5EB]/70 dark:bg-darkBg/60 border-[#D4AF37]/35 text-[#7A6D63] opacity-80 hover:opacity-100"
                                 }`}
                               >
                                 <div className="flex items-center justify-between mb-1">
@@ -496,7 +496,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                                     className={`text-xs font-bold ${
                                       isSelected
                                         ? "text-[#8C1D24] dark:text-[#FFE082]"
-                                        : "text-[#1E242B] dark:text-white"
+                                        : "text-[#231C18] dark:text-white"
                                     }`}
                                   >
                                     {evt.label}
@@ -505,13 +505,13 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                                     className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
                                       isSelected
                                         ? "bg-[#8C1D24] border-[#8C1D24] text-white"
-                                        : "border-[#CBD5E1] dark:border-stone-600 bg-white dark:bg-black/20"
+                                        : "border-[#D4AF37]/40 bg-white dark:bg-black/20"
                                     }`}
                                   >
                                     {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                                   </div>
                                 </div>
-                                <span className="text-[10px] text-[#64748B] dark:text-slate-400">
+                                <span className="text-[10px] text-[#5A4D43] dark:text-slate-400">
                                   {evt.date}
                                 </span>
                               </div>
@@ -524,7 +524,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
 
                   {/* Step 4: Warm Blessing / Wishes / Dietary Note */}
                   <div className="text-left space-y-1.5">
-                    <label className="block font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider">
+                    <label className="block font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider">
                       Warm Blessings or Message for Chandrika &amp; Xudong (Optional)
                     </label>
                     <textarea
@@ -532,7 +532,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Share your heartfelt wishes, blessings, or any special dietary requirements..."
-                      className="w-full p-3.5 rounded-xl border border-[#D4AF37]/40 bg-[#F8F9FA] dark:bg-[#12151A] text-xs sm:text-sm text-[#1E242B] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all resize-none shadow-inner"
+                      className="w-full p-3.5 rounded-xl border border-[#D4AF37]/50 bg-[#FAF5EB] dark:bg-darkBg text-xs sm:text-sm text-[#231C18] dark:text-white placeholder:text-[#9A8B80] focus:outline-none focus:border-[#8C1D24] focus:ring-1 focus:ring-[#8C1D24] transition-all resize-none shadow-inner"
                     />
                   </div>
 
@@ -547,7 +547,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#8C1D24] via-[#A8232B] to-[#750D14] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs sm:text-sm font-bold uppercase tracking-widest shadow-md hover:shadow-xl active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer border border-[#FFD54F]/60"
+                      className="w-full max-w-md mx-auto py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#8C1D24] via-[#A8232B] to-[#750D14] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs sm:text-sm font-bold uppercase tracking-widest shadow-md hover:shadow-xl active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer border border-[#FFD54F]/70"
                     >
                       {isSubmitting ? (
                         <span>Saving Your RSVP...</span>
@@ -558,7 +558,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                         </>
                       )}
                     </button>
-                    <p className="font-serif italic text-[11px] text-[#4B5563] dark:text-slate-400 text-center mt-2.5">
+                    <p className="font-serif italic text-[11px] text-[#5A4D43] dark:text-slate-400 text-center mt-2.5">
                       We look forward to sharing our most sacred celebrations with you!
                     </p>
                   </div>
@@ -579,24 +579,24 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
             onClick={() => setShowTokenModal(false)}
           >
             <div
-              className="bg-[#FFFFFF] dark:bg-[#1A1F26] rounded-3xl border border-[#D4AF37]/60 shadow-2xl max-w-md w-full p-6 text-center space-y-4 animate-scale-in"
+              className="bg-[#FFFDF9] dark:bg-darkSurface rounded-3xl border-2 border-[#D4AF37]/70 shadow-2xl max-w-md w-full p-6 text-center space-y-4 animate-scale-in"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-[#D4AF37]/25 pb-2">
-                <span className="font-sans text-[11px] font-bold text-[#967836] dark:text-[#D4AF37] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-2">
+                <span className="font-sans text-[11px] font-bold text-[#8C6B1C] dark:text-accent uppercase tracking-wider flex items-center gap-1.5">
                   <KeyRound className="w-4 h-4 text-[#8C1D24]" />
                   Enter Invitation Code
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowTokenModal(false)}
-                  className="w-7 h-7 rounded-full bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#202731] flex items-center justify-center text-[#4B5563] dark:text-slate-300 transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-[#FAF5EB] dark:bg-darkBg hover:bg-[#F3E7D5] flex items-center justify-center text-[#5A4D43] dark:text-slate-300 transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <p className="font-serif italic text-xs sm:text-sm text-[#4B5563] dark:text-slate-300">
+              <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-300">
                 Please enter the personalized invitation code sent to your family:
               </p>
 
@@ -608,14 +608,14 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                   placeholder="e.g. 7Kx92LmPq8Za"
                   value={manualTokenInput}
                   onChange={(e) => setManualTokenInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/50 bg-[#F8F9FA] dark:bg-[#12151A] text-sm font-mono text-[#1E242B] dark:text-white focus:outline-none focus:border-[#8C1D24] text-center uppercase tracking-widest shadow-inner"
+                  className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/60 bg-[#FAF5EB] dark:bg-darkBg text-sm font-mono text-[#231C18] dark:text-white focus:outline-none focus:border-[#8C1D24] text-center uppercase tracking-widest shadow-inner"
                 />
 
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setShowTokenModal(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 text-xs font-semibold text-[#4B5563] dark:text-slate-300 uppercase tracking-wider hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl border border-[#D4AF37]/50 text-xs font-semibold text-[#5A4D43] dark:text-slate-300 uppercase tracking-wider hover:bg-[#FAF5EB] dark:hover:bg-darkBg transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>

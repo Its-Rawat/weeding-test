@@ -3,20 +3,16 @@
 @source "./**/*.{js,ts,jsx,tsx}";
 @variant dark (&:where(.dark, .dark *));
 @theme {
-  /* Pleasant Pearl White and Dark Grey Palette */
-  --color-primary: #1E242B;
-  --color-secondary: #F8F9FA;
-  --color-pearl: #FAFAFC;
-  --color-pearlCard: #FFFFFF;
-  --color-slateDark: #2D3748;
-  --color-slateGrey: #4B5563;
-  --color-accent: #C5A880;
-  --color-accentDark: #967836;
+  /* Authentic Royal Indian Wedding Palette */
+  --color-primary: #231C18;
+  --color-secondary: #FAF5EB;
+  --color-accent: #D4AF37;
+  --color-accentDark: #8C6B1C;
   --color-crimson: #8C1D24;
   --color-crimsonDeep: #750D14;
   --color-haldi: #D9822B;
-  --color-darkBg: #12151A;
-  --color-darkSurface: #1A1F26;
+  --color-darkBg: #151111;
+  --color-darkSurface: #1F1718;
 
   /* Fonts: Calligraphy for Names, Elegant Serif for Titles, Clean Modern Sans for Details */
   --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
@@ -122,13 +118,13 @@
   }
 
   body {
-    @apply bg-[#F8F9FA] leading-relaxed text-[#1E242B] antialiased transition-colors duration-700 ease-out;
+    @apply bg-[#FAF5EB] leading-relaxed text-[#2D2520] antialiased transition-colors duration-1000 ease-out;
     font-family: var(--font-sans);
   }
 
   /* Style spesifik saat Dark Mode aktif */
   .dark body {
-    @apply bg-[#12151A] text-[#F8F9FA];
+    @apply bg-darkBg text-[#FAF5EB];
   }
 
   h1,

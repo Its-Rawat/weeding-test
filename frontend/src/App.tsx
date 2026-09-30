@@ -239,7 +239,7 @@ const App: React.FC = () => {
   const footerDate = hasMehendi ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#F8F9FA] text-[#1E242B] dark:bg-[#12151A] dark:text-[#F8F9FA]">
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
       {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ONLY ON PHONE SCREENS) */}
       {isPhoneScreen && <VideoLanding config={config} />}
 
@@ -279,7 +279,7 @@ const App: React.FC = () => {
       <MusicPlayer url={config.music.url} />
 
       {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
-      <footer className="dark:bg-[#151921] relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#F8F9FA] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
+      <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
         {/* Romantic Proposal Night Bridge Ambient Backdrop */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <img
@@ -287,7 +287,7 @@ const App: React.FC = () => {
             alt="Proposal Bridge"
             className="w-full h-full object-cover object-center opacity-20 dark:opacity-10 filter blur-[1px] scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#F8F9FA] via-[#F8F9FA]/90 to-[#F8F9FA] dark:from-[#12151A] dark:via-[#12151A]/92 dark:to-[#12151A]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EB] via-[#FAF5EB]/90 to-[#FAF5EB] dark:from-darkBg dark:via-darkBg/92 dark:to-darkBg" />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
@@ -296,17 +296,17 @@ const App: React.FC = () => {
 
         <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center gap-12 md:gap-24 py-16">
           <div className="space-y-4 text-center md:space-y-6">
-            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#967836] dark:text-[#D4AF37] uppercase">
+            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#8C6B1C] uppercase">
               Save The Date
             </span>
-            <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#1E242B] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
+            <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
               <span>{config.couple.bride.name}</span>
               <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
               <span>{config.couple.groom.name}</span>
             </h2>
             <div className="flex items-center justify-center gap-4 md:gap-6">
               <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
-              <p className="font-sans text-[#967836] dark:text-accent text-[12px] font-bold tracking-[0.4em] uppercase md:text-[18px]">
+              <p className="font-sans text-[#8C6B1C] dark:text-accent text-[12px] font-bold tracking-[0.4em] uppercase md:text-[18px]">
                 {footerDate}
               </p>
               <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
@@ -315,31 +315,31 @@ const App: React.FC = () => {
 
           <div className="space-y-12 text-center md:space-y-16">
             <div className="group relative inline-block px-4">
-              <Quote className="text-[#967836] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
+              <Quote className="text-[#8C6B1C] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
               <div className="space-y-6">
-                <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#4B5563] italic md:text-3xl dark:text-slate-300">
+                <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#5A4D43] italic md:text-3xl dark:text-slate-400">
                   "{config.text.closing.text}"
                 </p>
-                <p className="font-serif text-xl font-medium text-[#1E242B] dark:text-white">
+                <p className="font-serif text-xl font-medium text-[#231C18] dark:text-white">
                   {config.text.closing.salam}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-6 border-t border-[#D4AF37]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
-              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#967836] dark:text-[#D4AF37] md:text-[13px]">
+              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#8C6B1C] md:text-[13px]">
                 {config.text.closing.signature}
               </p>
-              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#1E242B] dark:text-white py-1">
+              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
                 {config.couple.bride.name} &amp; {config.couple.groom.name}
               </p>
-              <p className="font-sans text-[11px] text-[#4B5563] dark:text-slate-400 uppercase tracking-widest">{config.text.closing.family}</p>
+              <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
 
               {/* Host Credit & Contact */}
               <div className="pt-4">
                 <a
                   href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFFFF] dark:bg-[#1A1F26] px-4 py-2 text-xs text-[#1E242B] dark:text-slate-200 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
+                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
                   title="Contact Host: Aditya Rawat (adi2002rawat@gmail.com)"
                 >
                   <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />
