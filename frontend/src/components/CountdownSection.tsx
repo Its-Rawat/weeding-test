@@ -19,9 +19,25 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
     allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
   );
 
+  const weddingCeremony =
+    config.celebrations?.find(
+      (c) => c.key === "WEDDING" || c.title.toLowerCase().includes("wedding")
+    ) || config.celebrations?.[config.celebrations.length - 1];
+
+  const targetIso =
+    weddingCeremony?.startIso ||
+    (config.events?.akad?.startDateTime
+      ? new Date(config.events.akad.startDateTime).toISOString()
+      : "2027-02-15T19:00:00+05:30");
+
+  const celebrationSubtitle = hasMehendi
+    ? "14 & 15 February 2027"
+    : weddingCeremony?.dayDate
+    ? weddingCeremony.dayDate.replace(/^[A-Za-z]+,\s*/, "")
+    : "15 February 2027";
+
   useEffect(() => {
-    // 15 February 2027 at 19:00 IST (Wedding Ceremony)
-    const target = new Date("2027-02-15T19:00:00+05:30").getTime();
+    const target = new Date(targetIso).getTime();
 
     const updateCountdown = () => {
       const distance = target - new Date().getTime();
@@ -38,7 +54,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [targetIso]);
 
   return (
     <section id="countdown" className="py-12 sm:py-16 px-4 bg-[#FAF5EB] text-center border-y border-[#D4AF37]/30">
@@ -55,7 +71,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
           Countdown to the Royal Nuptials
         </h3>
         <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
-          Until We Celebrate Under The Mandap • {hasMehendi ? "14 & 15 February 2027" : "15 February 2027"}
+          Until We Celebrate Under The Mandap • {celebrationSubtitle}
         </p>
 
         {/* Minimalist 4-Box Grid */}

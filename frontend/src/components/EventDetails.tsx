@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, Clock, MapPin, Sparkles, Plus, ExternalLink, Check } from "lucide-react";
-import type { AppConfig } from "../types";
+import type { AppConfig, CelebrationEvent } from "../types";
+import { DEFAULT_CEREMONIES } from "../utils/configParser";
 import { generateGoogleCalendarUrl } from "../utils/calendarUtils";
 
 interface EventDetailsProps {
@@ -20,56 +21,11 @@ const normalizeEvent = (e: string): string => {
 const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, guestName }) => {
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
-  const sharedAddress = "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
-
-  // The 3 royal celebrations matching the Gurgaon 14 & 15 February 2027 itinerary
-  const ceremonies = [
-    {
-      id: 1,
-      key: "MEHENDI",
-      title: "Mehendi Ceremony",
-      subtitle: "Adorning hands with henna, music & sweet celebration",
-      dayDate: "Sunday, 14 February 2027",
-      time: "04:00 PM onwards",
-      venueName: "Royal Courtyard, The Club International",
-      venueAddress: sharedAddress,
-      dressCode: "Vibrant Mehndi Greens & Pastel Florals",
-      desc: "Welcoming our beloved guests as Chandrika adorns bridal henna, accompanied by live folk rhythms, traditional bangles artisan, and gourmet chaat stations.",
-      illustration: "🌿",
-      startIso: "2027-02-14T16:00:00+05:30",
-      endIso: "2027-02-14T20:00:00+05:30",
-    },
-    {
-      id: 2,
-      key: "HALDI",
-      title: "Haldi Ceremony",
-      subtitle: "A splash of sunshine, laughter & turmeric blessings",
-      dayDate: "Monday, 15 February 2027",
-      time: "10:00 AM onwards",
-      venueName: "Poolside Pavilion, The Club International",
-      venueAddress: sharedAddress,
-      dressCode: "Sunny Yellows, Ochre & Marigold Orange",
-      desc: "An auspicious ceremony of turmeric paste blessings for Chandrika & Xudong, accompanied by celebratory dhol beats and a shower of fresh marigold and rose petals.",
-      illustration: "🌼",
-      startIso: "2027-02-15T10:00:00+05:30",
-      endIso: "2027-02-15T13:00:00+05:30",
-    },
-    {
-      id: 3,
-      key: "WEDDING",
-      title: "Wedding Ceremony (Baraat & Sacred Pheras)",
-      subtitle: "The sacred vows of love under the holy mandap",
-      dayDate: "Monday, 15 February 2027",
-      time: "Baraat: 07:00 PM • Pheras: 08:30 PM",
-      venueName: "The Grand Mandap, The Club International",
-      venueAddress: sharedAddress,
-      dressCode: "Traditional Banarasi Silks & Regal Sherwanis",
-      desc: "Xudong arrives with joyful baraat procession, followed by Chandrika's grand bridal entrance and the sacred seven pheras around the holy agni.",
-      illustration: "🔥",
-      startIso: "2027-02-15T19:00:00+05:30",
-      endIso: "2027-02-15T22:00:00+05:30",
-    },
-  ];
+  // DB-driven celebrations with fallback
+  const ceremonies: CelebrationEvent[] =
+    config.celebrations && config.celebrations.length > 0
+      ? config.celebrations
+      : DEFAULT_CEREMONIES;
 
   const normalizedAllowed =
     allowedEvents && allowedEvents.length > 0
@@ -80,7 +36,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
     ? ceremonies.filter((c) => normalizedAllowed.includes(c.key))
     : ceremonies;
 
-  const handleAddToCalendar = (evt: typeof ceremonies[0]) => {
+  const handleAddToCalendar = (evt: CelebrationEvent) => {
     const calendarEvent = {
       title: `Chandrika & Xudong Wedding: ${evt.title}`,
       description: `${evt.subtitle}\n\nDress Code: ${evt.dressCode}\nVenue: ${evt.venueName}`,

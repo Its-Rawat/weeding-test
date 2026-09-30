@@ -1,76 +1,22 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, Heart, Sparkles } from "lucide-react";
+import type { StorySlide } from "../types";
+import { DEFAULT_STORY_SLIDES } from "../utils/configParser";
 
 interface StoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialIndex?: number;
+  slides?: StorySlide[];
 }
-
-interface StorySlide {
-  image: string;
-  chapter: string;
-  title: string;
-  subtitle: string;
-  caption: string;
-}
-
-const STORY_SLIDES: StorySlide[] = [
-  {
-    image: "/couple/snow_winter.jpg",
-    chapter: "Chapter 01",
-    title: "The Snowy Trails",
-    subtitle: "Where our journey began",
-    caption:
-      "Wrapped in winter warmth, shared laughter, and quiet pine trees that witnessed the start of our story.",
-  },
-  {
-    image: "/couple/tuktuk_candid.jpg",
-    chapter: "Chapter 02",
-    title: "Joy & Sweet Laughter",
-    subtitle: "Finding magic in simple moments",
-    caption:
-      "From fun rickshaw rides to late-night chats, every ordinary day turned into an extraordinary memory.",
-  },
-  {
-    image: "/couple/travel_fun.jpg",
-    chapter: "Chapter 03",
-    title: "Adventures Near & Far",
-    subtitle: "Exploring the world together",
-    caption:
-      "Hand in hand through sunny skies and new horizons, discovering that home is wherever we are together.",
-  },
-  {
-    image: "/couple/proposal_story.jpg",
-    chapter: "Chapter 04",
-    title: "Under Tropical Stars",
-    subtitle: "The proposal on the bridge",
-    caption:
-      "A knee on the wooden bridge, a box opened under the palms, and a question straight from the heart.",
-  },
-  {
-    image: "/couple/ring_reveal.jpg",
-    chapter: "Chapter 05",
-    title: "She Said YES!",
-    subtitle: "A lifetime promise begins",
-    caption:
-      "With tears of pure happiness, glowing lanterns, and full hearts ready to spend forever as one.",
-  },
-  {
-    image: "/couple/formal_portrait.jpg",
-    chapter: "Chapter 06",
-    title: "Stepping Into Forever",
-    subtitle: "Under the Holy Mandap",
-    caption:
-      "Chandrika & Xudong warmly welcome you to celebrate their wedding nuptials on February 14 & 15, 2027 in Gurugram.",
-  },
-];
 
 export const StoryModal: React.FC<StoryModalProps> = ({
   isOpen,
   onClose,
   initialIndex = 0,
+  slides,
 }) => {
+  const activeSlides = slides && slides.length > 0 ? slides : DEFAULT_STORY_SLIDES;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
@@ -87,12 +33,12 @@ export const StoryModal: React.FC<StoryModalProps> = ({
   }, [isOpen, initialIndex]);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % STORY_SLIDES.length);
-  }, []);
+    setCurrentIndex((prev) => (prev + 1) % activeSlides.length);
+  }, [activeSlides.length]);
 
   const handlePrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + STORY_SLIDES.length) % STORY_SLIDES.length);
-  }, []);
+    setCurrentIndex((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+  }, [activeSlides.length]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -111,7 +57,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentSlide = STORY_SLIDES[currentIndex];
+  const currentSlide = activeSlides[currentIndex] || activeSlides[0];
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientX);
@@ -145,7 +91,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
       >
         {/* Progress Story Bars at the top */}
         <div className="absolute top-3 inset-x-4 z-30 flex items-center gap-1.5 pointer-events-none">
-          {STORY_SLIDES.map((_, idx) => (
+          {activeSlides.map((_, idx) => (
             <div
               key={idx}
               className="h-1 flex-1 rounded-full bg-white/40 overflow-hidden backdrop-blur-xs"
@@ -171,7 +117,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
             </span>
             <div>
               <span className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#8C6B1C] uppercase block">
-                {currentSlide.chapter} • {currentIndex + 1} of {STORY_SLIDES.length}
+                {currentSlide.chapter} • {currentIndex + 1} of {activeSlides.length}
               </span>
               <h4 className="font-serif italic text-sm sm:text-base font-bold text-[#231C18] dark:text-white leading-tight">
                 {currentSlide.title}
@@ -226,7 +172,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
 
           {/* Thumbnail Pill Selector */}
           <div className="flex items-center justify-center gap-1.5 pt-1">
-            {STORY_SLIDES.map((slide, idx) => (
+            {activeSlides.map((slide, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}

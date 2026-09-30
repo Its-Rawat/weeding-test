@@ -43,7 +43,10 @@ const Hero: React.FC<HeroProps> = ({
     ? "CELEBRATIONS COMMENCE AT 04:00 PM"
     : "SACRED CEREMONY AT 07:00 PM";
 
-  const sharedAddress = "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
+  const sharedAddress =
+    config.venue.address ||
+    "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
+  const venueName = config.venue.name || "The Club International";
 
   return (
     <section id="invitation" className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center py-8 sm:py-14 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] overflow-hidden">
@@ -162,13 +165,13 @@ const Hero: React.FC<HeroProps> = ({
           {/* Venue & Location */}
           <div className="space-y-1.5 my-4">
             <h3 className="font-serif font-bold text-base sm:text-lg text-[#231C18] tracking-wide uppercase">
-              The Club International
+              {venueName}
             </h3>
             <p className="font-serif italic text-[#8C6B1C] text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
               {sharedAddress}
             </p>
             <p className="font-serif italic text-[11px] font-semibold text-[#8C1D24] pt-2">
-              Warmly Hosted by Aditya Rawat &amp; Family
+              {config.text.closing.family || "Warmly Hosted by Aditya Rawat & Family"}
             </p>
           </div>
 

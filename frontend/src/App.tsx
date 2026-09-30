@@ -227,7 +227,11 @@ const App: React.FC = () => {
       />
 
       {/* Story Lightbox Modal */}
-      <StoryModal isOpen={isStoryOpen} onClose={() => setIsStoryOpen(false)} />
+      <StoryModal
+        isOpen={isStoryOpen}
+        onClose={() => setIsStoryOpen(false)}
+        slides={config.storySlides}
+      />
 
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">

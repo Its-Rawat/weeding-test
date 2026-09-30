@@ -78,6 +78,32 @@ export interface AppConfig {
     botToken: string;
     chatId: string;
   };
+  celebrations: CelebrationEvent[];
+  storySlides: StorySlide[];
+}
+
+export interface CelebrationEvent {
+  id: number;
+  key: string;
+  title: string;
+  subtitle: string;
+  dayDate: string;
+  time: string;
+  venueName: string;
+  venueAddress: string;
+  dressCode: string;
+  desc: string;
+  illustration: string;
+  startIso: string;
+  endIso: string;
+}
+
+export interface StorySlide {
+  image: string;
+  chapter: string;
+  title: string;
+  subtitle: string;
+  caption: string;
 }
 
 export interface WeddingEvent {
