@@ -57,20 +57,20 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
   }, [targetIso]);
 
   return (
-    <section id="countdown" className="py-12 sm:py-16 px-4 bg-[#FAF5EB] text-center border-y border-[#D4AF37]/30">
+    <section id="countdown" className="py-12 sm:py-16 px-4 bg-[#F8F9FA] dark:bg-[#12151A] text-center border-y border-[#D4AF37]/25 dark:border-white/10 transition-colors">
       <div className="max-w-xl mx-auto">
         
         {/* Section Header */}
         <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
+          <div className="w-8 h-0.5 bg-[#D4AF37]/40 rounded-full" />
           <Heart className="w-3.5 h-3.5 text-[#8C1D24] fill-[#8C1D24]/20" />
-          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
+          <div className="w-8 h-0.5 bg-[#D4AF37]/40 rounded-full" />
         </div>
 
-        <h3 className="font-serif italic text-2xl sm:text-3xl text-[#231C18] font-normal mb-1">
+        <h3 className="font-serif italic text-2xl sm:text-3xl text-[#1E242B] dark:text-white font-normal mb-1">
           Countdown to the Royal Nuptials
         </h3>
-        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
+        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#967836] dark:text-[#D4AF37] font-semibold mb-6 sm:mb-8">
           Until We Celebrate Under The Mandap • {celebrationSubtitle}
         </p>
 
@@ -84,12 +84,12 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
           ].map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#FFFDF9] rounded-2xl border border-[#D4AF37]/50 p-3 sm:p-4 shadow-[0_4px_16px_rgba(140,107,28,0.06)] flex flex-col items-center justify-center transition-all hover:border-[#D4AF37] hover:scale-105"
+              className="bg-[#FFFFFF] dark:bg-[#1A1F26] rounded-2xl border border-[#D4AF37]/40 dark:border-white/10 p-3 sm:p-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col items-center justify-center transition-all hover:border-[#D4AF37] hover:scale-105"
             >
-              <span className={`font-serif text-2xl sm:text-4xl font-bold leading-none ${item.isCrimson ? "text-[#8C1D24]" : "text-[#231C18]"}`}>
+              <span className={`font-serif text-2xl sm:text-4xl font-bold leading-none ${item.isCrimson ? "text-[#8C1D24] dark:text-[#FFE082]" : "text-[#1E242B] dark:text-white"}`}>
                 {String(item.value).padStart(2, "0")}
               </span>
-              <span className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C6B1C] mt-1.5">
+              <span className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#967836] dark:text-[#D4AF37] mt-1.5">
                 {item.label}
               </span>
             </div>

@@ -76,9 +76,9 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
   };
 
   const itemBaseClass =
-    "p-2 sm:p-2.5 rounded-full text-[#4A3E36] dark:text-slate-200 hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-[#FAF5EB] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
+    "p-2 sm:p-2.5 rounded-full text-[#374151] dark:text-slate-200 hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-[#F3F4F6] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
   const tooltipClass =
-    "absolute -top-9 left-1/2 -translate-x-1/2 bg-[#231C18] dark:bg-[#D4AF37] text-white dark:text-[#231C18] text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block";
+    "absolute -top-9 left-1/2 -translate-x-1/2 bg-[#1E242B] dark:bg-[#D4AF37] text-white dark:text-[#1E242B] text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block";
 
   return (
     <nav
@@ -88,8 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
           : "translate-y-24 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="pointer-events-auto flex items-center justify-between gap-0.5 sm:gap-1 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/92 dark:bg-[#1a1715]/92 p-1.5 shadow-[0_12px_35px_rgba(140,107,28,0.2)] backdrop-blur-2xl transition-colors duration-500">
-        
+      <div className="pointer-events-auto flex items-center justify-between gap-0.5 sm:gap-1 rounded-full border border-[#D4AF37]/45 bg-[#FFFFFF]/92 dark:bg-[#161B22]/92 p-1.5 shadow-[0_12px_35px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5)] backdrop-blur-2xl transition-colors duration-500">
         {navItems.map((item) => {
           if (item.isRsvp) {
             return (
@@ -126,7 +125,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
           title={isPlayingMusic ? "Mute Music" : "Play Wedding Music"}
         >
           {isPlayingMusic ? (
-            <Volume2 className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#8C1D24] animate-pulse" />
+            <Volume2 className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#8C1D24] dark:text-[#FFE082] animate-pulse" />
           ) : (
             <VolumeX className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-stone-400" />
           )}
@@ -154,7 +153,6 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
             {theme === "light" ? "Dark Mode" : "Light Mode"}
           </span>
         </button>
-
       </div>
     </nav>
   );

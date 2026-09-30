@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, Heart, Sparkles } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import type { StorySlide } from "../types";
 import { DEFAULT_STORY_SLIDES } from "../utils/configParser";
 
@@ -84,7 +84,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
     >
       {/* Lightbox Container Card */}
       <div
-        className="relative w-full max-w-xl max-h-[92dvh] bg-[#FFFDF9] dark:bg-[#1A1512] rounded-3xl border-2 border-[#D4AF37]/80 shadow-[0_25px_70px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden"
+        className="relative w-full max-w-xl max-h-[92dvh] bg-[#FFFFFF] dark:bg-[#161B22] rounded-3xl border border-[#D4AF37]/70 shadow-[0_25px_70px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -112,14 +112,14 @@ export const StoryModal: React.FC<StoryModalProps> = ({
         {/* Top Header Controls */}
         <div className="relative z-30 pt-6 px-4 sm:px-6 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-[#FAF5EB] dark:bg-black/30 border border-[#D4AF37]/60 flex items-center justify-center text-[#8C1D24]">
+            <span className="w-7 h-7 rounded-full bg-[#F8F9FA] dark:bg-[#12151A] border border-[#D4AF37]/50 flex items-center justify-center text-[#8C1D24]">
               <Heart className="w-3.5 h-3.5 fill-[#8C1D24]/20" />
             </span>
             <div>
-              <span className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#8C6B1C] uppercase block">
+              <span className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#967836] dark:text-[#D4AF37] uppercase block">
                 {currentSlide.chapter} • {currentIndex + 1} of {activeSlides.length}
               </span>
-              <h4 className="font-serif italic text-sm sm:text-base font-bold text-[#231C18] dark:text-white leading-tight">
+              <h4 className="font-serif italic text-sm sm:text-base font-bold text-[#1E242B] dark:text-white leading-tight">
                 {currentSlide.title}
               </h4>
             </div>
@@ -127,7 +127,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#FAF5EB] dark:bg-black/40 hover:bg-[#F3E7D5] border border-[#D4AF37]/60 flex items-center justify-center text-[#5A4D43] dark:text-stone-300 hover:text-[#8C1D24] transition-all cursor-pointer shadow-xs"
+            className="w-8 h-8 rounded-full bg-[#F8F9FA] dark:bg-[#12151A] hover:bg-[#EAEAEA] dark:hover:bg-[#202731] border border-[#D4AF37]/50 flex items-center justify-center text-[#1E242B] dark:text-slate-200 hover:text-[#8C1D24] transition-all cursor-pointer shadow-xs"
             title="Close (Esc)"
           >
             <X className="w-4 h-4" />
@@ -162,11 +162,11 @@ export const StoryModal: React.FC<StoryModalProps> = ({
         </div>
 
         {/* Bottom Story Caption & Micro-Thumbnails */}
-        <div className="p-4 sm:p-5 text-center bg-[#FAF5EB] dark:bg-[#120F0D] border-t border-[#D4AF37]/30 space-y-2.5">
-          <p className="font-serif italic text-xs sm:text-sm text-[#8C6B1C] font-semibold">
+        <div className="p-4 sm:p-5 text-center bg-[#F8F9FA] dark:bg-[#12151A] border-t border-[#D4AF37]/30 space-y-2.5">
+          <p className="font-serif italic text-xs sm:text-sm text-[#967836] dark:text-[#D4AF37] font-semibold">
             "{currentSlide.subtitle}"
           </p>
-          <p className="font-sans text-xs text-[#5A4D43] dark:text-stone-300 max-w-md mx-auto leading-relaxed">
+          <p className="font-sans text-xs text-[#4B5563] dark:text-slate-300 max-w-md mx-auto leading-relaxed">
             {currentSlide.caption}
           </p>
 
