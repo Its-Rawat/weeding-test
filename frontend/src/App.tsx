@@ -59,6 +59,21 @@ const App: React.FC = () => {
     return () => window.removeEventListener("popstate", syncTokenData);
   }, []);
 
+  const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhoneScreen(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("theme") as "light" | "dark";
@@ -72,7 +87,8 @@ const App: React.FC = () => {
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
 
   useEffect(() => {
-    let videoReady = false;
+    // Only buffer video if on phone screen (< 768px). On PC, video is never shown.
+    let videoReady = !isPhoneScreen;
     let windowReady = false;
 
     const checkComplete = () => {
@@ -84,47 +100,55 @@ const App: React.FC = () => {
       }
     };
 
-    // 1. Buffer the full-screen video
-    const testVideo = document.createElement("video");
-    testVideo.src = "/Short_LandingPageVid.mp4?v=firstnames";
-    testVideo.preload = "auto";
-    testVideo.muted = true;
+    let testVideo: HTMLVideoElement | null = null;
 
-    if (testVideo.readyState >= 3) {
-      videoReady = true;
-      setBufferProgress((p) => Math.max(p, 75));
-      checkComplete();
+    if (isPhoneScreen) {
+      // 1. Buffer the full-screen video only on phone screens
+      testVideo = document.createElement("video");
+      testVideo.src = "/Short_LandingPageVid.mp4?v=firstnames";
+      testVideo.preload = "auto";
+      testVideo.muted = true;
+
+      if (testVideo.readyState >= 3) {
+        videoReady = true;
+        setBufferProgress((p) => Math.max(p, 75));
+        checkComplete();
+      } else {
+        testVideo.onloadeddata = () => {
+          setBufferProgress((p) => Math.max(p, 50));
+        };
+        testVideo.oncanplay = () => {
+          videoReady = true;
+          setBufferProgress((p) => Math.max(p, 80));
+          checkComplete();
+        };
+        testVideo.oncanplaythrough = () => {
+          videoReady = true;
+          setBufferProgress((p) => Math.max(p, 95));
+          checkComplete();
+        };
+        testVideo.onerror = () => {
+          videoReady = true;
+          checkComplete();
+        };
+      }
     } else {
-      testVideo.onloadeddata = () => {
-        setBufferProgress((p) => Math.max(p, 50));
-      };
-      testVideo.oncanplay = () => {
-        videoReady = true;
-        setBufferProgress((p) => Math.max(p, 80));
-        checkComplete();
-      };
-      testVideo.oncanplaythrough = () => {
-        videoReady = true;
-        setBufferProgress((p) => Math.max(p, 95));
-        checkComplete();
-      };
-      testVideo.onerror = () => {
-        videoReady = true;
-        checkComplete();
-      };
+      // On PC screen, immediately advance progress
+      setBufferProgress((p) => Math.max(p, 60));
+      checkComplete();
     }
 
     // 2. Buffer window resources (images, fonts, stylesheets)
     if (document.readyState === "complete") {
       windowReady = true;
-      setBufferProgress((p) => Math.max(p, 60));
+      setBufferProgress((p) => Math.max(p, 85));
       checkComplete();
     } else {
       window.addEventListener(
         "load",
         () => {
           windowReady = true;
-          setBufferProgress((p) => Math.max(p, 85));
+          setBufferProgress((p) => Math.max(p, 90));
           checkComplete();
         },
         { once: true }
@@ -133,23 +157,26 @@ const App: React.FC = () => {
 
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
-        setBufferProgress((p) => Math.max(p, 70));
+        setBufferProgress((p) => Math.max(p, 80));
+        checkComplete();
       });
     }
 
-    // Safety timeout: max 6.5s to ensure guest is never permanently blocked
+    // Safety timeout: max 6.5s on phone, 2.5s on PC
     const timeout = setTimeout(() => {
       videoReady = true;
       windowReady = true;
       setBufferProgress(100);
       setIsFullyLoaded(true);
-    }, 6500);
+    }, isPhoneScreen ? 6500 : 2500);
 
     return () => {
       clearTimeout(timeout);
-      testVideo.src = "";
+      if (testVideo) {
+        testVideo.src = "";
+      }
     };
-  }, [loading, config]);
+  }, [loading, config, isPhoneScreen]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -179,7 +206,11 @@ const App: React.FC = () => {
       });
     }, observerOptions);
 
-    const sections = document.querySelectorAll("section:not(#video-hero)");
+    const sections = document.querySelectorAll(
+      isPhoneScreen
+        ? "section:not(#video-hero)"
+        : "section:not(#video-hero):not(#invitation)"
+    );
     sections.forEach((section) => {
       section.classList.add(
         "opacity-0",
@@ -191,7 +222,7 @@ const App: React.FC = () => {
     });
 
     return () => observer.disconnect();
-  }, [isFullyLoaded]);
+  }, [isFullyLoaded, isPhoneScreen]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
@@ -209,8 +240,8 @@ const App: React.FC = () => {
 
   return (
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
-      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER) */}
-      <VideoLanding config={config} />
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ONLY ON PHONE SCREENS) */}
+      {isPhoneScreen && <VideoLanding config={config} />}
 
       {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
       <Navbar theme={theme} toggleTheme={toggleTheme} />

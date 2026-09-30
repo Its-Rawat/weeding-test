@@ -21,7 +21,13 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Navbar is hidden/minimized on the landing video, and appears at the bottom once user scrolls down
+      const isPhone = window.innerWidth < 768;
+      if (!isPhone) {
+        // On PC (no landing video), floating navigation dock is always accessible
+        setIsVisible(true);
+        return;
+      }
+      // On phone, navbar is hidden on the landing video, and appears at the bottom once user scrolls down
       const threshold = window.innerHeight * 0.35;
       if (window.scrollY > threshold) {
         setIsVisible(true);
@@ -31,6 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     };
 
     window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
     handleScroll(); // Initial check
 
     const handleMusicPlayState = (e: any) => {
@@ -42,6 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
       window.removeEventListener("wedding-music-state", handleMusicPlayState);
     };
   }, []);

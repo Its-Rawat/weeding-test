@@ -56,7 +56,7 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
   return (
     <section
       id="video-hero"
-      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between"
+      className="block md:hidden relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between"
     >
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
       <video
