@@ -10,6 +10,7 @@ import FloatingPetals from "./components/FloatingPetals";
 import VideoLanding from "./components/VideoLanding";
 import InstallPrompt from "./components/InstallPrompt";
 import WeddingLoader from "./components/WeddingLoader";
+import StoryModal from "./components/StoryModal";
 import { useConfig } from "./hooks/useConfig";
 import { Heart, Quote, Mail } from "lucide-react";
 import { personalizedRsvpService } from "./services/personalizedRsvpService";
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const { config, loading } = useConfig();
   const [personalizedGuestName, setPersonalizedGuestName] = useState<string | null>(null);
   const [allowedEvents, setAllowedEvents] = useState<string[] | null>(null);
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
 
   useEffect(() => {
     const syncTokenData = () => {
@@ -221,7 +223,11 @@ const App: React.FC = () => {
         config={config}
         personalizedGuestName={personalizedGuestName}
         allowedEvents={allowedEvents}
+        onOpenStory={() => setIsStoryOpen(true)}
       />
+
+      {/* Story Lightbox Modal */}
+      <StoryModal isOpen={isStoryOpen} onClose={() => setIsStoryOpen(false)} />
 
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
@@ -237,8 +243,18 @@ const App: React.FC = () => {
 
       <MusicPlayer url={config.music.url} />
 
-      {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT */}
+      {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
       <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
+        {/* Romantic Proposal Night Bridge Ambient Backdrop */}
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <img
+            src="/couple/ring_reveal.jpg"
+            alt="Proposal Bridge"
+            className="w-full h-full object-cover object-center opacity-20 dark:opacity-10 filter blur-[1px] scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EB] via-[#FAF5EB]/90 to-[#FAF5EB] dark:from-darkBg dark:via-darkBg/92 dark:to-darkBg" />
+        </div>
+
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
           <Heart className="animate-pulse-soft h-[85vw] w-[85vw] stroke-[0.3] text-[#8C1D24]" />
         </div>

@@ -6,9 +6,15 @@ interface HeroProps {
   config: AppConfig;
   personalizedGuestName?: string | null;
   allowedEvents?: string[] | null;
+  onOpenStory?: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName, allowedEvents }) => {
+const Hero: React.FC<HeroProps> = ({
+  config,
+  personalizedGuestName,
+  allowedEvents,
+  onOpenStory,
+}) => {
   const [guestName, setGuestName] = useState<string | null>(personalizedGuestName || null);
 
   useEffect(() => {
@@ -74,7 +80,7 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName, allowedEvent
           </div>
 
           {/* Formal Request Copy */}
-          <div className="space-y-1.5 sm:space-y-2 mb-6">
+          <div className="space-y-1.5 sm:space-y-2 mb-4">
             <p className="font-serif italic text-[#5A4D43] text-xs sm:text-sm">
               With the blessings of our parents
             </p>
@@ -84,6 +90,36 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName, allowedEvent
             <p className="font-serif text-xs sm:text-sm text-[#5A4D43] italic max-w-sm mx-auto leading-relaxed pt-1">
               Request the pleasure of your company at the celebration of the marriage of
             </p>
+          </div>
+
+          {/* Royal Arched Window Portrait (Chandrika & Xudong) */}
+          <div className="my-5 flex flex-col items-center">
+            <div
+              onClick={onOpenStory}
+              className="relative group cursor-pointer"
+              title="Click to view our story & proposal"
+            >
+              {/* Outer Golden Aura */}
+              <div className="absolute -inset-1 rounded-t-[105px] rounded-b-2xl bg-gradient-to-b from-[#D4AF37] via-[#F7D8A5]/60 to-[#D4AF37]/80 opacity-80 blur-xs transition-opacity duration-500 group-hover:opacity-100" />
+
+              {/* Arched Palace Window Frame */}
+              <div className="relative w-44 h-56 sm:w-52 sm:h-64 rounded-t-[100px] rounded-b-xl overflow-hidden border-2 border-[#D4AF37] bg-[#FAF5EB] shadow-[0_12px_32px_rgba(140,107,28,0.22)]">
+                <img
+                  src="/couple/formal_portrait.jpg"
+                  alt="Chandrika & Xudong"
+                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
+                />
+                
+                {/* Subtle vignette gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10 opacity-70 group-hover:opacity-40 transition-opacity duration-300" />
+                
+                {/* Floating "View Story" banner at the bottom of the portrait */}
+                <div className="absolute bottom-2.5 inset-x-2 flex items-center justify-center gap-1.5 px-2 py-1 rounded-full bg-black/45 backdrop-blur-md border border-[#FFD54F]/60 text-[10px] sm:text-[11px] font-royal uppercase tracking-widest text-[#FFD54F] font-bold shadow-md group-hover:bg-[#8C1D24]/85 transition-colors">
+                  <Sparkles className="w-3 h-3 text-[#FFD54F] animate-pulse" />
+                  <span>Our Story &amp; Proposal</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Grand Couple Title */}
@@ -145,8 +181,22 @@ const Hero: React.FC<HeroProps> = ({ config, personalizedGuestName, allowedEvent
 
         </div>
 
+        {/* Luxury "View Our Story & Proposal" Pill */}
+        <div className="mt-5 text-center">
+          <button
+            onClick={onOpenStory}
+            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FFFDF9] hover:bg-[#FAF5EB] border border-[#D4AF37] shadow-[0_4px_16px_rgba(140,107,28,0.12)] text-[#8C6B1C] hover:text-[#8C1D24] text-xs font-serif italic tracking-wide transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
+            <span>View Our Story &amp; Proposal in 6 Moments</span>
+            <span className="text-[10px] font-sans font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EB] border border-[#D4AF37]/50 text-[#8C1D24]">
+              ✨ 6 Photos
+            </span>
+          </button>
+        </div>
+
         {/* Scroll Down Indicator */}
-        <div className="mt-6 text-center animate-bounce">
+        <div className="mt-5 text-center animate-bounce">
           <button
             onClick={handleScrollToCelebrations}
             className="group inline-flex flex-col items-center text-[#5A4D43] hover:text-[#231C18] transition-colors cursor-pointer"

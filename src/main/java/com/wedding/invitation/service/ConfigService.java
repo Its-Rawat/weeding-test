@@ -24,13 +24,13 @@ public class ConfigService {
         DEFAULT_CONFIG.put("BRIDE_FULLNAME", "Chandrika");
         DEFAULT_CONFIG.put("BRIDE_PARENTS", "Beloved daughter of Mr. & Mrs. Sharma");
         DEFAULT_CONFIG.put("BRIDE_INSTAGRAM", "chandrika_c");
-        DEFAULT_CONFIG.put("BRIDE_IMAGE", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop");
+        DEFAULT_CONFIG.put("BRIDE_IMAGE", "/couple/formal_portrait.jpg");
 
         DEFAULT_CONFIG.put("GROOM_NICKNAME", "Xudong");
         DEFAULT_CONFIG.put("GROOM_FULLNAME", "Xudong");
         DEFAULT_CONFIG.put("GROOM_PARENTS", "Beloved son of Mr. & Mrs. Wang");
         DEFAULT_CONFIG.put("GROOM_INSTAGRAM", "xudong_w");
-        DEFAULT_CONFIG.put("GROOM_IMAGE", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop");
+        DEFAULT_CONFIG.put("GROOM_IMAGE", "/couple/formal_portrait.jpg");
 
         DEFAULT_CONFIG.put("VENUE_NAME", "The Club International");
         DEFAULT_CONFIG.put("VENUE_ADDRESS", "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)");
@@ -45,7 +45,7 @@ public class ConfigService {
         DEFAULT_CONFIG.put("AKAD_ISO_START", "2027-02-15T19:00:00+05:30");
         DEFAULT_CONFIG.put("AKAD_ISO_END", "2027-02-15T22:00:00+05:30");
 
-        DEFAULT_CONFIG.put("HERO_IMAGE", "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop");
+        DEFAULT_CONFIG.put("HERO_IMAGE", "/couple/formal_portrait.jpg");
         DEFAULT_CONFIG.put("HERO_CITY", "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)");
         DEFAULT_CONFIG.put("MUSIC_URL", "https://www.bensound.com/bensound-music/bensound-forever.mp3");
         DEFAULT_CONFIG.put("RSVP_MAX_GUESTS", "10");
