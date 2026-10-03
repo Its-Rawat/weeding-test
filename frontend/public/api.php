@@ -134,7 +134,11 @@ function isAdmin() {
 
 function getJsonInput() {
     $raw = file_get_contents('php://input');
-    return !empty($raw) ? json_decode($raw, true) : [];
+    if (empty($raw)) return [];
+    // Strip UTF-8 BOM if present
+    $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+    $decoded = json_decode(trim($raw), true);
+    return is_array($decoded) ? $decoded : [];
 }
 
 // 5. Parse Request Route

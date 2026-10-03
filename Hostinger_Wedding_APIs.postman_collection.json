@@ -1,0 +1,541 @@
+{
+  "info": {
+    "_postman_id": "c48291a2-5b91-4e78-9e12-d963c64c7811",
+    "name": "Chandrika & Xudong Wedding - Complete Hostinger APIs",
+    "description": "Complete production API suite for Chandrika & Xudong's Royal Wedding website on Hostinger.\n\nAll data is stored directly in Hostinger MySQL (`u423951430_wedding_db`).\n\n### Authentication:\nAdmin operations include the header `X-Admin-Key: {{adminKey}}` (default: `wedding2027`) or use cookie session.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://chandrikawedsxudong.com",
+      "type": "string"
+    },
+    {
+      "key": "adminKey",
+      "value": "wedding2027",
+      "type": "string"
+    },
+    {
+      "key": "guestId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "guestToken",
+      "value": "sampletoken12",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Server Health & Auth",
+      "item": [
+        {
+          "name": "Health Check (Hostinger MySQL)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Verifies that Hostinger backend and MySQL connection are healthy and running."
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"credential\": \"RawatDollar1234#\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Logs in with Hostinger admin password to create admin session cookie."
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Auth Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "status"]
+            },
+            "description": "Checks whether the current session or X-Admin-Key is authenticated."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Guest Management (Hostinger MySQL)",
+      "item": [
+        {
+          "name": "Bulk Upload Guests (Excel/JSON Import)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "if (Array.isArray(res) && res.length > 0) {",
+                  "    pm.collectionVariables.set('guestId', res[0].id);",
+                  "    pm.collectionVariables.set('guestToken', res[0].token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Sharma Family\",\n    \"type\": \"FAMILY\",\n    \"members\": [\"Rajesh Sharma\", \"Sunita Sharma\", \"Rahul Sharma\"],\n    \"allowedEvents\": [\"MEHENDI\", \"HALDI\", \"WEDDING\"]\n  },\n  {\n    \"name\": \"Dr. Priya Nair\",\n    \"type\": \"INDIVIDUAL\",\n    \"allowedEvents\": [\"HALDI\", \"WEDDING\"]\n  },\n  {\n    \"name\": \"Vikram & Anita Verma\",\n    \"type\": \"FAMILY\",\n    \"members\": [\"Vikram Verma\", \"Anita Verma\"],\n    \"allowedEvents\": [\"WEDDING\"]\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "bulk"]
+            },
+            "description": "Upload multiple guests and families at once. Auto-generates unique 12-char RSVP tokens and links for all guests."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Single Guest (Family)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) { pm.collectionVariables.set('guestId', res.id); }",
+                  "if (res.token) { pm.collectionVariables.set('guestToken', res.token); }",
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kapoor Family\",\n  \"type\": \"FAMILY\",\n  \"members\": [\n    \"Rakesh Kapoor\",\n    \"Meena Kapoor\",\n    \"Aryan Kapoor\"\n  ],\n  \"allowedEvents\": [\n    \"MEHENDI\",\n    \"HALDI\",\n    \"WEDDING\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates a family guest with individual member checkboxes and auto-generates a unique 12-char RSVP token."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Single Guest (Individual)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aditi Roy\",\n  \"type\": \"INDIVIDUAL\",\n  \"allowedEvents\": [\n    \"MEHENDI\",\n    \"HALDI\",\n    \"WEDDING\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates an individual guest invitation."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Single Guest (Wedding Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Siddharth Joshi\",\n  \"type\": \"INDIVIDUAL\",\n  \"allowedEvents\": [\n    \"WEDDING\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Creates an invitation specifically for the Wedding ceremony only (Feb 15)."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Registered Guests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/guests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests"]
+            },
+            "description": "Retrieves all registered guests with their unique RSVP links and attendance response."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Guest Allowed Events",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"allowedEvents\": [\"HALDI\", \"WEDDING\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}", "events"]
+            },
+            "description": "Updates the allowed celebrations for an existing guest without changing their link."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Guest Status (Active / Inactive)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}", "status"]
+            },
+            "description": "Enable or disable an invitation (without deleting it)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Guest",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{guestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guests", "{{guestId}}"]
+            },
+            "description": "Permanently deletes a guest and all their family members."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Personalized RSVP (Guest Link View)",
+      "item": [
+        {
+          "name": "Get Guest Invitation by Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Simulates what the guest sees when opening https://chandrikawedsxudong.com/rsvp/{token}."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit RSVP (Joyfully Attending)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvpStatus\": \"ATTENDING\",\n  \"attendingMembers\": [\n    \"Rakesh Kapoor\",\n    \"Meena Kapoor\"\n  ],\n  \"message\": \"Heartiest congratulations Chandrika and Xudong! Can't wait to celebrate!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Submits guest acceptance, which members are coming, and a congratulatory message."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit RSVP (Regretfully Decline)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvpStatus\": \"NOT_ATTENDING\",\n  \"message\": \"Sending our love and heartfelt blessings from afar!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp/{{guestToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp", "{{guestToken}}"]
+            },
+            "description": "Submits guest decline."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Public RSVPs & Wishes",
+      "item": [
+        {
+          "name": "Get Public RSVPs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp"]
+            },
+            "description": "Fetches general public RSVP entries."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Public RSVP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guest_name\": \"Col. R. S. Rawat\",\n  \"phone\": \"+91 9876543210\",\n  \"attendance\": \"hadir\",\n  \"guest_count\": 2,\n  \"message\": \"Warmest blessings to the lovely couple!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rsvp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rsvp"]
+            },
+            "description": "Submits a public RSVP from the website form."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Wedding Wishes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishes"]
+            },
+            "description": "Fetches all guest wishes and blessings."
+          },
+          "response": []
+        },
+        {
+          "name": "Send Wedding Wish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aunt Sunita & Uncle Vivek\",\n  \"message\": \"May your love grow stronger with every passing day. Have a magnificent celebration!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/wishes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishes"]
+            },
+            "description": "Post a wedding wish to the live site."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Wedding Configuration (MySQL config)",
+      "item": [
+        {
+          "name": "Get Public Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "config"]
+            },
+            "description": "Fetches safe public configurations for the website."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Full Configuration (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/config/full",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "config", "full"]
+            },
+            "description": "Fetches complete configurations including admin fields."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Configuration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"VENUE_NAME\": \"The Club International\",\n  \"VENUE_ADDRESS\": \"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\n  \"TEXT_FAMILY\": \"Warmly Hosted by Aditya Rawat & Family\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "config"]
+            },
+            "description": "Updates any configuration key in Hostinger MySQL."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
