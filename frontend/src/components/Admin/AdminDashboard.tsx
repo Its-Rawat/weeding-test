@@ -12,6 +12,8 @@ import {
   Search,
   Settings,
   Trash2,
+  UserCheck,
+  UserPlus,
   Users,
   X,
 } from "lucide-react";
@@ -20,6 +22,7 @@ import { invalidateConfigCache } from "../../hooks/useConfig";
 import InvitationManager from "../InvitationManager";
 import QRCodeManager from "../QRCodeManager";
 import MusicManager from "./MusicManager";
+import GuestManager from "./GuestManager";
 
 interface RSVP {
   id: number;
@@ -704,8 +707,8 @@ const AdminDashboard = ({
   siteUrl: string;
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "rsvp" | "wishes" | "qr" | "pdf" | "settings"
-  >("rsvp");
+    "guests" | "rsvp" | "wishes" | "music" | "qr" | "pdf" | "settings"
+  >("guests");
   const [rsvps, setRsvps] = useState(initialRsvps);
   const [wishes, setWishes] = useState(initialWishes);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -771,7 +774,8 @@ const AdminDashboard = ({
   };
 
   const tabs = [
-    { id: "rsvp", label: "RSVP Data", icon: Users },
+    { id: "guests", label: "Guests & Invitations", icon: UserCheck },
+    { id: "rsvp", label: "Public RSVPs", icon: Users },
     { id: "wishes", label: "Wishes & Blessings", icon: MessageCircle },
     { id: "music", label: "Music & Songs", icon: Music },
     { id: "qr", label: "QR Generator", icon: QrCode },
@@ -808,6 +812,12 @@ const AdminDashboard = ({
           </button>
         ))}
       </div>
+
+      {activeTab === "guests" && (
+        <div className="animate-reveal">
+          <GuestManager />
+        </div>
+      )}
 
       {activeTab === "rsvp" && (
         <div className="animate-reveal space-y-6">
