@@ -11,12 +11,20 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   config,
   videoSrc = "/Short_LandingPageVid.mp4?v=firstnames",
 }) => {
-  const [isMuted, setIsMuted] = useState(true);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
   useEffect(() => {
+    // 1. Permanently keep video 100% muted
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.volume = 0;
+      videoRef.current.play().catch((err) => {
+        console.warn("Video autoplay info:", err);
+      });
+    }
+
+    // 2. Track background / wedding music state
     const handleMusicState = (e: any) => {
       if (e.detail?.isPlaying !== undefined) {
         setIsPlayingMusic(e.detail.isPlaying);
@@ -24,19 +32,15 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
     };
     window.addEventListener("wedding-music-state", handleMusicState);
 
-    // Autoplay video on load
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => {
-        console.warn("Video autoplay info:", err);
-      });
-    }
+    // Initial state query
+    window.dispatchEvent(new CustomEvent("query-wedding-music-state"));
 
     return () => {
       window.removeEventListener("wedding-music-state", handleMusicState);
     };
   }, []);
 
-  // Auto-pause video when user scrolls down into invitation
+  // Auto-pause video frames when user scrolls down into invitation
   useEffect(() => {
     const handleScroll = () => {
       if (videoRef.current) {
@@ -56,18 +60,15 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleToggleMusic = (e?: React.MouseEvent) => {
+  const handleToggleSound = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    // Video ALWAYS stays muted - never unmute the video soundtrack!
     if (videoRef.current) {
-      const nextMuted = !videoRef.current.muted;
-      videoRef.current.muted = nextMuted;
-      setIsMuted(nextMuted);
-
-      // Stop background music so only the landing video audio plays!
-      if (!nextMuted) {
-        window.dispatchEvent(new CustomEvent("pause-wedding-music"));
-      }
+      videoRef.current.muted = true;
+      videoRef.current.volume = 0;
     }
+    // Toggle the admin wedding soundtrack
+    window.dispatchEvent(new CustomEvent("toggle-wedding-music"));
   };
 
   const handleScrollDown = () => {
@@ -85,28 +86,28 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
       id="video-hero"
       className="block md:hidden relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between"
     >
-      {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
+      {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, PERMANENTLY SILENT) */}
       <video
         ref={videoRef}
         src={videoSrc}
         autoPlay
         loop
-        muted={isMuted}
+        muted
         playsInline
         webkit-playsinline="true"
         preload="auto"
-        onClick={handleToggleMusic}
+        onClick={handleToggleSound}
         className="absolute inset-0 w-full h-full object-cover cursor-pointer"
       />
 
-      {/* TOP: ONLY THE MUSIC / VOLUME TAB (SEMI-TRANSPARENT GLASS) */}
+      {/* TOP: MUSIC / SOUND TOGGLE (CONTROLS ADMIN-CONFIGURED AUDIO) */}
       <div className="relative z-30 pt-4 sm:pt-6 px-4 sm:px-6 flex items-center justify-end pointer-events-auto">
         <button
-          onClick={handleToggleMusic}
-          className="group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/25 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white/90 shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-          title={isPlayingMusic ? "Mute Music" : "Play Wedding Music"}
+          onClick={handleToggleSound}
+          className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white/90 shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          title={isPlayingMusic ? "Pause Wedding Music" : "Play Wedding Music"}
         >
-          {!isMuted ? (
+          {isPlayingMusic ? (
             <>
               <Volume2 className="w-4 h-4 text-amber-300 animate-pulse" />
               <span className="text-[11px] font-serif text-amber-100 font-medium">

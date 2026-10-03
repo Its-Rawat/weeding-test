@@ -11,6 +11,7 @@ import {
   Plus,
   RefreshCw,
   Sparkles,
+  Star,
   Trash2,
   Upload,
   Volume2,
@@ -201,6 +202,15 @@ export const MusicManager: React.FC = () => {
     }
     const updated = tracks.filter((t) => t.id !== id);
     persistChanges(updated, undefined, `Deleted "${title}" from playlist`);
+  };
+
+  // Set any song as the primary landing video & background audio
+  const handleSetAsLandingAudio = (track: TrackItem) => {
+    persistChanges(
+      tracks,
+      track.src,
+      `⭐ Set "${track.title}" as the Landing Video & Background Audio!`
+    );
   };
 
   // Quick Replace Audio on existing song card
@@ -541,6 +551,27 @@ export const MusicManager: React.FC = () => {
                       preload="none"
                       className="h-8 w-full rounded-md accent-amber-600"
                     />
+
+                    {/* Set as Landing Video Audio Button */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                      {bgMusicUrl === track.src ? (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 rounded-full border border-amber-300 dark:border-amber-700 shadow-xs">
+                          <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+                          <span>Active Landing Video Audio</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetAsLandingAudio(track)}
+                          disabled={saving}
+                          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-700 hover:text-amber-800 dark:text-slate-300 dark:hover:text-amber-300 bg-slate-50 hover:bg-amber-50 dark:bg-slate-700/60 dark:hover:bg-amber-950/40 px-2.5 py-1 rounded-full border border-slate-200 hover:border-amber-300 dark:border-slate-600 dark:hover:border-amber-700 transition cursor-pointer"
+                          title="Click to make this song play on the mobile landing video"
+                        >
+                          <Star className="h-3 w-3 text-amber-600" />
+                          <span>Set as Landing Video Audio</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -549,18 +580,18 @@ export const MusicManager: React.FC = () => {
         )}
       </div>
 
-      {/* Background Music Card (Envelope Opening) */}
+      {/* Background Music Card (Landing Page Video & Wedding Background Music) */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-amber-600" />
               <h3 className="font-serif text-base font-bold italic text-slate-900 dark:text-white">
-                Envelope Opening Background Music
+                Landing Page Video &amp; Wedding Background Audio
               </h3>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              The gentle romantic soundtrack that plays automatically when guests open their personalized invitation envelope.
+              The primary romantic soundtrack that plays when guests tap <strong>&quot;Tap for Sound 🔊&quot;</strong> on the mobile landing video, and continues playing smoothly as they explore the invitation.
             </p>
           </div>
 
@@ -570,7 +601,7 @@ export const MusicManager: React.FC = () => {
             ) : (
               <Upload className="h-3.5 w-3.5" />
             )}
-            Upload Background MP3
+            Upload Custom MP3
             <input
               type="file"
               onChange={handleBgMusicUpload}
@@ -580,6 +611,38 @@ export const MusicManager: React.FC = () => {
             />
           </label>
         </div>
+
+        {/* Quick select dropdown from celebration playlist */}
+        {tracks.length > 0 && (
+          <div className="mt-4 p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <span className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 shrink-0">
+              <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" /> Quick Pick from Playlist:
+            </span>
+            <select
+              value={bgMusicUrl}
+              onChange={(e) => {
+                if (e.target.value) {
+                  const selectedTrack = tracks.find((t) => t.src === e.target.value);
+                  persistChanges(
+                    tracks,
+                    e.target.value,
+                    selectedTrack
+                      ? `⭐ Landing audio set to "${selectedTrack.title}"!`
+                      : "Landing audio updated!"
+                  );
+                }
+              }}
+              className="w-full flex-1 rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-medium outline-none focus:ring-2 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white cursor-pointer"
+            >
+              <option value="">-- Choose a song from your playlist --</option>
+              {tracks.map((t, i) => (
+                <option key={t.id} value={t.src}>
+                  Track #{i + 1}: {t.title} — {t.artist}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
           <input
@@ -591,9 +654,9 @@ export const MusicManager: React.FC = () => {
           />
           <button
             type="button"
-            onClick={() => persistChanges(tracks, bgMusicUrl, "Background music URL updated!")}
+            onClick={() => persistChanges(tracks, bgMusicUrl, "Landing & background music URL updated!")}
             disabled={saving}
-            className="shrink-0 rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 transition"
+            className="shrink-0 rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 transition cursor-pointer"
           >
             Save URL
           </button>

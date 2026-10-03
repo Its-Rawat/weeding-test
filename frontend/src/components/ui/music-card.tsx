@@ -47,6 +47,7 @@ export function MusicCard({
       },
       onplay: () => {
         setIsPlaying(true);
+        window.dispatchEvent(new CustomEvent("pause-wedding-music"));
         updateProgress();
       },
       onend: () => {
