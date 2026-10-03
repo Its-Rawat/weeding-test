@@ -36,15 +36,38 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
     };
   }, []);
 
+  // Auto-pause video when user scrolls down into invitation
+  useEffect(() => {
+    const handleScroll = () => {
+      if (videoRef.current) {
+        const rect = videoRef.current.getBoundingClientRect();
+        if (rect.bottom < window.innerHeight * 0.4) {
+          if (!videoRef.current.paused) {
+            videoRef.current.pause();
+          }
+        } else {
+          if (videoRef.current.paused) {
+            videoRef.current.play().catch(() => {});
+          }
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleToggleMusic = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (videoRef.current) {
       const nextMuted = !videoRef.current.muted;
       videoRef.current.muted = nextMuted;
       setIsMuted(nextMuted);
+
+      // Stop background music so only the landing video audio plays!
+      if (!nextMuted) {
+        window.dispatchEvent(new CustomEvent("pause-wedding-music"));
+      }
     }
-    // Dispatches music toggle to MusicPlayer for background Shehnai/music
-    window.dispatchEvent(new CustomEvent("toggle-wedding-music"));
   };
 
   const handleScrollDown = () => {
@@ -83,11 +106,11 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
           className="group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/25 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white/90 shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           title={isPlayingMusic ? "Mute Music" : "Play Wedding Music"}
         >
-          {isPlayingMusic && !isMuted ? (
+          {!isMuted ? (
             <>
               <Volume2 className="w-4 h-4 text-amber-300 animate-pulse" />
               <span className="text-[11px] font-serif text-amber-100 font-medium">
-                Music Playing 🪷
+                Sound On 🔊
               </span>
             </>
           ) : (

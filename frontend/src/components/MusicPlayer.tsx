@@ -32,8 +32,16 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
       }
     };
 
+    const handlePause = () => {
+      if (audio && !audio.paused) {
+        audio.pause();
+        notifyState();
+      }
+    };
+
     window.addEventListener("play-wedding-music", handlePlay);
     window.addEventListener("toggle-wedding-music", handleToggle);
+    window.addEventListener("pause-wedding-music", handlePause);
     audio.addEventListener("play", notifyState);
     audio.addEventListener("pause", notifyState);
     audio.addEventListener("ended", notifyState);
@@ -41,6 +49,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     return () => {
       window.removeEventListener("play-wedding-music", handlePlay);
       window.removeEventListener("toggle-wedding-music", handleToggle);
+      window.removeEventListener("pause-wedding-music", handlePause);
       audio.removeEventListener("play", notifyState);
       audio.removeEventListener("pause", notifyState);
       audio.removeEventListener("ended", notifyState);
