@@ -5,6 +5,7 @@ import {
   Edit,
   Loader2,
   MessageCircle,
+  Music,
   Printer,
   QrCode,
   Save,
@@ -18,6 +19,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { invalidateConfigCache } from "../../hooks/useConfig";
 import InvitationManager from "../InvitationManager";
 import QRCodeManager from "../QRCodeManager";
+import MusicManager from "./MusicManager";
 
 interface RSVP {
   id: number;
@@ -500,6 +502,16 @@ const CONFIG_SECTIONS: { title: string; fields: ConfigField[] }[] = [
       },
     ],
   },
+  {
+    title: "Playlist Tracks (Raw JSON)",
+    fields: [
+      {
+        key: "PLAYLIST_TRACKS",
+        label: 'JSON Array of Songs [{"id": "...", "title": "...", "artist": "...", "src": "...", "poster": "...", "mainColor": "...", "tag": "..."}, ...]',
+        type: "json",
+      },
+    ],
+  },
 ];
 
 const SettingsTab: React.FC = () => {
@@ -548,7 +560,7 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const jsonFields = ["BANK_ACCOUNTS", "LOVE_STORY", "GALLERY_IMAGES"];
+    const jsonFields = ["BANK_ACCOUNTS", "LOVE_STORY", "GALLERY_IMAGES", "PLAYLIST_TRACKS"];
     let hasError = false;
     for (const key of jsonFields) {
       if (rawConfig[key] && !validateJson(key, rawConfig[key])) {
@@ -761,6 +773,7 @@ const AdminDashboard = ({
   const tabs = [
     { id: "rsvp", label: "RSVP Data", icon: Users },
     { id: "wishes", label: "Wishes & Blessings", icon: MessageCircle },
+    { id: "music", label: "Music & Songs", icon: Music },
     { id: "qr", label: "QR Generator", icon: QrCode },
     { id: "pdf", label: "Design PDF", icon: Printer },
     { id: "settings", label: "Settings", icon: Settings },
@@ -900,6 +913,12 @@ const AdminDashboard = ({
             onDelete={(id) => handleDelete("wish", [id])}
             onBulkDelete={(ids) => handleDelete("wish", ids)}
           />
+        </div>
+      )}
+
+      {activeTab === "music" && (
+        <div className="animate-reveal">
+          <MusicManager />
         </div>
       )}
 

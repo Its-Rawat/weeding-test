@@ -84,7 +84,7 @@ const CAROUSEL_ITEMS: WheelCarouselItem[] = WEDDING_PLAYLIST.map((t) => ({
   imageAlt: `${t.title} - ${t.tag}`,
 }));
 
-export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
+export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = ({ config }) => {
   const [activeTrackIndex, setActiveTrackIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"wheel" | "list">("wheel");
   const [isDark, setIsDark] = useState(() => {
@@ -93,6 +93,28 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
     }
     return false;
   });
+
+  const tracks: Track[] = React.useMemo(() => {
+    if (config?.playlistTracks && Array.isArray(config.playlistTracks) && config.playlistTracks.length > 0) {
+      return config.playlistTracks;
+    }
+    return WEDDING_PLAYLIST;
+  }, [config?.playlistTracks]);
+
+  const carouselItems: WheelCarouselItem[] = React.useMemo(() => {
+    return tracks.map((t) => ({
+      label: t.shortLabel || t.title,
+      image: t.poster || "/couple/formal_portrait.jpg",
+      imageAlt: `${t.title} - ${t.tag || ""}`,
+    }));
+  }, [tracks]);
+
+  // Ensure activeTrackIndex stays within bounds when playlist length changes
+  useEffect(() => {
+    if (activeTrackIndex >= tracks.length) {
+      setActiveTrackIndex(Math.max(0, tracks.length - 1));
+    }
+  }, [tracks.length, activeTrackIndex]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -106,7 +128,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
     return () => observer.disconnect();
   }, []);
 
-  const currentTrack = WEDDING_PLAYLIST[activeTrackIndex];
+  const currentTrack = tracks[activeTrackIndex] || tracks[0] || WEDDING_PLAYLIST[0];
 
   return (
     <section
@@ -206,7 +228,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
               {viewMode === "wheel" ? (
                 <div className="relative w-full h-[250px] sm:h-[270px] flex items-center justify-center">
                   <WheelCarousel
-                    items={CAROUSEL_ITEMS}
+                    items={carouselItems}
                     mode="custom"
                     background="transparent"
                     panelColor={
@@ -244,7 +266,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
                   aria-label="Scrollable wedding song list"
                   className="space-y-2 h-[190px] max-h-[190px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-[#D4AF37]/50 scrollbar-track-transparent focus:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
                 >
-                  {WEDDING_PLAYLIST.map((track, idx) => {
+                  {tracks.map((track, idx) => {
                     const isSelected = idx === activeTrackIndex;
                     return (
                       <button

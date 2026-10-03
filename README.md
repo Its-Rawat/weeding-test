@@ -40,7 +40,7 @@ A digital wedding invitation web application built with **Spring Boot 3**, **Jav
   - Dark Mode and Light Mode with instant toggle and local storage persistence.
   - Floating romantic petal animation.
 - **Admin Management & QR Generator**:
-  - Protected admin portal at `/admin` (Default password: `P@ssw0rd`).
+  - Protected admin portal at `/admin` (Default password: `RawatDollar1234#`).
   - View, search, filter, inline-edit, single-delete, and bulk-delete RSVPs and Wishes.
   - Real-time response statistics (Attending headcount, Tentative, Regrets).
   - Edit all couple details, dates, venues, story, gallery, and bank accounts.
@@ -72,7 +72,7 @@ java -jar target/wedding-invitation-1.0.0.jar
 Once started, open your browser and navigate to:
 - **Main Invitation**: [http://localhost:8080](http://localhost:8080)
 - **Personalized Invitation**: [http://localhost:8080/?to=VIP+Guest](http://localhost:8080/?to=VIP+Guest)
-- **Admin Dashboard**: [http://localhost:8080/admin](http://localhost:8080/admin) (Password: `P@ssw0rd`)
+- **Admin Dashboard**: [http://localhost:8080/admin](http://localhost:8080/admin) (Password: `RawatDollar1234#`)
 - **QR Code Generator**: [http://localhost:8080/qrcode](http://localhost:8080/qrcode)
 
 ---

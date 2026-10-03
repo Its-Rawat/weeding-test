@@ -80,6 +80,18 @@ export interface AppConfig {
   };
   celebrations: CelebrationEvent[];
   storySlides: StorySlide[];
+  playlistTracks?: TrackItem[];
+}
+
+export interface TrackItem {
+  id: string;
+  title: string;
+  shortLabel: string;
+  artist: string;
+  poster: string;
+  src: string;
+  mainColor: string;
+  tag: string;
 }
 
 export interface CelebrationEvent {

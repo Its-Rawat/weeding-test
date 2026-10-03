@@ -18,7 +18,7 @@ public class AuthController {
 
     public static final String COOKIE_NAME = "wedding_admin_auth";
 
-    @Value("${wedding.admin.password:P@ssw0rd}")
+    @Value("${wedding.admin.password:RawatDollar1234#}")
     private String adminPassword;
 
     public static boolean isAuthenticated(HttpServletRequest request) {

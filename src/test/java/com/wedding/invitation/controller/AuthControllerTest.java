@@ -32,7 +32,7 @@ class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
 
         // Valid credential
-        LoginDto valid = new LoginDto("login", "P@ssw0rd");
+        LoginDto valid = new LoginDto("login", "RawatDollar1234#");
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(valid)))

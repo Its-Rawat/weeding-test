@@ -1,4 +1,4 @@
-import type { AppConfig, CelebrationEvent, StorySlide } from "../types";
+import type { AppConfig, CelebrationEvent, StorySlide, TrackItem } from "../types";
 
 export const DEFAULT_CEREMONIES: CelebrationEvent[] = [
   {
@@ -99,6 +99,69 @@ export const DEFAULT_STORY_SLIDES: StorySlide[] = [
   },
 ];
 
+export const DEFAULT_PLAYLIST_TRACKS: TrackItem[] = [
+  {
+    id: "track-1",
+    title: "Kudmayi • Royal Symphony",
+    shortLabel: "Kudmayi • Royal Symphony",
+    artist: "Shahid Mallya • Traditional Sitar",
+    poster: "/couple/formal_portrait.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#D4AF37",
+    tag: "Formal Portrait",
+  },
+  {
+    id: "track-2",
+    title: "Din Shagna Da • Bridal Walk",
+    shortLabel: "Din Shagna Da • Bridal Walk",
+    artist: "Jasleen Royal • Shenai Melody",
+    poster: "/couple/proposal_story.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#8C1D24",
+    tag: "The Proposal",
+  },
+  {
+    id: "track-3",
+    title: "Kesariya • Sacred Promise",
+    shortLabel: "Kesariya • Sacred Promise",
+    artist: "Arijit Singh • Flute & Acoustic",
+    poster: "/couple/ring_reveal.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#B38E38",
+    tag: "Ring Reveal",
+  },
+  {
+    id: "track-4",
+    title: "Mast Magan • Wanderlust",
+    shortLabel: "Mast Magan • Wanderlust",
+    artist: "Arijit Singh • Rhythmic Tabla",
+    poster: "/couple/travel_fun.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#D9822B",
+    tag: "Travel Memories",
+  },
+  {
+    id: "track-5",
+    title: "Tum Se Hi • Snowy Pines",
+    shortLabel: "Tum Se Hi • Snowy Pines",
+    artist: "Mohit Chauhan • Serene Chords",
+    poster: "/couple/snow_winter.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#3B82F6",
+    tag: "Winter Trails",
+  },
+  {
+    id: "track-6",
+    title: "Gallan Goodiyaan • Street Joy",
+    shortLabel: "Gallan Goodiyaan • Street Joy",
+    artist: "Shankar Mahadevan • Dhol Folk",
+    poster: "/couple/tuktuk_candid.jpg",
+    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
+    mainColor: "#E11D48",
+    tag: "TukTuk Candid",
+  },
+];
+
 export function parseConfig(raw: Record<string, string>): AppConfig {
   const parseJson = <T>(str: string | undefined, fallback: T): T => {
     if (!str) return fallback;
@@ -120,6 +183,12 @@ export function parseConfig(raw: Record<string, string>): AppConfig {
     Array.isArray(parsedSlides) && parsedSlides.length > 0
       ? parsedSlides
       : DEFAULT_STORY_SLIDES;
+
+  const parsedTracks = parseJson<TrackItem[]>(raw.PLAYLIST_TRACKS, DEFAULT_PLAYLIST_TRACKS);
+  const playlistTracks =
+    Array.isArray(parsedTracks) && parsedTracks.length > 0
+      ? parsedTracks
+      : DEFAULT_PLAYLIST_TRACKS;
 
   return {
     couple: {
@@ -209,5 +278,6 @@ export function parseConfig(raw: Record<string, string>): AppConfig {
     },
     celebrations,
     storySlides,
+    playlistTracks,
   };
 }
