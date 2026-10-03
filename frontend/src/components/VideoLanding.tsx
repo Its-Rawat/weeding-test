@@ -4,9 +4,13 @@ import type { AppConfig } from "../types";
 
 interface VideoLandingProps {
   config: AppConfig;
+  videoSrc?: string;
 }
 
-const VideoLanding: React.FC<VideoLandingProps> = ({ config }) => {
+const VideoLanding: React.FC<VideoLandingProps> = ({
+  config,
+  videoSrc = "/Short_LandingPageVid.mp4?v=firstnames",
+}) => {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -61,7 +65,7 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgen
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, FULLY VISIBLE) */}
       <video
         ref={videoRef}
-        src="/Short_LandingPageVid.mp4?v=firstnames"
+        src={videoSrc}
         autoPlay
         loop
         muted={isMuted}

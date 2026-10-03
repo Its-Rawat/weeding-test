@@ -150,12 +150,20 @@ const App: React.FC = () => {
       }
     };
 
-    let testVideo: HTMLVideoElement | null = null;
+    const hasMehendiNow = Boolean(
+      allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+    );
+    const isWeddingOnlyNow = Boolean(
+      allowedEvents && allowedEvents.length > 0 && !hasMehendiNow
+    );
+    const landingVidSrc = isWeddingOnlyNow
+      ? "/Short_LandingPageVid_15Feb.mp4?v=weddingonly"
+      : "/Short_LandingPageVid.mp4?v=firstnames";
 
     if (isPhoneScreen) {
       // 1. Buffer the full-screen video only on phone screens
       testVideo = document.createElement("video");
-      testVideo.src = "/Short_LandingPageVid.mp4?v=firstnames";
+      testVideo.src = landingVidSrc;
       testVideo.preload = "auto";
       testVideo.muted = true;
 
@@ -226,7 +234,7 @@ const App: React.FC = () => {
         testVideo.src = "";
       }
     };
-  }, [loading, config, isPhoneScreen]);
+  }, [loading, config, isPhoneScreen, allowedEvents]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -285,13 +293,19 @@ const App: React.FC = () => {
   const hasMehendi = Boolean(
     allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
   );
+  const isWeddingOnly = Boolean(
+    allowedEvents && allowedEvents.length > 0 && !hasMehendi
+  );
+  const landingVideoSrc = isWeddingOnly
+    ? "/Short_LandingPageVid_15Feb.mp4?v=weddingonly"
+    : "/Short_LandingPageVid.mp4?v=firstnames";
 
   const footerDate = hasMehendi ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
       {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ONLY ON PHONE SCREENS) */}
-      {isPhoneScreen && <VideoLanding config={config} />}
+      {isPhoneScreen && <VideoLanding config={config} videoSrc={landingVideoSrc} />}
 
       {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
       <Navbar theme={theme} toggleTheme={toggleTheme} />
