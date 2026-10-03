@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Route API requests to PHP proxy
+  RewriteRule ^api/(.*)$ api_proxy.php [QSA,L]
+
+  # Existing files and directories serve directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Fallback for React Router (e.g. /admin, /qr)
+  RewriteRule ^ index.html [L]
+</IfModule>
