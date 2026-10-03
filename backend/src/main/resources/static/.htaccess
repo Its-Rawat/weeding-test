@@ -2,16 +2,16 @@
   RewriteEngine On
   RewriteBase /
 
-  # Route API requests to PHP proxy
-  RewriteRule ^api/(.*)$ api_proxy.php [QSA,L]
+  # Route API requests directly to native Hostinger PHP backend
+  RewriteRule ^api/(.*)$ api.php?route=$1 [QSA,L]
 
-  # Route uploads directory directly to Render backend so uploaded songs stream perfectly
-  RewriteRule ^uploads/(.*)$ https://weeding-test.onrender.com/uploads/$1 [R=302,L]
-
-  # Existing files and directories serve directly
+  # Existing files and directories serve directly (including local /uploads/)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
+
+  # Fallback for older uploads if not found on Hostinger
+  RewriteRule ^uploads/(.*)$ https://weeding-test.onrender.com/uploads/$1 [R=302,L]
 
   # Fallback for React Router (e.g. /admin, /qr)
   RewriteRule ^ index.html [L]
