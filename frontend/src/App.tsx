@@ -140,13 +140,14 @@ const App: React.FC = () => {
     // Only buffer video if on phone screen (< 768px). On PC, video is never shown.
     let videoReady = !isPhoneScreen;
     let windowReady = false;
+    let testVideo: HTMLVideoElement | null = null;
 
     const checkComplete = () => {
       if (videoReady && (windowReady || document.readyState === "complete") && !loading && config) {
         setBufferProgress(100);
         setTimeout(() => {
           setIsFullyLoaded(true);
-        }, 400);
+        }, 300);
       }
     };
 
@@ -192,7 +193,8 @@ const App: React.FC = () => {
       }
     } else {
       // On PC screen, immediately advance progress
-      setBufferProgress((p) => Math.max(p, 60));
+      videoReady = true;
+      setBufferProgress((p) => Math.max(p, 75));
       checkComplete();
     }
 

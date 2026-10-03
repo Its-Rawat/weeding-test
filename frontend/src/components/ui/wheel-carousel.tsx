@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useTheme } from "next-themes";
 import {
   type KeyboardEvent,
   type PointerEvent,
@@ -145,8 +144,24 @@ export function WheelCarousel({
 }: WheelCarouselProps) {
   const reduceMotion = useReducedMotion() ?? false;
   const instanceId = useId();
-  const { resolvedTheme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() => {
+    if (typeof document !== "undefined") {
+      return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    return "light";
+  });
   const [themeReady, setThemeReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    setThemeReady(true);
+    const observer = new MutationObserver(() => {
+      setResolvedTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   const resolvedMode =
     mode === "system"
       ? themeReady && resolvedTheme === "dark"
