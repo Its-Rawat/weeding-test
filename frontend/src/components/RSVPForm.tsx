@@ -47,9 +47,13 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
   return (
     <section
       id="rsvp"
-      className="dark:bg-darkBg bg-[#FAF5EB] py-16 transition-colors duration-1000 md:py-28 border-t border-[#D4AF37]/20"
+      className="relative dark:bg-darkBg bg-[#FAF5EB] py-16 transition-colors duration-1000 md:py-28 border-t border-[#D4AF37]/20 overflow-hidden"
     >
-      <div className="container mx-auto max-w-4xl px-4 md:px-6">
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-28 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -bottom-28 right-10 w-96 h-96 rounded-full bg-gradient-to-tl from-[#8C1D24]/10 via-transparent to-transparent blur-3xl -z-10" />
+
+      <div className="container mx-auto max-w-4xl px-4 md:px-6 relative z-10">
         {/* Section Header */}
         <div className="mb-10 space-y-3 text-center md:mb-14">
           <Heart className="text-[#8C1D24] dark:text-accent mx-auto mb-2 h-5 w-5 animate-pulse" />

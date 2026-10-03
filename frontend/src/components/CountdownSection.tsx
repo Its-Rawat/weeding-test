@@ -57,8 +57,11 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
   }, [targetIso]);
 
   return (
-    <section id="countdown" className="py-12 sm:py-16 px-4 bg-[#FAF5EB] text-center border-y border-[#D4AF37]/30">
-      <div className="max-w-xl mx-auto">
+    <section id="countdown" className="relative py-12 sm:py-16 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] text-center border-y border-[#D4AF37]/30 overflow-hidden">
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent rounded-full blur-3xl -z-10" />
+
+      <div className="max-w-xl mx-auto relative z-10">
         
         {/* Section Header */}
         <div className="flex items-center justify-center gap-2 mb-2">

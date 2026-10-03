@@ -54,14 +54,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
   };
 
   return (
-    <section id="event" className="py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20">
-      <div className="max-w-2xl mx-auto">
+    <section id="event" className="relative py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20 overflow-hidden">
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-bl from-[#D4AF37]/20 via-[#F7D8A5]/10 to-transparent blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-gradient-to-tr from-[#8C1D24]/15 via-transparent to-transparent blur-3xl -z-10" />
+
+      <div className="max-w-2xl mx-auto relative z-10">
         
         {/* Section Title */}
         <div className="text-center mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#8C6B1C] tracking-widest uppercase font-serif font-medium mb-1">
             <span>🪷</span>
-            <span>Itinerary &amp; Royal Functions</span>
+            <span>Itinerary &amp; Royal Ceremonies</span>
             <span>🪷</span>
           </div>
           <h2 className="font-serif italic text-3xl sm:text-5xl text-[#231C18] font-normal">
@@ -76,23 +80,24 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
               Please join us across two joyous days of love, music, and sacred traditions.
             </p>
           )}
-          <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto mt-3 rounded-full" />
+          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3 rounded-full" />
         </div>
 
         {/* Ceremony Cards Stack */}
         <div className="space-y-6 sm:space-y-8">
-          {displayCeremonies.map((evt, idx) => (
+          {displayCeremonies.map((evt) => (
             <div
               key={evt.id}
-              className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_8px_30px_rgba(140,107,28,0.08)] hover:shadow-lg transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"
+              className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_8px_30px_rgba(140,107,28,0.08)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.18)] hover:border-[#D4AF37] transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"
             >
-              {/* Top Accent Icon & Function Number */}
+              {/* Top Accent Icon & Date (Function 1/2/3 removed as requested) */}
               <div className="flex items-center justify-between border-b border-[#D4AF37]/25 pb-3 mb-4">
-                <span className="text-2xl sm:text-3xl p-2 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/40 flex items-center justify-center">
+                <span className="text-2xl sm:text-3xl p-2 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/40 flex items-center justify-center shadow-xs">
                   {evt.illustration}
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#8C1D24] font-bold bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#D4AF37]/40">
-                  Function 0{idx + 1}
+                <span className="text-xs font-serif italic text-[#8C6B1C] font-semibold flex items-center gap-1.5 bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#D4AF37]/30">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8C1D24]" />
+                  {evt.dayDate}
                 </span>
               </div>
 

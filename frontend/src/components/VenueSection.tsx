@@ -7,8 +7,12 @@ export default function VenueSection({ config }: { config: AppConfig }) {
   const venueAddress = config.venue.address || "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)";
 
   return (
-    <section id="venue" className="py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20">
-      <div className="max-w-2xl mx-auto">
+    <section id="venue" className="relative py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20 overflow-hidden">
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#F7D8A5]/10 to-transparent blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-tl from-[#8C1D24]/15 via-transparent to-transparent blur-3xl -z-10" />
+
+      <div className="max-w-2xl mx-auto relative z-10">
         
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-12">
@@ -23,11 +27,11 @@ export default function VenueSection({ config }: { config: AppConfig }) {
           <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
             An exquisite luxury destination in Delhi NCR with lush green landscapes, majestic pavilions, and royal Indian hospitality.
           </p>
-          <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto mt-3 rounded-full" />
+          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3 rounded-full" />
         </div>
 
         {/* Illustrated Venue Card */}
-        <div className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_10px_35px_rgba(140,107,28,0.08)] overflow-hidden p-6 sm:p-8">
+        <div className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_10px_35px_rgba(140,107,28,0.08)] hover:shadow-[0_12px_45px_rgba(212,175,55,0.18)] hover:border-[#D4AF37] transition-all duration-300 overflow-hidden p-6 sm:p-8">
           
           {/* Architectural Venue Image */}
           <div className="relative rounded-2xl overflow-hidden shadow-inner h-64 sm:h-80 mb-6 group">

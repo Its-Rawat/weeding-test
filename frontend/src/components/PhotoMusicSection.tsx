@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MusicCard } from "@/components/ui/music-card";
 import { WheelCarousel, type WheelCarouselItem } from "@/components/ui/wheel-carousel";
-import { Music, Sparkles, Disc3, Radio, ChevronLeft, ChevronRight, ListMusic, Compass, Heart } from "lucide-react";
+import { Music, Radio, Compass, ListMusic, Heart } from "lucide-react";
 import type { AppConfig } from "../types";
 
 interface Track {
@@ -113,9 +113,10 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
       id="photo-music"
       className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-hidden transition-colors duration-700"
     >
-      {/* 2026 Ambient Golden Glows */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#D4AF37]/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#8C1D24]/10 blur-3xl" />
+      {/* 2026 Gradient Atmospheric Ambient Lighting Glows */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#D4AF37]/25 via-[#F7D8A5]/15 to-transparent blur-[110px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-[#8C1D24]/20 via-[#D4AF37]/10 to-transparent blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-radial from-white/40 dark:from-white/5 to-transparent blur-3xl -z-10" />
 
       <div className="container mx-auto max-w-5xl relative z-10">
         {/* Section Header */}
@@ -123,7 +124,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
             <Radio className="w-3.5 h-3.5 text-[#8C1D24] dark:text-accent animate-pulse" />
             <span className="font-sans text-[10px] font-bold tracking-[0.25em] uppercase text-[#8C6B1C] dark:text-accent">
-              Melodies &amp; Memories • 2026 Soundscape
+              Melodies &amp; Memories
             </span>
           </div>
 
@@ -132,20 +133,20 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
           </h2>
 
           <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Every snapshot carries a song. Spin or scroll through 3 songs at a time to experience our celebration playlist.
+            Every snapshot carries a song. Explore our celebration playlist paired with our favorite memories.
           </p>
 
-          <div className="w-14 h-0.5 bg-[#D4AF37]/60 mx-auto rounded-full mt-2" />
+          <div className="w-14 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full mt-2" />
         </div>
 
-        {/* Compact Level-2026 Stage: Song Player Card + Compact 3-Song Playlist */}
+        {/* Compact Level-2026 Stage: Song Player Card + Song Wheel / Playlist */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-          {/* Left Column: The MusicCard Player */}
+          {/* Left Column: The MusicCard Player (Prev/Next buttons removed as requested) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center">
             <div className="relative group">
               {/* Outer Golden Aura Ring */}
               <div
-                className="absolute -inset-1 rounded-2xl opacity-50 blur-md transition duration-500 group-hover:opacity-100"
+                className="absolute -inset-1.5 rounded-3xl opacity-60 blur-lg transition duration-500 group-hover:opacity-100"
                 style={{ backgroundColor: currentTrack.mainColor }}
               />
 
@@ -160,39 +161,9 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
                 className="relative shadow-2xl"
               />
             </div>
-
-            {/* Quick Track Switcher Pills */}
-            <div className="mt-3.5 flex items-center justify-between w-full max-w-[20rem] px-2 text-[#231C18] dark:text-slate-200">
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveTrackIndex(
-                    (prev) => (prev - 1 + WEDDING_PLAYLIST.length) % WEDDING_PLAYLIST.length
-                  )
-                }
-                className="inline-flex items-center gap-1 text-xs font-serif px-3 py-1 rounded-full border border-[#D4AF37]/40 bg-[#FFFDF9] dark:bg-darkSurface hover:border-[#D4AF37] hover:scale-105 active:scale-95 transition cursor-pointer shadow-xs"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" /> Prev
-              </button>
-
-              <span className="text-[11px] font-serif italic text-[#8C6B1C] dark:text-accent flex items-center gap-1.5">
-                <Disc3 className="w-3.5 h-3.5 animate-spin text-[#8C1D24] dark:text-accent" />
-                Track {activeTrackIndex + 1} of {WEDDING_PLAYLIST.length}
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveTrackIndex((prev) => (prev + 1) % WEDDING_PLAYLIST.length)
-                }
-                className="inline-flex items-center gap-1 text-xs font-serif px-3 py-1 rounded-full border border-[#D4AF37]/40 bg-[#FFFDF9] dark:bg-darkSurface hover:border-[#D4AF37] hover:scale-105 active:scale-95 transition cursor-pointer shadow-xs"
-              >
-                Next <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
           </div>
 
-          {/* Right Column: Compact 3-Song Playlist (Takes Minimum Space) */}
+          {/* Right Column: Clean 3-Song Playlist (Takes Minimum Space, No Clutter Text) */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <div className="relative rounded-3xl bg-[#FFFDF9]/95 dark:bg-darkSurface/95 border border-[#D4AF37]/40 shadow-xl p-4 sm:p-5 overflow-hidden backdrop-blur-md">
               {/* Header inside Playlist Box */}
@@ -200,7 +171,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
                 <div className="flex items-center gap-2">
                   <Music className="w-4 h-4 text-[#8C1D24] dark:text-accent" />
                   <h3 className="font-serif text-sm font-bold text-[#231C18] dark:text-white">
-                    Wedding Playlist • 3 Songs Visible
+                    Wedding Playlist
                   </h3>
                 </div>
 
@@ -325,19 +296,6 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
                   })}
                 </div>
               )}
-
-              {/* Interactive Helper Hint */}
-              <div className="mt-2.5 pt-2.5 border-t border-[#D4AF37]/20 flex items-center justify-between text-[11px] text-[#5A4D43] dark:text-slate-400 font-sans">
-                <span className="flex items-center gap-1.5 text-[10.5px]">
-                  <Sparkles className="w-3.5 h-3.5 text-[#8C1D24] dark:text-accent shrink-0" />
-                  {viewMode === "wheel"
-                    ? "Wheel shows 3 songs at once • Spin or swipe to scroll"
-                    : "List shows 3 songs at once • Scroll down to browse all 6"}
-                </span>
-                <span className="hidden sm:inline font-serif italic text-[11px] text-[#8C6B1C] dark:text-accent">
-                  {currentTrack.tag}
-                </span>
-              </div>
             </div>
           </div>
         </div>
