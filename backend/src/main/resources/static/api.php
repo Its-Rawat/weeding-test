@@ -65,14 +65,49 @@ $pdo->exec("
     CREATE TABLE IF NOT EXISTS guest_invitations (
         id BIGINT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
+        type VARCHAR(50) DEFAULT 'FAMILY',
         token VARCHAR(100) UNIQUE NOT NULL,
         phone VARCHAR(50) DEFAULT NULL,
-        status VARCHAR(50) DEFAULT 'PENDING',
+        status VARCHAR(50) DEFAULT 'ACTIVE',
+        rsvp_status VARCHAR(50) DEFAULT 'PENDING',
         events TEXT DEFAULT NULL,
-        plus_ones INT DEFAULT 0,
-        created_at VARCHAR(100) DEFAULT NULL
+        message TEXT DEFAULT NULL,
+        responded_at VARCHAR(100) DEFAULT NULL,
+        created_at VARCHAR(100) DEFAULT NULL,
+        updated_at VARCHAR(100) DEFAULT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
+
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS guest_family_members (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        guest_invitation_id BIGINT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        attending TINYINT(1) DEFAULT 0,
+        INDEX idx_guest_id (guest_invitation_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
+try {
+    $cols = $pdo->query("SHOW COLUMNS FROM guest_invitations")->fetchAll(PDO::FETCH_COLUMN);
+    if (!in_array('type', $cols)) {
+        $pdo->exec("ALTER TABLE guest_invitations ADD COLUMN type VARCHAR(50) DEFAULT 'FAMILY' AFTER name");
+    }
+    if (!in_array('rsvp_status', $cols)) {
+        $pdo->exec("ALTER TABLE guest_invitations ADD COLUMN rsvp_status VARCHAR(50) DEFAULT 'PENDING' AFTER status");
+    }
+    if (!in_array('message', $cols)) {
+        $pdo->exec("ALTER TABLE guest_invitations ADD COLUMN message TEXT DEFAULT NULL AFTER events");
+    }
+    if (!in_array('responded_at', $cols)) {
+        $pdo->exec("ALTER TABLE guest_invitations ADD COLUMN responded_at VARCHAR(100) DEFAULT NULL AFTER message");
+    }
+    if (!in_array('updated_at', $cols)) {
+        $pdo->exec("ALTER TABLE guest_invitations ADD COLUMN updated_at VARCHAR(100) DEFAULT NULL AFTER created_at");
+    }
+} catch (Exception $e) {
+    // Migration columns check passed
+}
 
 // 3. Seed Default Configurations if config table is empty
 $chkStmt = $pdo->query("SELECT COUNT(*) FROM config");
@@ -214,6 +249,278 @@ if ($route === 'rsvp' || preg_match('/^rsvp\/?$/', $route)) {
     }
 }
 
+// --- Helper Functions for Guests ---
+function generateGuestToken($pdo) {
+    for ($i = 0; $i < 20; $i++) {
+        $token = substr(bin2hex(random_bytes(8)), 0, 12);
+        $check = $pdo->prepare("SELECT COUNT(*) FROM guest_invitations WHERE token = ?");
+        $check->execute([$token]);
+        if ($check->fetchColumn() == 0) {
+            return $token;
+        }
+    }
+    return substr(bin2hex(random_bytes(10)), 0, 16);
+}
+
+function formatGuestResponse($row, $members, $siteBaseUrl) {
+    $events = [];
+    if (!empty($row['events'])) {
+        $dec = json_decode($row['events'], true);
+        if (is_array($dec)) {
+            $events = $dec;
+        } else {
+            $events = array_map('trim', explode(',', $row['events']));
+        }
+    } else {
+        $events = ['MEHENDI', 'HALDI', 'WEDDING'];
+    }
+
+    $formattedMembers = [];
+    foreach ($members as $m) {
+        $formattedMembers[] = [
+            'id' => intval($m['id'] ?? 0),
+            'name' => $m['name'],
+            'attending' => (bool)($m['attending'] ?? false)
+        ];
+    }
+
+    $rsvpLink = rtrim($siteBaseUrl, '/') . '/rsvp/' . $row['token'];
+
+    return [
+        'id' => intval($row['id']),
+        'name' => $row['name'],
+        'type' => $row['type'] ?? 'FAMILY',
+        'token' => $row['token'],
+        'rsvpLink' => $rsvpLink,
+        'status' => $row['status'] ?? 'ACTIVE',
+        'rsvpStatus' => $row['rsvp_status'] ?? 'PENDING',
+        'members' => $formattedMembers,
+        'message' => $row['message'] ?? null,
+        'allowedEvents' => $events,
+        'respondedAt' => $row['responded_at'] ?? null,
+        'createdAt' => $row['created_at'] ?? null
+    ];
+}
+
+// --- HEALTH CHECK: /api/health or /health ---
+if ($route === 'health' || $route === 'api/health') {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'UP',
+        'database' => 'connected',
+        'backend' => 'Hostinger Native MySQL',
+        'timestamp' => date('c')
+    ]);
+    exit;
+}
+
+// --- GUESTS: GET ALL /api/guests ---
+if ($route === 'guests' && $method === 'GET') {
+    header('Content-Type: application/json');
+    $siteBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'chandrikawedsxudong.com');
+
+    $stmt = $pdo->query("SELECT * FROM guest_invitations ORDER BY id DESC");
+    $guests = $stmt->fetchAll();
+
+    $mStmt = $pdo->query("SELECT * FROM guest_family_members ORDER BY id ASC");
+    $allMembers = $mStmt->fetchAll();
+    $membersByGuest = [];
+    foreach ($allMembers as $m) {
+        $gid = $m['guest_invitation_id'];
+        if (!isset($membersByGuest[$gid])) $membersByGuest[$gid] = [];
+        $membersByGuest[$gid][] = $m;
+    }
+
+    $response = [];
+    foreach ($guests as $g) {
+        $mems = $membersByGuest[$g['id']] ?? [];
+        $response[] = formatGuestResponse($g, $mems, $siteBaseUrl);
+    }
+    echo json_encode($response);
+    exit;
+}
+
+// --- GUESTS: BULK CREATE /api/guests/bulk ---
+if ($route === 'guests/bulk' && $method === 'POST') {
+    header('Content-Type: application/json');
+    $siteBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'chandrikawedsxudong.com');
+    $body = getJsonInput();
+    if (!is_array($body)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Expected an array of guest objects']);
+        exit;
+    }
+
+    $results = [];
+    foreach ($body as $item) {
+        $name = trim($item['name'] ?? '');
+        if (empty($name)) continue;
+
+        $type = strtoupper(trim($item['type'] ?? 'FAMILY'));
+        if ($type !== 'INDIVIDUAL') $type = 'FAMILY';
+        $token = generateGuestToken($pdo);
+        $events = $item['allowedEvents'] ?? ['MEHENDI', 'HALDI', 'WEDDING'];
+        $eventsJson = is_array($events) ? json_encode($events) : $events;
+        $createdAt = date('c');
+
+        $ins = $pdo->prepare("INSERT INTO guest_invitations (name, type, token, status, rsvp_status, events, created_at, updated_at) VALUES (?, ?, ?, 'ACTIVE', 'PENDING', ?, ?, ?)");
+        $ins->execute([$name, $type, $token, $eventsJson, $createdAt, $createdAt]);
+        $guestId = $pdo->lastInsertId();
+
+        $membersList = [];
+        if (!empty($item['members']) && is_array($item['members'])) {
+            $mIns = $pdo->prepare("INSERT INTO guest_family_members (guest_invitation_id, name, attending) VALUES (?, ?, 0)");
+            foreach ($item['members'] as $mName) {
+                $mName = trim($mName);
+                if (!empty($mName)) {
+                    $mIns->execute([$guestId, $mName]);
+                    $membersList[] = ['id' => $pdo->lastInsertId(), 'name' => $mName, 'attending' => false];
+                }
+            }
+        } elseif ($type === 'INDIVIDUAL') {
+            $mIns = $pdo->prepare("INSERT INTO guest_family_members (guest_invitation_id, name, attending) VALUES (?, ?, 0)");
+            $mIns->execute([$guestId, $name]);
+            $membersList[] = ['id' => $pdo->lastInsertId(), 'name' => $name, 'attending' => false];
+        }
+
+        $row = [
+            'id' => $guestId,
+            'name' => $name,
+            'type' => $type,
+            'token' => $token,
+            'status' => 'ACTIVE',
+            'rsvp_status' => 'PENDING',
+            'events' => $eventsJson,
+            'message' => null,
+            'responded_at' => null,
+            'created_at' => $createdAt
+        ];
+        $results[] = formatGuestResponse($row, $membersList, $siteBaseUrl);
+    }
+
+    http_response_code(201);
+    echo json_encode($results);
+    exit;
+}
+
+// --- GUESTS: SINGLE CREATE /api/guests ---
+if ($route === 'guests' && $method === 'POST') {
+    header('Content-Type: application/json');
+    $siteBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'chandrikawedsxudong.com');
+    $body = getJsonInput();
+    $name = trim($body['name'] ?? '');
+    if (empty($name)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Guest name is required']);
+        exit;
+    }
+
+    $type = strtoupper(trim($body['type'] ?? 'FAMILY'));
+    if ($type !== 'INDIVIDUAL') $type = 'FAMILY';
+    $token = generateGuestToken($pdo);
+    $events = $body['allowedEvents'] ?? ['MEHENDI', 'HALDI', 'WEDDING'];
+    $eventsJson = is_array($events) ? json_encode($events) : $events;
+    $createdAt = date('c');
+
+    $ins = $pdo->prepare("INSERT INTO guest_invitations (name, type, token, status, rsvp_status, events, created_at, updated_at) VALUES (?, ?, ?, 'ACTIVE', 'PENDING', ?, ?, ?)");
+    $ins->execute([$name, $type, $token, $eventsJson, $createdAt, $createdAt]);
+    $guestId = $pdo->lastInsertId();
+
+    $membersList = [];
+    if (!empty($body['members']) && is_array($body['members'])) {
+        $mIns = $pdo->prepare("INSERT INTO guest_family_members (guest_invitation_id, name, attending) VALUES (?, ?, 0)");
+        foreach ($body['members'] as $mName) {
+            $mName = trim($mName);
+            if (!empty($mName)) {
+                $mIns->execute([$guestId, $mName]);
+                $membersList[] = ['id' => $pdo->lastInsertId(), 'name' => $mName, 'attending' => false];
+            }
+        }
+    } elseif ($type === 'INDIVIDUAL') {
+        $mIns = $pdo->prepare("INSERT INTO guest_family_members (guest_invitation_id, name, attending) VALUES (?, ?, 0)");
+        $mIns->execute([$guestId, $name]);
+        $membersList[] = ['id' => $pdo->lastInsertId(), 'name' => $name, 'attending' => false];
+    }
+
+    $row = [
+        'id' => $guestId,
+        'name' => $name,
+        'type' => $type,
+        'token' => $token,
+        'status' => 'ACTIVE',
+        'rsvp_status' => 'PENDING',
+        'events' => $eventsJson,
+        'message' => null,
+        'responded_at' => null,
+        'created_at' => $createdAt
+    ];
+
+    http_response_code(201);
+    echo json_encode(formatGuestResponse($row, $membersList, $siteBaseUrl));
+    exit;
+}
+
+// --- GUESTS: UPDATE EVENTS /api/guests/{id}/events ---
+if (preg_match('/^guests\/(\d+)\/events$/', $route, $m) && ($method === 'PATCH' || $method === 'PUT')) {
+    header('Content-Type: application/json');
+    $id = intval($m[1]);
+    $body = getJsonInput();
+    $events = $body['allowedEvents'] ?? ['MEHENDI', 'HALDI', 'WEDDING'];
+    $eventsJson = is_array($events) ? json_encode($events) : $events;
+
+    $stmt = $pdo->prepare("UPDATE guest_invitations SET events = ?, updated_at = ? WHERE id = ?");
+    $stmt->execute([$eventsJson, date('c'), $id]);
+
+    $fetch = $pdo->prepare("SELECT * FROM guest_invitations WHERE id = ?");
+    $fetch->execute([$id]);
+    $g = $fetch->fetch();
+    if ($g) {
+        $mStmt = $pdo->prepare("SELECT * FROM guest_family_members WHERE guest_invitation_id = ?");
+        $mStmt->execute([$id]);
+        $siteBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'chandrikawedsxudong.com');
+        echo json_encode(formatGuestResponse($g, $mStmt->fetchAll(), $siteBaseUrl));
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'Guest not found']);
+    }
+    exit;
+}
+
+// --- GUESTS: UPDATE STATUS /api/guests/{id}/status ---
+if (preg_match('/^guests\/(\d+)\/status$/', $route, $m) && ($method === 'PATCH' || $method === 'PUT')) {
+    header('Content-Type: application/json');
+    $id = intval($m[1]);
+    $body = getJsonInput();
+    $status = strtoupper(trim($body['status'] ?? 'ACTIVE'));
+
+    $stmt = $pdo->prepare("UPDATE guest_invitations SET status = ?, updated_at = ? WHERE id = ?");
+    $stmt->execute([$status, date('c'), $id]);
+
+    $fetch = $pdo->prepare("SELECT * FROM guest_invitations WHERE id = ?");
+    $fetch->execute([$id]);
+    $g = $fetch->fetch();
+    if ($g) {
+        $mStmt = $pdo->prepare("SELECT * FROM guest_family_members WHERE guest_invitation_id = ?");
+        $mStmt->execute([$id]);
+        $siteBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'chandrikawedsxudong.com');
+        echo json_encode(formatGuestResponse($g, $mStmt->fetchAll(), $siteBaseUrl));
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'Guest not found']);
+    }
+    exit;
+}
+
+// --- GUESTS: DELETE /api/guests/{id} ---
+if (preg_match('/^guests\/(\d+)$/', $route, $m) && $method === 'DELETE') {
+    header('Content-Type: application/json');
+    $id = intval($m[1]);
+    $pdo->prepare("DELETE FROM guest_family_members WHERE guest_invitation_id = ?")->execute([$id]);
+    $pdo->prepare("DELETE FROM guest_invitations WHERE id = ?")->execute([$id]);
+    http_response_code(204);
+    exit;
+}
+
 // --- PERSONALIZED RSVP: /api/rsvp/{token} ---
 if (preg_match('/^rsvp\/([^\/]+)$/', $route, $m)) {
     header('Content-Type: application/json');
@@ -223,7 +530,37 @@ if (preg_match('/^rsvp\/([^\/]+)$/', $route, $m)) {
         $stmt->execute([$token]);
         $inv = $stmt->fetch();
         if ($inv) {
-            echo json_encode($inv);
+            $mStmt = $pdo->prepare("SELECT * FROM guest_family_members WHERE guest_invitation_id = ? ORDER BY id ASC");
+            $mStmt->execute([$inv['id']]);
+            $rawMembers = $mStmt->fetchAll();
+
+            $members = [];
+            foreach ($rawMembers as $rm) {
+                $members[] = [
+                    'name' => $rm['name'],
+                    'attending' => (bool)$rm['attending']
+                ];
+            }
+
+            $allowedEvents = ['MEHENDI', 'HALDI', 'WEDDING'];
+            if (!empty($inv['events'])) {
+                $dec = json_decode($inv['events'], true);
+                if (is_array($dec)) {
+                    $allowedEvents = $dec;
+                } else {
+                    $allowedEvents = array_map('trim', explode(',', $inv['events']));
+                }
+            }
+
+            echo json_encode([
+                'name' => $inv['name'],
+                'type' => $inv['type'] ?? 'FAMILY',
+                'status' => $inv['status'] ?? 'ACTIVE',
+                'rsvpStatus' => $inv['rsvp_status'] ?? 'PENDING',
+                'members' => $members,
+                'allowedEvents' => $allowedEvents,
+                'message' => $inv['message'] ?? null
+            ]);
         } else {
             http_response_code(404);
             echo json_encode(['error' => 'Invitation not found']);
@@ -231,16 +568,63 @@ if (preg_match('/^rsvp\/([^\/]+)$/', $route, $m)) {
         exit;
     } elseif ($method === 'POST') {
         $body = getJsonInput();
-        $status = $body['status'] ?? 'CONFIRMED';
-        $plusOnes = intval($body['plus_ones'] ?? 0);
-        $events = isset($body['events']) ? (is_string($body['events']) ? $body['events'] : json_encode($body['events'])) : null;
+        $stmt = $pdo->prepare("SELECT * FROM guest_invitations WHERE token = ?");
+        $stmt->execute([$token]);
+        $inv = $stmt->fetch();
+        if (!$inv) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Invitation not found']);
+            exit;
+        }
 
-        $stmt = $pdo->prepare("UPDATE guest_invitations SET status = ?, plus_ones = ?, events = ? WHERE token = ?");
-        $stmt->execute([$status, $plusOnes, $events, $token]);
+        if (($inv['status'] ?? 'ACTIVE') === 'INACTIVE') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Invitation inactive']);
+            exit;
+        }
 
-        $fetchStmt = $pdo->prepare("SELECT * FROM guest_invitations WHERE token = ?");
-        $fetchStmt->execute([$token]);
-        echo json_encode($fetchStmt->fetch());
+        $rsvpStatus = strtoupper(trim($body['rsvpStatus'] ?? 'ATTENDING'));
+        if ($rsvpStatus !== 'NOT_ATTENDING') $rsvpStatus = 'ATTENDING';
+        $message = trim($body['message'] ?? '');
+        $now = date('c');
+
+        $upStmt = $pdo->prepare("UPDATE guest_invitations SET rsvp_status = ?, message = ?, responded_at = ?, updated_at = ? WHERE token = ?");
+        $upStmt->execute([$rsvpStatus, $message, $now, $now, $token]);
+
+        $attendingMembers = $body['attendingMembers'] ?? [];
+        $attendingCount = 0;
+
+        if ($rsvpStatus === 'ATTENDING') {
+            if (!empty($attendingMembers) && is_array($attendingMembers)) {
+                $lowered = array_map('strtolower', array_map('trim', $attendingMembers));
+                $mStmt = $pdo->prepare("SELECT * FROM guest_family_members WHERE guest_invitation_id = ?");
+                $mStmt->execute([$inv['id']]);
+                $allMems = $mStmt->fetchAll();
+                $updateMem = $pdo->prepare("UPDATE guest_family_members SET attending = ? WHERE id = ?");
+                foreach ($allMems as $m) {
+                    $isAtt = in_array(strtolower(trim($m['name'])), $lowered);
+                    $updateMem->execute([$isAtt ? 1 : 0, $m['id']]);
+                    if ($isAtt) $attendingCount++;
+                }
+            } else {
+                $pdo->prepare("UPDATE guest_family_members SET attending = 1 WHERE guest_invitation_id = ?")->execute([$inv['id']]);
+                $countStmt = $pdo->prepare("SELECT COUNT(*) FROM guest_family_members WHERE guest_invitation_id = ?");
+                $countStmt->execute([$inv['id']]);
+                $attendingCount = max(1, intval($countStmt->fetchColumn()));
+            }
+        } else {
+            $pdo->prepare("UPDATE guest_family_members SET attending = 0 WHERE guest_invitation_id = ?")->execute([$inv['id']]);
+            $attendingCount = 0;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => $rsvpStatus === 'ATTENDING' ? 'RSVP recorded!' : 'RSVP decline recorded.',
+            'name' => $inv['name'],
+            'rsvpStatus' => $rsvpStatus,
+            'attendingCount' => $attendingCount,
+            'respondedAt' => $now
+        ]);
         exit;
     }
 }

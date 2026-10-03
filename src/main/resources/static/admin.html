@@ -986,7 +986,9 @@
         <div class="server-config">
           <i class="fa-solid fa-server" style="color: var(--accent-gold); font-size: 0.85rem;"></i>
           <select id="serverSelect" onchange="handleServerChange()">
-            <option value="https://weeding-test.onrender.com">Cloud (Render)</option>
+            <option value="current">Hostinger Native (Current Site)</option>
+            <option value="https://chandrikawedsxudong.com">Hostinger (chandrikawedsxudong.com)</option>
+            <option value="https://weeding-test.onrender.com">Cloud (Render Fallback)</option>
             <option value="http://localhost:8080">Localhost (:8080)</option>
             <option value="custom">Custom URL...</option>
           </select>
@@ -1341,8 +1343,14 @@
 
   <!-- Application Logic -->
   <script>
-    // Configuration
-    let apiBaseUrl = localStorage.getItem('wedding_api_base_url') || 'https://weeding-test.onrender.com';
+    // Configuration - Default to current site (Hostinger Native)
+    const currentOrigin = window.location.origin.startsWith('http') ? window.location.origin : 'https://chandrikawedsxudong.com';
+    let savedBase = localStorage.getItem('wedding_api_base_url');
+    if (!savedBase || savedBase.includes('render.com')) {
+      savedBase = currentOrigin;
+      localStorage.setItem('wedding_api_base_url', savedBase);
+    }
+    let apiBaseUrl = savedBase;
     let allGuests = [];
     let parsedBulkData = [];
     let activeEditGuestId = null;
@@ -1363,7 +1371,10 @@
       const select = document.getElementById('serverSelect');
       const customInput = document.getElementById('customServerUrl');
 
-      if (apiBaseUrl === 'https://weeding-test.onrender.com' || apiBaseUrl === 'http://localhost:8080') {
+      if (apiBaseUrl === currentOrigin || apiBaseUrl === 'https://chandrikawedsxudong.com') {
+        select.value = 'current';
+        customInput.style.display = 'none';
+      } else if (apiBaseUrl === 'https://weeding-test.onrender.com' || apiBaseUrl === 'http://localhost:8080') {
         select.value = apiBaseUrl;
         customInput.style.display = 'none';
       } else {
@@ -1383,7 +1394,7 @@
         customInput.focus();
       } else {
         customInput.style.display = 'none';
-        apiBaseUrl = select.value;
+        apiBaseUrl = select.value === 'current' ? currentOrigin : select.value;
         localStorage.setItem('wedding_api_base_url', apiBaseUrl);
         updateWebsiteLink();
         checkHealth(true);
@@ -1404,7 +1415,9 @@
 
     function updateWebsiteLink() {
       const link = document.getElementById('viewWebsiteBtn');
-      link.href = apiBaseUrl;
+      if (link) {
+        link.href = '/';
+      }
     }
 
     // Health Check
