@@ -379,7 +379,7 @@ export function WheelCarousel({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "flex h-full min-h-[420px] w-full items-center justify-center overflow-hidden",
+        "flex h-full min-h-[200px] w-full items-center justify-center overflow-hidden",
         className,
       )}
       style={{ backgroundColor: palette.background }}
@@ -461,13 +461,16 @@ export function WheelCarousel({
 
           {carouselItems.map((item, index) => {
             const offset = shortestOffset(index, rotation, itemCount);
-            if (Math.abs(offset) > visibleItems + 1) return null;
+            // When visibleItems <= 1.5, strictly show only 3 songs (previous, active, next)
+            const cutoff = visibleItems <= 1.5 ? 1.25 : visibleItems + 1;
+            if (Math.abs(offset) > cutoff) return null;
 
             const angle = offset * spacing;
             const radians = (angle * Math.PI) / 180;
             const x = -radius * (1 - Math.cos(radians));
             const y = radius * Math.sin(radians);
-            const distance = Math.min(Math.abs(offset) / visibleItems, 1);
+            const normDivisor = visibleItems <= 1.5 ? 1.8 : visibleItems;
+            const distance = Math.min(Math.abs(offset) / normDivisor, 1);
             const opacity = Math.cos((distance * Math.PI) / 2);
             const scale = 1 - Math.min(Math.abs(offset) * 0.04, 0.45);
             const selected = Math.abs(offset) < 0.5;

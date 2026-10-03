@@ -15,6 +15,8 @@ import StoryModal from "./components/StoryModal";
 import { useConfig } from "./hooks/useConfig";
 import { Heart, Quote, Mail } from "lucide-react";
 import { personalizedRsvpService } from "./services/personalizedRsvpService";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 
 const extractTokenFromUrl = (): string | null => {
   if (typeof window === "undefined") return null;
@@ -58,6 +60,53 @@ const App: React.FC = () => {
     syncTokenData();
     window.addEventListener("popstate", syncTokenData);
     return () => window.removeEventListener("popstate", syncTokenData);
+  }, []);
+
+  // SnorklTV / GSAP style buttery smooth momentum scrolling
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    });
+
+    (window as any).lenis = lenis;
+
+    let animationFrameId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      animationFrameId = requestAnimationFrame(raf);
+    }
+    animationFrameId = requestAnimationFrame(raf);
+
+    // Smooth scroll for anchor navigation links (#events, #venue, #rsvp, #photo-music)
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest("a");
+      if (anchor) {
+        const href = anchor.getAttribute("href");
+        if (href && href.startsWith("#") && href.length > 1) {
+          const targetEl = document.querySelector(href);
+          if (targetEl) {
+            e.preventDefault();
+            lenis.scrollTo(targetEl as HTMLElement, {
+              offset: -20,
+              duration: 1.4,
+            });
+          }
+        }
+      }
+    };
+
+    document.addEventListener("click", handleAnchorClick);
+
+    return () => {
+      document.removeEventListener("click", handleAnchorClick);
+      cancelAnimationFrame(animationFrameId);
+      lenis.destroy();
+      delete (window as any).lenis;
+    };
   }, []);
 
   const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => {

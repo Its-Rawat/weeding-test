@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MusicCard } from "@/components/ui/music-card";
 import { WheelCarousel, type WheelCarouselItem } from "@/components/ui/wheel-carousel";
-import { Music, Sparkles, Disc3, Radio, ChevronLeft, ChevronRight } from "lucide-react";
+import { Music, Sparkles, Disc3, Radio, ChevronLeft, ChevronRight, ListMusic, Compass, Heart } from "lucide-react";
 import type { AppConfig } from "../types";
 
 interface Track {
@@ -86,6 +86,7 @@ const CAROUSEL_ITEMS: WheelCarouselItem[] = WEDDING_PLAYLIST.map((t) => ({
 
 export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
   const [activeTrackIndex, setActiveTrackIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<"wheel" | "list">("wheel");
   const [isDark, setIsDark] = useState(() => {
     if (typeof document !== "undefined") {
       return document.documentElement.classList.contains("dark");
@@ -110,41 +111,41 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
   return (
     <section
       id="photo-music"
-      className="relative py-16 sm:py-24 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-hidden transition-colors duration-700"
+      className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-hidden transition-colors duration-700"
     >
       {/* 2026 Ambient Golden Glows */}
       <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#D4AF37]/15 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#8C1D24]/10 blur-3xl" />
 
-      <div className="container mx-auto max-w-6xl relative z-10">
+      <div className="container mx-auto max-w-5xl relative z-10">
         {/* Section Header */}
-        <div className="mb-10 sm:mb-14 text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
+        <div className="mb-8 sm:mb-12 text-center space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
             <Radio className="w-3.5 h-3.5 text-[#8C1D24] dark:text-accent animate-pulse" />
-            <span className="font-sans text-[10.5px] font-bold tracking-[0.25em] uppercase text-[#8C6B1C] dark:text-accent">
+            <span className="font-sans text-[10px] font-bold tracking-[0.25em] uppercase text-[#8C6B1C] dark:text-accent">
               Melodies &amp; Memories • 2026 Soundscape
             </span>
           </div>
 
-          <h2 className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-[#231C18] dark:text-white font-normal">
+          <h2 className="font-serif italic text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white font-normal">
             Moments in Melody
           </h2>
 
-          <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-            Every snapshot carries a song. Spin or swipe the wheel to discover our favorite wedding melodies paired with our journey.
+          <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            Every snapshot carries a song. Spin or scroll through 3 songs at a time to experience our celebration playlist.
           </p>
 
-          <div className="w-16 h-0.5 bg-[#D4AF37]/60 mx-auto rounded-full mt-2" />
+          <div className="w-14 h-0.5 bg-[#D4AF37]/60 mx-auto rounded-full mt-2" />
         </div>
 
-        {/* Compact Level-2026 Stage: Song Player Card + Song Wheel Carousel */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        {/* Compact Level-2026 Stage: Song Player Card + Compact 3-Song Playlist */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Left Column: The MusicCard Player */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center">
             <div className="relative group">
               {/* Outer Golden Aura Ring */}
               <div
-                className="absolute -inset-1.5 rounded-3xl opacity-50 blur-lg transition duration-500 group-hover:opacity-100"
+                className="absolute -inset-1 rounded-2xl opacity-50 blur-md transition duration-500 group-hover:opacity-100"
                 style={{ backgroundColor: currentTrack.mainColor }}
               />
 
@@ -161,7 +162,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
             </div>
 
             {/* Quick Track Switcher Pills */}
-            <div className="mt-4 flex items-center justify-between w-full max-w-[20rem] px-2 text-[#231C18] dark:text-slate-200">
+            <div className="mt-3.5 flex items-center justify-between w-full max-w-[20rem] px-2 text-[#231C18] dark:text-slate-200">
               <button
                 type="button"
                 onClick={() =>
@@ -191,62 +192,147 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = () => {
             </div>
           </div>
 
-          {/* Right Column: Interactive Song Wheel Carousel */}
+          {/* Right Column: Compact 3-Song Playlist (Takes Minimum Space) */}
           <div className="lg:col-span-7 flex flex-col justify-center">
-            <div className="relative rounded-3xl bg-[#FFFDF9]/90 dark:bg-darkSurface/90 border border-[#D4AF37]/40 shadow-xl p-4 sm:p-6 overflow-hidden backdrop-blur-md">
-              {/* Header inside Wheel Box */}
-              <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#D4AF37]/25">
+            <div className="relative rounded-3xl bg-[#FFFDF9]/95 dark:bg-darkSurface/95 border border-[#D4AF37]/40 shadow-xl p-4 sm:p-5 overflow-hidden backdrop-blur-md">
+              {/* Header inside Playlist Box */}
+              <div className="flex items-center justify-between pb-2.5 mb-2 border-b border-[#D4AF37]/25">
                 <div className="flex items-center gap-2">
                   <Music className="w-4 h-4 text-[#8C1D24] dark:text-accent" />
-                  <h3 className="font-serif text-sm sm:text-base font-bold text-[#231C18] dark:text-white">
-                    Wedding Melody Wheel
+                  <h3 className="font-serif text-sm font-bold text-[#231C18] dark:text-white">
+                    Wedding Playlist • 3 Songs Visible
                   </h3>
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-sans tracking-wider uppercase text-[#8C6B1C] dark:text-accent font-semibold">
-                  Spin • Swipe • Select
-                </span>
+
+                {/* View Mode Toggle: Wheel vs List */}
+                <div className="flex items-center gap-1 bg-[#FAF5EB] dark:bg-darkBg p-0.5 rounded-full border border-[#D4AF37]/30">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("wheel")}
+                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-sans font-semibold transition cursor-pointer ${
+                      viewMode === "wheel"
+                        ? "bg-[#D4AF37] text-white shadow-xs"
+                        : "text-[#5A4D43] dark:text-slate-300 hover:text-[#8C1D24]"
+                    }`}
+                  >
+                    <Compass className="w-3 h-3" /> Dial
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("list")}
+                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-sans font-semibold transition cursor-pointer ${
+                      viewMode === "list"
+                        ? "bg-[#D4AF37] text-white shadow-xs"
+                        : "text-[#5A4D43] dark:text-slate-300 hover:text-[#8C1D24]"
+                    }`}
+                  >
+                    <ListMusic className="w-3 h-3" /> List
+                  </button>
+                </div>
               </div>
 
-              {/* The Wheel Carousel Component */}
-              <div className="relative w-full h-[360px] sm:h-[400px] flex items-center justify-center">
-                <WheelCarousel
-                  items={CAROUSEL_ITEMS}
-                  mode="custom"
-                  background="transparent"
-                  panelColor={
-                    isDark
-                      ? "rgba(255, 255, 255, 0.04)"
-                      : "rgba(212, 175, 55, 0.08)"
-                  }
-                  textColor={
-                    isDark
-                      ? "rgba(250, 245, 235, 0.40)"
-                      : "rgba(90, 77, 67, 0.45)"
-                  }
-                  selectedColor={isDark ? "#D4AF37" : "#8C1D24"}
-                  markerColor="#D4AF37"
-                  markerSize={14}
-                  markerGap={16}
-                  photoSide="left"
-                  photoWidth={34}
-                  photoAspect="3/4"
-                  photoRadius={16}
-                  radius={240}
-                  spacing={18}
-                  visibleItems={5}
-                  apexInset={28}
-                  activeIndex={activeTrackIndex}
-                  onActiveChange={(_item, index) => setActiveTrackIndex(index)}
-                  className="h-full min-h-[340px]"
-                  itemClassName="font-serif text-xs sm:text-sm md:text-base font-semibold"
-                />
-              </div>
+              {/* View 1: Compact 3-Song Wheel Dial */}
+              {viewMode === "wheel" ? (
+                <div className="relative w-full h-[250px] sm:h-[270px] flex items-center justify-center">
+                  <WheelCarousel
+                    items={CAROUSEL_ITEMS}
+                    mode="custom"
+                    background="transparent"
+                    panelColor={
+                      isDark
+                        ? "rgba(255, 255, 255, 0.04)"
+                        : "rgba(212, 175, 55, 0.08)"
+                    }
+                    textColor={
+                      isDark
+                        ? "rgba(250, 245, 235, 0.45)"
+                        : "rgba(90, 77, 67, 0.45)"
+                    }
+                    selectedColor={isDark ? "#D4AF37" : "#8C1D24"}
+                    markerColor="#D4AF37"
+                    markerSize={12}
+                    markerGap={14}
+                    photoSide="left"
+                    photoWidth={36}
+                    photoAspect="3/4"
+                    photoRadius={14}
+                    radius={170}
+                    spacing={24}
+                    visibleItems={1}
+                    apexInset={26}
+                    activeIndex={activeTrackIndex}
+                    onActiveChange={(_item, index) => setActiveTrackIndex(index)}
+                    className="h-full min-h-[220px]"
+                    itemClassName="font-serif text-xs sm:text-sm font-semibold"
+                  />
+                </div>
+              ) : (
+                /* View 2: Compact Scrollable Playlist List (Strictly 3 Songs Visible at a time) */
+                <div
+                  tabIndex={0}
+                  aria-label="Scrollable wedding song list"
+                  className="space-y-2 h-[190px] max-h-[190px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-[#D4AF37]/50 scrollbar-track-transparent focus:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
+                >
+                  {WEDDING_PLAYLIST.map((track, idx) => {
+                    const isSelected = idx === activeTrackIndex;
+                    return (
+                      <button
+                        type="button"
+                        key={track.id}
+                        onClick={() => setActiveTrackIndex(idx)}
+                        className={`w-full h-[56px] flex items-center gap-3 px-3 py-2 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none ${
+                          isSelected
+                            ? "bg-[#FFFDF9] dark:bg-darkSurface border-[#D4AF37] ring-1 ring-[#D4AF37] shadow-sm"
+                            : "bg-[#FFFDF9]/60 dark:bg-darkSurface/60 border-[#D4AF37]/25 hover:border-[#D4AF37]/60 hover:bg-[#FFFDF9] dark:hover:bg-darkSurface opacity-85 hover:opacity-100"
+                        }`}
+                      >
+                        {/* Micro Photo Thumbnail */}
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 shadow-inner">
+                          <img
+                            src={track.poster}
+                            alt={track.title}
+                            className="w-full h-full object-cover"
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-[#8C1D24]/30 flex items-center justify-center">
+                              <Heart className="w-3.5 h-3.5 text-white fill-white animate-pulse" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Song Details */}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4
+                              className={`text-xs font-serif font-bold truncate ${
+                                isSelected
+                                  ? "text-[#8C1D24] dark:text-accent font-semibold"
+                                  : "text-[#231C18] dark:text-slate-200"
+                              }`}
+                            >
+                              {track.title}
+                            </h4>
+                            <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-[#FAF5EB] dark:bg-darkBg border border-[#D4AF37]/30 text-[#8C6B1C] dark:text-accent shrink-0">
+                              {track.tag}
+                            </span>
+                          </div>
+                          <p className="text-[10.5px] font-sans text-[#5A4D43] dark:text-slate-400 truncate">
+                            {track.artist}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Interactive Helper Hint */}
-              <div className="mt-3 pt-3 border-t border-[#D4AF37]/20 flex items-center justify-between text-[11px] text-[#5A4D43] dark:text-slate-400 font-sans">
-                <span className="flex items-center gap-1.5">
+              <div className="mt-2.5 pt-2.5 border-t border-[#D4AF37]/20 flex items-center justify-between text-[11px] text-[#5A4D43] dark:text-slate-400 font-sans">
+                <span className="flex items-center gap-1.5 text-[10.5px]">
                   <Sparkles className="w-3.5 h-3.5 text-[#8C1D24] dark:text-accent shrink-0" />
-                  Scroll mouse wheel or drag up/down to rotate tracks
+                  {viewMode === "wheel"
+                    ? "Wheel shows 3 songs at once • Spin or swipe to scroll"
+                    : "List shows 3 songs at once • Scroll down to browse all 6"}
                 </span>
                 <span className="hidden sm:inline font-serif italic text-[11px] text-[#8C6B1C] dark:text-accent">
                   {currentTrack.tag}
