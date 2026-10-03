@@ -4,6 +4,7 @@ import CountdownSection from "./components/CountdownSection";
 import VenueSection from "./components/VenueSection";
 import EventDetails from "./components/EventDetails";
 import RSVPForm from "./components/RSVPForm";
+import PhotoMusicSection from "./components/PhotoMusicSection";
 import MusicPlayer from "./components/MusicPlayer";
 import Navbar from "./components/Navbar";
 import FloatingPetals from "./components/FloatingPetals";
@@ -274,6 +275,7 @@ const App: React.FC = () => {
         />
         <VenueSection config={config} />
         <RSVPForm config={config} />
+        <PhotoMusicSection config={config} />
       </main>
 
       <MusicPlayer url={config.music.url} />

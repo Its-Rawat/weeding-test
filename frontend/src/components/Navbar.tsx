@@ -8,6 +8,7 @@ import {
   VolumeX,
   Moon,
   Sun,
+  Music,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -63,6 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     { icon: Mail, label: "Invitation", href: "#invitation" },
     { icon: Calendar, label: "Celebrations", href: "#event" },
     { icon: MapPin, label: "Venue", href: "#venue" },
+    { icon: Music, label: "Melodies", href: "#photo-music" },
     { icon: Send, label: "RSVP", href: "#rsvp", isRsvp: true },
   ];
 
