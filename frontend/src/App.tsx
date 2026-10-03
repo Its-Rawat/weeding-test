@@ -109,19 +109,26 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth < 768;
-    }
-    return false;
-  });
+  const checkIsPhoneScreen = () => {
+    if (typeof window === "undefined") return false;
+    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    return isMobileUA || window.innerWidth < 768;
+  };
+
+  const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => checkIsPhoneScreen());
 
   useEffect(() => {
     const handleResize = () => {
-      setIsPhoneScreen(window.innerWidth < 768);
+      setIsPhoneScreen(checkIsPhoneScreen());
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
   }, []);
 
   const [theme, setTheme] = useState<"light" | "dark">(() => {
