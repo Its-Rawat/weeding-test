@@ -125,7 +125,10 @@ export const MusicManager: React.FC = () => {
 
       const res = await fetch("/api/config", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Key": "wedding2027",
+        },
         credentials: "include",
         body: JSON.stringify(payload),
       });
@@ -153,6 +156,9 @@ export const MusicManager: React.FC = () => {
     const res = await fetch("/api/upload/audio", {
       method: "POST",
       credentials: "include",
+      headers: {
+        "X-Admin-Key": "wedding2027",
+      },
       body: formData,
     });
 
@@ -173,6 +179,9 @@ export const MusicManager: React.FC = () => {
     const res = await fetch("/api/upload/image", {
       method: "POST",
       credentials: "include",
+      headers: {
+        "X-Admin-Key": "wedding2027",
+      },
       body: formData,
     });
 

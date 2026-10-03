@@ -5,6 +5,9 @@
   # Route API requests to PHP proxy
   RewriteRule ^api/(.*)$ api_proxy.php [QSA,L]
 
+  # Route uploads directory directly to Render backend so uploaded songs stream perfectly
+  RewriteRule ^uploads/(.*)$ https://weeding-test.onrender.com/uploads/$1 [R=302,L]
+
   # Existing files and directories serve directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
