@@ -15,6 +15,7 @@ import {
   personalizedRsvpService,
   type PublicInvitation,
 } from "../services/personalizedRsvpService";
+import { EtchingFrameCorners } from "./ui/EtchingCorner";
 
 interface PersonalizedRSVPProps {
   token: string;
@@ -205,18 +206,21 @@ export const PersonalizedRSVPSection: React.FC<PersonalizedRSVPProps> = ({ token
 
   return (
     <div className="w-full max-w-2xl mx-auto my-6 px-4">
-      {/* Editorial Arched Royal RSVP Container */}
-      <div className="relative bg-[#FFFDF9] rounded-3xl border-2 border-[#D4AF37]/70 shadow-[0_15px_45px_-10px_rgba(140,107,28,0.15)] p-6 sm:p-10 text-center overflow-hidden transition-all duration-300">
+      {/* Editorial Arched Royal RSVP Container (Huey Lightshop Style) */}
+      <div className="relative bg-[#FFFBF0] dark:bg-[#1c1716] rounded-2xl border border-[#374454]/25 dark:border-[#C5A059]/30 shadow-[0_15px_45px_-10px_rgba(55,68,84,0.1)] p-6 sm:p-10 text-center overflow-hidden transition-all duration-300">
         
+        {/* Ornate Corner Filigrees */}
+        <EtchingFrameCorners color="#374454" size={24} className="opacity-35 dark:opacity-20" />
+
         {/* Subtle Inner Filigree Border */}
-        <div className="absolute inset-2.5 rounded-2xl border border-[#D4AF37]/30 pointer-events-none" />
+        <div className="absolute inset-2.5 rounded-xl border border-[#374454]/15 dark:border-[#C5A059]/20 pointer-events-none" />
 
         {/* Auspicious Header Emblem */}
         <div className="flex flex-col items-center mb-4">
-          <div className="w-12 h-12 rounded-full border border-[#D4AF37] bg-[#FAF5EB] flex items-center justify-center mb-2 shadow-xs">
+          <div className="w-12 h-12 rounded-full border border-[#374454]/30 dark:border-[#C5A059]/40 bg-[#FFFBF0] dark:bg-[#151111] flex items-center justify-center mb-2 shadow-2xs">
             <Heart className="w-5 h-5 text-[#8C1D24] fill-[#8C1D24]/20 animate-pulse" />
           </div>
-          <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#8C6B1C] uppercase">
+          <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#374454] dark:text-[#C5A059] uppercase">
             Personalized Invitation RSVP
           </span>
         </div>

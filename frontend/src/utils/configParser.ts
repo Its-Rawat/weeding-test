@@ -12,7 +12,7 @@ export const DEFAULT_CEREMONIES: CelebrationEvent[] = [
     venueAddress: "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)",
     dressCode: "Vibrant Mehndi Greens & Pastel Florals",
     desc: "Welcoming our beloved guests as Chandrika adorns bridal henna, accompanied by live folk rhythms, traditional bangles artisan, and gourmet chaat stations.",
-    illustration: "🌿",
+    illustration: "/illustrations/mehendi_etching.jpg",
     startIso: "2027-02-14T16:00:00+05:30",
     endIso: "2027-02-14T20:00:00+05:30",
   },
@@ -27,7 +27,7 @@ export const DEFAULT_CEREMONIES: CelebrationEvent[] = [
     venueAddress: "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)",
     dressCode: "Sunny Yellows, Ochre & Marigold Orange",
     desc: "An auspicious ceremony of turmeric paste blessings for Chandrika & Xudong, accompanied by celebratory dhol beats and a shower of fresh marigold and rose petals.",
-    illustration: "🌼",
+    illustration: "/illustrations/haldi_etching.jpg",
     startIso: "2027-02-15T10:00:00+05:30",
     endIso: "2027-02-15T13:00:00+05:30",
   },
@@ -42,13 +42,21 @@ export const DEFAULT_CEREMONIES: CelebrationEvent[] = [
     venueAddress: "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)",
     dressCode: "Traditional Banarasi Silks & Regal Sherwanis",
     desc: "Xudong arrives with joyful baraat procession, followed by Chandrika's grand bridal entrance and the sacred seven pheras around the holy agni.",
-    illustration: "🔥",
+    illustration: "/illustrations/wedding_etching.jpg",
     startIso: "2027-02-15T19:00:00+05:30",
     endIso: "2027-02-15T22:00:00+05:30",
   },
 ];
 
 export const DEFAULT_STORY_SLIDES: StorySlide[] = [
+  {
+    image: "/illustrations/couple_etching.jpg",
+    chapter: "Artistic Memory",
+    title: "Resort Bridge Etching",
+    subtitle: "Hand-sketched under tropical palms",
+    caption:
+      "A hand-drawn architectural pen-and-ink etching capturing Chandrika & Xudong smiling together on the wooden resort bridge.",
+  },
   {
     image: "/couple/snow_winter.jpg",
     chapter: "Chapter 01",

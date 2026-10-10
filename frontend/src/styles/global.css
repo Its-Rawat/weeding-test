@@ -3,10 +3,14 @@
 @source "./**/*.{js,ts,jsx,tsx}";
 @variant dark (&:where(.dark, .dark *));
 @theme {
-  /* Authentic Royal Indian Wedding Palette */
-  --color-primary: #231C18;
-  --color-secondary: #FAF5EB;
-  --color-accent: #D4AF37;
+  /* Huey Lightshop × Royal Indian Palette */
+  --color-primary: #232B35;
+  --color-secondary: #FFFBF0;
+  --color-parchment: #FFFBF0;
+  --color-hueySlate: #374454;
+  --color-hueyMuted: #5A6A7D;
+  --color-hueyWine: #3A111A;
+  --color-accent: #C5A059;
   --color-accentDark: #8C6B1C;
   --color-crimson: #8C1D24;
   --color-crimsonDeep: #750D14;
@@ -14,12 +18,13 @@
   --color-darkBg: #151111;
   --color-darkSurface: #1F1718;
 
-  /* Fonts: Calligraphy for Names, Elegant Serif for Titles, Clean Modern Sans for Details */
-  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  /* Typography: EB Garamond Editorial Serif (Huey Lightshop), Royal Cinzel, Script */
+  --font-serif: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  --font-editorial: "EB Garamond", serif;
   --font-script: "Great Vibes", "Alex Brush", cursive;
   --font-sans: "Plus Jakarta Sans", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-devanagari: "Rozha One", "Cormorant Garamond", serif;
-  --font-royal: "Cinzel", "Marcellus", "Cormorant Garamond", serif;
+  --font-royal: "Cinzel", "EB Garamond", serif;
 
   /* Animations */
   --animate-subtle-zoom: subtleZoom 20s infinite alternate;
@@ -107,6 +112,21 @@
   }
   .font-royal {
     font-family: var(--font-royal);
+  }
+  .font-editorial {
+    font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  }
+  .font-garamond {
+    font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  }
+  .bg-parchment {
+    background-color: #FFFBF0;
+  }
+  .border-etching {
+    border: 1px solid rgba(55, 68, 84, 0.16);
+  }
+  .shadow-etching {
+    box-shadow: 0 12px 35px -8px rgba(55, 68, 84, 0.08);
   }
 }
 

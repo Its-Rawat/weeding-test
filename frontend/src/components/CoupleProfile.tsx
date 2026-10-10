@@ -1,6 +1,7 @@
-import { Heart } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { Heart, PenTool, Image as ImageIcon } from "lucide-react";
 import type { AppConfig } from "../types";
+import { EtchingFrameCorners } from "./ui/EtchingCorner";
 
 const InstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -10,85 +11,187 @@ const InstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 const CoupleProfile: React.FC<{ config: AppConfig }> = ({ config }) => {
   const { bride, groom } = config.couple;
+  const [brideMode, setBrideMode] = useState<"etching" | "photo">("etching");
+  const [groomMode, setGroomMode] = useState<"etching" | "photo">("etching");
+
   return (
     <section
       id="couple"
-      className="dark:bg-darkBg relative bg-[#FAF5EB] py-24 transition-colors duration-1000 md:py-36 border-t border-[#D4AF37]/20"
+      className="relative bg-[#FFFBF0] dark:bg-[#151111] py-20 md:py-32 border-t border-[#374454]/15 dark:border-[#C5A059]/20 transition-colors duration-1000 overflow-hidden"
     >
-      <div className="relative z-10 container mx-auto max-w-6xl px-6">
-        <div className="mb-20 space-y-5 text-center md:mb-28">
-          <Heart className="text-[#8C1D24]/60 dark:text-accent/40 mx-auto mb-4 h-6 w-6 animate-pulse" />
-          <span className="text-[#8C6B1C] dark:text-accent font-serif text-xl sm:text-2xl italic">
-            {config.text.opening.salam}
-          </span>
-          <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl tracking-tight text-[#231C18] italic dark:text-white">
-            The Happy Couple
+      <div className="relative z-10 container mx-auto max-w-5xl px-4 sm:px-6">
+        
+        {/* Editorial Section Header (Huey Lightshop Style) */}
+        <div className="mb-16 md:mb-24 space-y-4 text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 text-xs text-[#8C1D24] dark:text-[#C5A059] tracking-[0.25em] uppercase font-sans font-semibold">
+            <span>🪷</span>
+            <span>Artistic Portraiture</span>
+            <span>🪷</span>
+          </div>
+
+          <h2 className="font-editorial text-4xl sm:text-6xl md:text-7xl font-normal text-[#232B35] dark:text-white tracking-tight">
+            The Bride &amp; Groom
           </h2>
-          <div className="bg-[#D4AF37]/40 mx-auto h-[1px] w-24"></div>
-          <p className="mx-auto max-w-3xl font-serif text-lg sm:text-xl md:text-2xl leading-relaxed font-light text-balance text-[#5A4D43] italic dark:text-slate-300">
-            {config.text.quote.ar_rum}
+
+          <div className="flex items-center justify-center gap-3 my-2">
+            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
+            <span className="text-[#C5A059] text-xs">✦</span>
+            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
+          </div>
+
+          <p className="font-editorial italic text-lg sm:text-xl text-[#556272] dark:text-stone-300 leading-relaxed font-light">
+            "{config.text.quote?.ar_rum || "Two souls united under sacred stars, embarking on a timeless voyage of love, harmony, and shared dreams."}"
           </p>
-          <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.3em] text-[#8C6B1C] uppercase">
-            {config.text.quote.source}
+
+          <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.3em] text-[#374454] dark:text-[#C5A059] uppercase">
+            {config.text.quote?.source || "Sacred Vedic Nuptials"}
           </p>
         </div>
-        <div className="grid items-start gap-16 md:grid-cols-2 md:gap-24">
-          <div className="group flex flex-col items-center space-y-8 text-center md:items-end md:text-right">
-            <div className="relative">
-              <div className="border-[#D4AF37]/40 dark:border-accent/20 absolute -inset-4 scale-105 rounded-full border transition-transform duration-1000 group-hover:scale-100 md:-inset-6"></div>
-              <img
-                src={groom.image}
-                className="dark:border-darkSurface relative h-56 w-56 rounded-full border-4 border-[#FFFDF9] ring-2 ring-[#D4AF37]/50 object-cover shadow-2xl transition-all duration-1000 group-hover:brightness-105 md:h-[22rem] md:w-[22rem]"
-                alt={groom.name}
-              />
+
+        {/* 2-Column Editorial Spread: Groom & Bride */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
+          
+          {/* 1. GROOM CARD (Xudong) */}
+          <div className="relative bg-[#FFFBF0] dark:bg-[#1c1716] rounded-2xl border border-[#374454]/20 dark:border-[#C5A059]/30 p-6 sm:p-8 shadow-[0_12px_40px_-10px_rgba(55,68,84,0.08)] flex flex-col items-center text-center overflow-hidden">
+            <EtchingFrameCorners color="#374454" size={24} className="opacity-35 dark:opacity-20" />
+
+            {/* Toggle Switch */}
+            <div className="inline-flex items-center p-1 rounded-full bg-[#FAF5EB] dark:bg-black/30 border border-[#374454]/15 mb-4 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setGroomMode("etching")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-sans font-semibold uppercase tracking-wider transition-all ${
+                  groomMode === "etching"
+                    ? "bg-[#374454] text-[#FFFBF0] shadow-xs"
+                    : "text-[#556272] hover:text-[#374454] dark:text-stone-300"
+                }`}
+              >
+                <PenTool className="w-3 h-3" />
+                <span>Etching Art</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setGroomMode("photo")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-sans font-semibold uppercase tracking-wider transition-all ${
+                  groomMode === "photo"
+                    ? "bg-[#374454] text-[#FFFBF0] shadow-xs"
+                    : "text-[#556272] hover:text-[#374454] dark:text-stone-300"
+                }`}
+              >
+                <ImageIcon className="w-3 h-3" />
+                <span>Photo</span>
+              </button>
             </div>
-            <div className="space-y-3 md:space-y-5">
-              <h3 className="font-script text-5xl sm:text-7xl md:text-8xl text-[#231C18] py-1 dark:text-white drop-shadow-sm">
+
+            {/* Architectural Arched Portrait */}
+            <div className="relative w-48 h-64 sm:w-56 sm:h-74 rounded-t-[110px] rounded-b-xl overflow-hidden border border-[#374454]/25 dark:border-[#C5A059]/40 bg-[#FFFBF0] shadow-md my-2 group">
+              <img
+                src={groomMode === "etching" ? "/illustrations/groom_etching.jpg" : groom.image}
+                alt={groom.name}
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-50" />
+            </div>
+
+            {/* Groom Details */}
+            <div className="mt-5 space-y-2">
+              <span className="font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-[#C5A059]">
+                The Groom
+              </span>
+              <h3 className="font-editorial text-3xl sm:text-4xl text-[#232B35] dark:text-white font-normal">
                 {groom.fullName}
               </h3>
-              <p className="font-sans ml-auto max-w-xs text-[11px] font-medium tracking-[0.2em] text-balance text-[#5A4D43] uppercase md:max-w-sm md:text-[13px] dark:text-slate-400">
+              <p className="font-editorial italic text-xs sm:text-sm text-[#556272] dark:text-stone-300 max-w-xs mx-auto leading-relaxed">
                 {groom.parents}
               </p>
-              <a
-                href={`https://instagram.com/${groom.instagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-sans text-[#8C6B1C] hover:text-[#8C1D24] inline-flex items-center gap-2.5 rounded-full border border-[#D4AF37]/40 bg-[#FFFDF9] px-6 py-2.5 shadow-2xs transition-all hover:scale-105 dark:border-white/10 dark:bg-white/5 dark:hover:text-white"
-              >
-                <InstagramIcon className="h-3.5 w-3.5 text-[#8C1D24]" />
-                <span className="text-[10px] font-bold tracking-widest uppercase">
-                  @{groom.instagram}
-                </span>
-              </a>
+
+              {groom.instagram && (
+                <div className="pt-2">
+                  <a
+                    href={`https://instagram.com/${groom.instagram}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#374454]/20 dark:border-[#C5A059]/30 bg-[#FAF5EB] dark:bg-black/30 px-4 py-1.5 text-xs text-[#374454] dark:text-stone-300 hover:border-[#8C1D24] transition-all hover:scale-105"
+                  >
+                    <InstagramIcon className="h-3 w-3 text-[#8C1D24]" />
+                    <span className="text-[10px] font-sans font-bold tracking-widest uppercase">
+                      @{groom.instagram}
+                    </span>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
-          <div className="group flex flex-col items-center space-y-8 text-center md:items-start md:text-left">
-            <div className="relative">
-              <div className="border-[#D4AF37]/40 dark:border-accent/20 absolute -inset-4 scale-105 rounded-full border transition-transform duration-1000 group-hover:scale-100 md:-inset-6"></div>
-              <img
-                src={bride.image}
-                className="dark:border-darkSurface relative h-56 w-56 rounded-full border-4 border-[#FFFDF9] ring-2 ring-[#D4AF37]/50 object-cover shadow-2xl transition-all duration-1000 group-hover:brightness-105 md:h-[22rem] md:w-[22rem]"
-                alt={bride.name}
-              />
+
+          {/* 2. BRIDE CARD (Chandrika) */}
+          <div className="relative bg-[#FFFBF0] dark:bg-[#1c1716] rounded-2xl border border-[#374454]/20 dark:border-[#C5A059]/30 p-6 sm:p-8 shadow-[0_12px_40px_-10px_rgba(55,68,84,0.08)] flex flex-col items-center text-center overflow-hidden">
+            <EtchingFrameCorners color="#374454" size={24} className="opacity-35 dark:opacity-20" />
+
+            {/* Toggle Switch */}
+            <div className="inline-flex items-center p-1 rounded-full bg-[#FAF5EB] dark:bg-black/30 border border-[#374454]/15 mb-4 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setBrideMode("etching")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-sans font-semibold uppercase tracking-wider transition-all ${
+                  brideMode === "etching"
+                    ? "bg-[#374454] text-[#FFFBF0] shadow-xs"
+                    : "text-[#556272] hover:text-[#374454] dark:text-stone-300"
+                }`}
+              >
+                <PenTool className="w-3 h-3" />
+                <span>Etching Art</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setBrideMode("photo")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-sans font-semibold uppercase tracking-wider transition-all ${
+                  brideMode === "photo"
+                    ? "bg-[#374454] text-[#FFFBF0] shadow-xs"
+                    : "text-[#556272] hover:text-[#374454] dark:text-stone-300"
+                }`}
+              >
+                <ImageIcon className="w-3 h-3" />
+                <span>Photo</span>
+              </button>
             </div>
-            <div className="space-y-3 md:space-y-5">
-              <h3 className="font-script text-5xl sm:text-7xl md:text-8xl text-[#231C18] py-1 dark:text-white drop-shadow-sm">
+
+            {/* Architectural Arched Portrait */}
+            <div className="relative w-48 h-64 sm:w-56 sm:h-74 rounded-t-[110px] rounded-b-xl overflow-hidden border border-[#374454]/25 dark:border-[#C5A059]/40 bg-[#FFFBF0] shadow-md my-2 group">
+              <img
+                src={brideMode === "etching" ? "/illustrations/bride_etching.jpg" : bride.image}
+                alt={bride.name}
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-50" />
+            </div>
+
+            {/* Bride Details */}
+            <div className="mt-5 space-y-2">
+              <span className="font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-[#C5A059]">
+                The Bride
+              </span>
+              <h3 className="font-editorial text-3xl sm:text-4xl text-[#232B35] dark:text-white font-normal">
                 {bride.fullName}
               </h3>
-              <p className="font-sans max-w-xs text-[11px] font-medium tracking-[0.2em] text-balance text-[#5A4D43] uppercase md:max-w-sm md:text-[13px] dark:text-slate-400">
+              <p className="font-editorial italic text-xs sm:text-sm text-[#556272] dark:text-stone-300 max-w-xs mx-auto leading-relaxed">
                 {bride.parents}
               </p>
-              <a
-                href={`https://instagram.com/${bride.instagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-sans text-[#8C6B1C] hover:text-[#8C1D24] inline-flex items-center gap-2.5 rounded-full border border-[#D4AF37]/40 bg-[#FFFDF9] px-6 py-2.5 shadow-2xs transition-all hover:scale-105 dark:border-white/10 dark:bg-white/5 dark:hover:text-white"
-              >
-                <InstagramIcon className="h-3.5 w-3.5 text-[#8C1D24]" />
-                <span className="text-[10px] font-bold tracking-widest uppercase">
-                  @{bride.instagram}
-                </span>
-              </a>
+
+              {bride.instagram && (
+                <div className="pt-2">
+                  <a
+                    href={`https://instagram.com/${bride.instagram}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#374454]/20 dark:border-[#C5A059]/30 bg-[#FAF5EB] dark:bg-black/30 px-4 py-1.5 text-xs text-[#374454] dark:text-stone-300 hover:border-[#8C1D24] transition-all hover:scale-105"
+                  >
+                    <InstagramIcon className="h-3 w-3 text-[#8C1D24]" />
+                    <span className="text-[10px] font-sans font-bold tracking-widest uppercase">
+                      @{bride.instagram}
+                    </span>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
