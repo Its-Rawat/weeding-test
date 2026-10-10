@@ -116,86 +116,126 @@ const App: React.FC = () => {
   // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
   useEffect(() => {
     let isSnapping = false;
-    let scrollDebounce: any = null;
+    let touchStartY = 0;
+    let touchStartX = 0;
 
     const snapToPage = (targetId: "video-hero" | "invitation") => {
       if (isSnapping) return;
       isSnapping = true;
+
       const target = document.getElementById(targetId);
-      if (target) {
-        const targetTop = targetId === "video-hero" ? 0 : target.offsetTop;
-        const lenis = (window as any).lenis;
-        if (lenis && !("ontouchstart" in window)) {
-          lenis.scrollTo(targetTop, { duration: 0.9, immediate: false });
-        } else {
-          window.scrollTo({ top: targetTop, behavior: "smooth" });
-        }
+      const targetTop = targetId === "video-hero" ? 0 : (target ? target.offsetTop : window.innerHeight);
+
+      const lenis = (window as any).lenis;
+      if (lenis && !("ontouchstart" in window)) {
+        lenis.scrollTo(targetTop, {
+          duration: 0.85,
+          lock: true,
+          onComplete: () => {
+            setTimeout(() => {
+              isSnapping = false;
+            }, 100);
+          },
+        });
+      } else {
+        window.scrollTo({ top: targetTop, behavior: "smooth" });
+        setTimeout(() => {
+          isSnapping = false;
+        }, 600);
       }
-      setTimeout(() => {
-        isSnapping = false;
-      }, 750);
     };
 
     // Desktop mouse wheel handler: intercepts wheel events around Page 1 and Page 2 boundary
     const handleWheel = (e: WheelEvent) => {
-      if (isSnapping) return;
       const y = window.scrollY;
-      const vh = window.innerHeight;
+      const invitationEl = document.getElementById("invitation");
+      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
 
-      // On Page 1 (Video): any downward scroll glides to Page 2
-      if (y < 40 && e.deltaY > 4) {
+      // If already gliding to a page, absorb wheel impulses around the hero zone
+      if (isSnapping) {
+        if (y <= invitationTop + 50) {
+          e.preventDefault();
+        }
+        return;
+      }
+
+      // 1. On Page 1 (Video Hero): any downward wheel scroll glides to Page 2
+      if (y < 40 && e.deltaY > 2) {
         e.preventDefault();
         snapToPage("invitation");
+        return;
       }
-      // On Page 2 (Invitation): any upward scroll glides to Page 1
-      else if (Math.abs(y - vh) < 60 && e.deltaY < -4) {
+
+      // 2. On Page 2 (Invitation) or between Page 1 & 2: any upward wheel scroll glides to Page 1
+      if (y <= invitationTop + 40 && e.deltaY < -2) {
         e.preventDefault();
         snapToPage("video-hero");
+        return;
       }
-      // In dead zone between Page 1 and Page 2: immediately finish glide
-      else if (y > 20 && y < vh * 0.92) {
+
+      // 3. In the transition zone between Page 1 and Page 2:
+      if (y > 20 && y < invitationTop - 20) {
         e.preventDefault();
         if (e.deltaY > 0) {
           snapToPage("invitation");
         } else {
           snapToPage("video-hero");
         }
+        return;
+      }
+
+      // 4. Past Page 2 (y > invitationTop + 40): let normal scroll happen down to ceremonies, venue, RSVP!
+    };
+
+    // Mobile touch gestures:
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
       }
     };
 
-    const handleSettle = () => {
-      if (isSnapping) return;
-      const y = window.scrollY;
-      const vh = window.innerHeight;
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isSnapping || e.changedTouches.length === 0) return;
 
-      // In-between zone between video (y = 0) and invitation (y = vh)
-      if (y > 20 && y < vh * 0.9) {
-        if (y > vh * 0.15) {
-          snapToPage("invitation");
-        } else {
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaY = touchStartY - touchEndY; // > 0 means swiped UP (scrolling DOWN)
+      const deltaX = touchStartX - touchEndX;
+
+      // Ignore horizontal swipes or subtle micro-taps
+      if (Math.abs(deltaY) < 25 || Math.abs(deltaX) > Math.abs(deltaY) * 1.5) return;
+
+      const y = window.scrollY;
+      const invitationEl = document.getElementById("invitation");
+      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
+
+      // 1. On Page 1 and swiped UP (scrolling DOWN) -> snap to Page 2
+      if (y < 40 && deltaY > 25) {
+        snapToPage("invitation");
+      }
+      // 2. On Page 2 and swiped DOWN (scrolling UP towards Page 1) -> snap to Page 1
+      else if (y <= invitationTop + 40 && deltaY < -25) {
+        snapToPage("video-hero");
+      }
+      // 3. Trapped in-between:
+      else if (y > 20 && y < invitationTop - 20) {
+        if (deltaY < 0) {
           snapToPage("video-hero");
+        } else {
+          snapToPage("invitation");
         }
       }
     };
 
-    const handleTouchEnd = () => {
-      setTimeout(handleSettle, 60);
-    };
-
-    const handleScroll = () => {
-      clearTimeout(scrollDebounce);
-      scrollDebounce = setTimeout(handleSettle, 90);
-    };
-
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
-    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("scroll", handleScroll);
-      clearTimeout(scrollDebounce);
     };
   }, []);
 

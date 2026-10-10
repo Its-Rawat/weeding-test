@@ -24,13 +24,24 @@ const Hero: React.FC<HeroProps> = ({
       id="invitation"
       className="relative w-full h-[100dvh] min-h-[100dvh] flex flex-col justify-between items-center px-4 sm:px-8 py-10 sm:py-14 md:py-16 overflow-hidden text-center select-none snap-start snap-always"
     >
-      {/* 1. Full-Bleed Couple Photo on the Resort Bridge */}
+      {/* 1. Full-Bleed Couple Photo on the Resort Bridge:
+          - Desktop / Laptop (>= 768px): HD Landscape image
+          - Mobile devices (< 768px): Vertical photo (old pic)
+      */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <img
-          src="/couple/resort_bridge_landscape_hd.jpg"
-          alt="Chandrika & Xudong"
-          className="w-full h-full object-cover object-[center_35%] scale-100 transition-transform duration-[2.4s] ease-out"
-        />
+        <picture className="w-full h-full block">
+          {/* Desktop & Laptop Screens (PC, Laptop, iPad Landscape) */}
+          <source
+            media="(min-width: 768px)"
+            srcSet="/couple/resort_bridge_landscape_hd.jpg"
+          />
+          {/* Mobile Screens (Phone portrait) */}
+          <img
+            src="/couple/resort_bridge_night.jpg"
+            alt="Chandrika & Xudong"
+            className="w-full h-full object-cover object-[center_35%] scale-100 transition-transform duration-[2.4s] ease-out"
+          />
+        </picture>
         {/* Luxury Vignette Scrim:
             - Darkened top night sky so top text is crystal-clear
             - Soft transparent center so Bride & Groom faces and bodies are fully visible and illuminated

@@ -43,6 +43,26 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
   const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
   const [inquirySent, setInquirySent] = useState(false);
 
+  // Visibility: Only appear AFTER user has scrolled past the video hero page
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const checkScrollPosition = () => {
+      const invitationEl = document.getElementById("invitation");
+      // Appears once user reaches or scrolls towards the invitation section (Page 2)
+      const threshold = invitationEl ? invitationEl.offsetTop - 80 : window.innerHeight * 0.7;
+      setIsVisible(window.scrollY >= threshold);
+    };
+
+    checkScrollPosition();
+    window.addEventListener("scroll", checkScrollPosition, { passive: true });
+    window.addEventListener("resize", checkScrollPosition, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", checkScrollPosition);
+      window.removeEventListener("resize", checkScrollPosition);
+    };
+  }, []);
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const initialMessages: Message[] = [
@@ -276,10 +296,19 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
 
   return (
     <>
-      {/* FLOATING TRIGGER BUTTON (Always accessible, elegant gold & royal crimson) */}
-      <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 select-none">
+      {/* FLOATING TRIGGER BUTTON (Only visible AFTER video page, elegant gold & royal crimson) */}
+      <div
+        className={`fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 select-none transition-all duration-500 ease-out ${
+          isVisible || isOpen
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-8 pointer-events-none"
+        }`}
+      >
         <button
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => {
+            setIsOpen((prev) => !prev);
+            setHasOpened(true);
+          }}
           className="group relative flex items-center gap-2.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white shadow-[0_4px_20px_rgba(140,29,36,0.4)] border border-[#D4AF37]/50 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           title="Ask Wedding AI Concierge"
         >
