@@ -336,7 +336,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
           {/* Subtle Floating Speech Bubble (Appears on idle/hover) */}
           <div
             id="cat-speech-bubble"
-            className="animate-bubble mb-1 px-3 py-1 rounded-full bg-[#FAF5EB]/95 dark:bg-[#201819]/95 backdrop-blur-md border border-[#DDCFB5] dark:border-[#D4AF37]/40 shadow-sm text-[11px] font-serif font-bold text-[#7E1A27] dark:text-[#E5A8AD] tracking-wider transition-all duration-300 flex items-center gap-1.5 group-hover:scale-105"
+            className="animate-bubble mb-0.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#FAF5EB]/95 dark:bg-[#201819]/95 backdrop-blur-md border border-[#DDCFB5] dark:border-[#D4AF37]/40 shadow-sm text-[10px] sm:text-[11px] font-serif font-bold text-[#7E1A27] dark:text-[#E5A8AD] tracking-wider transition-all duration-300 flex items-center gap-1 group-hover:scale-105"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-ping" />
             <span>{isOpen ? "Close ✕" : "Ask Me! ✨"}</span>
@@ -344,25 +344,25 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
 
           {/* The Cat Character */}
           <div className="relative flex flex-col items-center">
-            {/* The Floating Cat Graphic */}
+            {/* The Floating Cat Graphic (Scaled to a cute compact size) */}
             <img
               id="free-cat-img"
               src="/illustrations/lucky_cat.png"
               alt="Maneki Neko Lucky Cat"
-              className="relative z-10 w-20 sm:w-24 h-auto object-contain animate-floating-cat group-hover:scale-110 active:scale-95 transition-transform duration-300 filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
+              className="relative z-10 w-14 sm:w-16 h-auto object-contain animate-floating-cat group-hover:scale-110 active:scale-95 transition-transform duration-300 filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.18)]"
             />
 
             {/* Natural Soft Ground Shadow (Breathes under cat's feet) */}
-            <div className="w-14 h-3 rounded-full bg-stone-900/40 blur-[3px] animate-shadow -mt-1.5 z-0" />
+            <div className="w-10 sm:w-12 h-2 rounded-full bg-stone-900/35 blur-[2.5px] animate-shadow -mt-1 z-0" />
 
             {/* Floating Sparkle Near Waving Paw */}
-            <span className="absolute top-1 right-0 text-sm text-[#D4AF37] opacity-90 animate-pulse pointer-events-none group-hover:scale-125 transition-transform">
+            <span className="absolute top-0.5 right-0 text-xs sm:text-sm text-[#D4AF37] opacity-90 animate-pulse pointer-events-none group-hover:scale-125 transition-transform">
               ✨
             </span>
 
             {/* Floating Close Badge (Only appears when open) */}
             <div
-              className={`absolute -top-1 -right-1 z-20 w-6 h-6 rounded-full bg-[#7E1A27] text-white text-xs font-bold flex items-center justify-center shadow-md transition-opacity duration-300 ${
+              className={`absolute -top-1 -right-1 z-20 w-5 h-5 rounded-full bg-[#7E1A27] text-white text-[10px] font-bold flex items-center justify-center shadow-md transition-opacity duration-300 ${
                 isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
               }`}
             >
