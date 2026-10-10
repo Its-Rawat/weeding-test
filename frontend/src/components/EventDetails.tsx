@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Calendar, Clock, MapPin, Sparkles, Plus, ExternalLink, Check } from "lucide-react";
+import React from "react";
 import type { AppConfig, CelebrationEvent } from "../types";
 import { DEFAULT_CEREMONIES } from "../utils/configParser";
 import { generateGoogleCalendarUrl } from "../utils/calendarUtils";
@@ -19,8 +18,6 @@ const normalizeEvent = (e: string): string => {
 };
 
 const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, guestName }) => {
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-
   // DB-driven celebrations with fallback
   const ceremonies: CelebrationEvent[] =
     config.celebrations && config.celebrations.length > 0
@@ -54,119 +51,151 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
     window.open(generateGoogleCalendarUrl(calendarEvent), "_blank");
   };
 
-  const handleCopyVenue = (id: number, text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
+  const isMultiEvent = displayCeremonies.length > 1;
 
   return (
-    <section id="event" className="relative py-16 sm:py-24 px-4 bg-[#FAF5EB] border-t border-[#D4AF37]/20 overflow-hidden">
-      {/* 2026 Ambient Gradient Lighting */}
-      <div className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-bl from-[#D4AF37]/20 via-[#F7D8A5]/10 to-transparent blur-3xl -z-10" />
-      <div className="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-gradient-to-tr from-[#8C1D24]/15 via-transparent to-transparent blur-3xl -z-10" />
+    <section
+      id="event"
+      className="relative py-16 sm:py-24 px-4 sm:px-8 bg-[#FAF5EB] dark:bg-darkBg overflow-hidden transition-colors duration-1000"
+    >
+      {/* Editorial Container (Zero cards, zero container boxes, completely seamless) */}
+      <div className="w-full max-w-2xl mx-auto space-y-12 sm:space-y-16 relative z-10">
 
-      <div className="max-w-2xl mx-auto relative z-10">
-        
-        {/* Section Title */}
-        <div className="text-center mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-1.5 text-xs text-[#8C6B1C] tracking-widest uppercase font-serif font-medium mb-1">
-            <span>🪷</span>
-            <span>Itinerary &amp; Royal Ceremonies</span>
-            <span>🪷</span>
-          </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl text-[#231C18] font-normal">
-            The Celebrations
-          </h2>
-          {guestName && normalizedAllowed ? (
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFFDF9] border border-[#D4AF37] text-xs sm:text-sm font-serif font-medium text-[#8C1D24] shadow-xs mt-3">
-              <span>✨ Sacred Itinerary specially curated for <strong className="font-bold">{guestName}</strong></span>
-            </div>
-          ) : (
-            <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
-              Please join us for the sacred wedding ceremony and auspicious pheras.
-            </p>
-          )}
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3 rounded-full" />
-        </div>
-
-        {/* Ceremony Cards Stack */}
-        <div className="space-y-6 sm:space-y-8">
-          {displayCeremonies.map((evt) => (
-            <div
-              key={evt.id}
-              className="bg-[#FFFDF9] rounded-3xl border border-[#D4AF37]/50 shadow-[0_8px_30px_rgba(140,107,28,0.08)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.18)] hover:border-[#D4AF37] transition-all duration-300 p-5 sm:p-7 relative overflow-hidden"
-            >
-              {/* Top Accent Icon & Date (Function 1/2/3 removed as requested) */}
-              <div className="flex items-center justify-between border-b border-[#D4AF37]/25 pb-3 mb-4">
-                <span className="text-2xl sm:text-3xl p-2 rounded-2xl bg-[#FAF5EB] border border-[#D4AF37]/40 flex items-center justify-center shadow-xs">
-                  {evt.illustration}
-                </span>
-                <span className="text-xs font-serif italic text-[#8C6B1C] font-semibold flex items-center gap-1.5 bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#D4AF37]/30">
-                  <Sparkles className="w-3.5 h-3.5 text-[#8C1D24]" />
-                  {evt.dayDate}
-                </span>
-              </div>
-
-              {/* Ceremony Title */}
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#231C18] tracking-tight">
-                {evt.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-[#8C6B1C] font-serif italic mt-0.5 mb-4">
-                "{evt.subtitle}"
+        {/* Multi-ceremony header (rendered only when guest is invited to multiple events like Mehendi & Haldi) */}
+        {isMultiEvent && (
+          <header className="text-center space-y-2 pb-4">
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.3em] uppercase text-[#9E7D46] dark:text-[#D4AF37]">
+              Sacred Itinerary
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight">
+              The Wedding Celebrations
+            </h2>
+            {guestName && (
+              <p className="text-xs sm:text-sm font-serif italic text-[#8F2837] dark:text-[#E5A8AD] pt-1">
+                Specially curated for {guestName}
               </p>
+            )}
+            <div className="w-16 h-[1px] bg-[#E2D8C9] dark:bg-white/15 mx-auto mt-4" />
+          </header>
+        )}
 
-              {/* Date, Time & Venue Block */}
-              <div className="bg-[#FAF5EB] rounded-2xl p-4 border border-[#D4AF37]/35 space-y-2 text-xs sm:text-sm text-[#231C18] mb-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#8C1D24] shrink-0" />
-                  <span className="font-semibold text-[#231C18]">{evt.dayDate}</span>
+        {/* Ceremonies List: Magazine Editorial Layout */}
+        {displayCeremonies.map((evt, index) => {
+          const isWedding =
+            evt.key === "WEDDING" ||
+            evt.title.toLowerCase().includes("wedding") ||
+            evt.title.toLowerCase().includes("phera");
+
+          return (
+            <article
+              key={evt.id}
+              className={`w-full text-center space-y-8 sm:space-y-10 ${
+                index > 0 ? "pt-12 sm:pt-16 border-t border-[#E2D8C9] dark:border-white/10" : ""
+              }`}
+            >
+              {/* 1. Editorial Header */}
+              <header className="space-y-3">
+                <h3 className="text-4xl sm:text-5xl md:text-6xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight leading-none">
+                  {isWedding && !isMultiEvent ? "Our Wedding Ceremony" : evt.title}
+                </h3>
+                <p className="text-xs sm:text-sm font-sans font-medium tracking-[0.3em] uppercase text-[#8F2837] dark:text-[#FFB4AB]">
+                  {isWedding ? "Baraat • Pheras" : evt.subtitle}
+                </p>
+              </header>
+
+              {/* 2. Date & Time Axis (Anchored by hairline borders only, no card container) */}
+              <section className="py-8 border-y border-[#E2D8C9] dark:border-white/15 space-y-6">
+                {/* Date */}
+                <div>
+                  <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#9E7D46] dark:text-[#D4AF37]">
+                    Date
+                  </span>
+                  <p className="text-xl sm:text-2xl font-serif font-medium text-[#191410] dark:text-[#FAF5EB] mt-1">
+                    {evt.dayDate}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#8C6B1C] shrink-0" />
-                  <span className="font-medium text-[#5A4D43]">{evt.time}</span>
-                </div>
-                <div className="flex items-start gap-2 pt-1 border-t border-[#D4AF37]/25">
-                  <MapPin className="w-4 h-4 text-[#8C1D24] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold block text-[#231C18]">{evt.venueName}</span>
-                    <span className="text-[11px] text-[#5A4D43] font-light block">{evt.venueAddress}</span>
+
+                {/* Baraat & Pheras Timings (or single timing for Haldi / Mehendi) */}
+                {isWedding ? (
+                  <div className="flex items-center justify-center gap-8 sm:gap-16 pt-2">
+                    <div className="text-center">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#9E7D46] dark:text-[#D4AF37]">
+                        Baraat
+                      </span>
+                      <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] mt-0.5">
+                        07:00 <span className="text-xs font-sans font-normal text-stone-500 dark:text-stone-400">PM</span>
+                      </p>
+                    </div>
+
+                    <div className="h-8 w-[1px] bg-[#E2D8C9] dark:bg-white/15"></div>
+
+                    <div className="text-center">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#8F2837] dark:text-[#FFB4AB]">
+                        Pheras
+                      </span>
+                      <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#8F2837] dark:text-[#FFB4AB] mt-0.5">
+                        08:30 <span className="text-xs font-sans font-normal text-stone-500 dark:text-stone-400">PM</span>
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
+                ) : (
+                  <div className="pt-2 text-center">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#9E7D46] dark:text-[#D4AF37]">
+                      Ceremony Timing
+                    </span>
+                    <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] mt-0.5">
+                      {evt.time}
+                    </p>
+                  </div>
+                )}
+              </section>
 
-              {/* Dress Code Tag */}
-              <div className="mb-5 flex items-center gap-2 text-xs">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8C6B1C] bg-[#D4AF37]/15 px-2.5 py-0.5 rounded border border-[#D4AF37]/30 shrink-0">
-                  Attire
+              {/* 3. Venue & Destination */}
+              <section className="space-y-2 max-w-md mx-auto">
+                <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#9E7D46] dark:text-[#D4AF37]">
+                  Destination
                 </span>
-                <span className="text-[#5A4D43] font-medium italic truncate">{evt.dressCode}</span>
-              </div>
+                <h4 className="text-xl sm:text-2xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] leading-snug">
+                  {evt.venueName}
+                </h4>
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-light leading-relaxed">
+                  {evt.venueAddress}
+                </p>
 
-              {/* Action Buttons: Add to Calendar & Directions */}
-              <div className="flex items-center gap-2 pt-1">
+                {evt.dressCode && (
+                  <div className="pt-3">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#9E7D46] dark:text-[#D4AF37] block">
+                      Attire
+                    </span>
+                    <p className="text-xs sm:text-sm font-serif italic text-[#5A4D43] dark:text-[#E0D5C7] mt-0.5">
+                      {evt.dressCode}
+                    </p>
+                  </div>
+                )}
+              </section>
+
+              {/* 4. Understated Action Bar (Minimalist Links - Zero button boxes) */}
+              <footer className="pt-4 flex items-center justify-center gap-6 text-xs sm:text-sm tracking-wider uppercase font-semibold">
                 <button
                   onClick={() => handleAddToCalendar(evt)}
-                  className="flex-1 py-2.5 px-3 bg-[#FAF5EB] hover:bg-[#F3E7D5] text-[#231C18] rounded-xl border border-[#D4AF37]/60 text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors active:scale-98 shadow-xs cursor-pointer"
+                  className="text-[#191410] dark:text-[#FAF5EB] py-1 border-b border-[#191410] dark:border-[#FAF5EB] hover:text-[#8F2837] hover:border-[#8F2837] dark:hover:text-[#FFB4AB] dark:hover:border-[#FFB4AB] transition-all cursor-pointer bg-transparent"
                 >
-                  <Plus className="w-3.5 h-3.5 text-[#8C6B1C]" />
-                  <span>Add to Calendar</span>
+                  + Add to Calendar
                 </button>
-
+                <span className="text-stone-300 dark:text-stone-600 font-light">&bull;</span>
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(evt.venueName + " " + evt.venueAddress)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2.5 px-4 bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#9A1616] text-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-sm cursor-pointer"
+                  className="text-[#8F2837] dark:text-[#FFB4AB] py-1 border-b border-[#8F2837] dark:border-[#FFB4AB] hover:opacity-80 transition-all inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-[#FFE082]" />
-                  <span>Map</span>
+                  <span>View Map</span>
+                  <span className="text-[11px]">↗</span>
                 </a>
-              </div>
-
-            </div>
-          ))}
-        </div>
+              </footer>
+            </article>
+          );
+        })}
 
       </div>
     </section>

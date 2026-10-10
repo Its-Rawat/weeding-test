@@ -77,25 +77,31 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
           Until We Celebrate Under The Mandap • {celebrationSubtitle}
         </p>
 
-        {/* Minimalist 4-Box Grid */}
-        <div className="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto">
+        {/* Minimalist Hairline Countdown (Zero box cards) */}
+        <div className="flex items-center justify-center gap-4 sm:gap-8 max-w-md mx-auto py-5 border-y border-[#E2D8C9] dark:border-white/10">
           {[
-            { label: "DAYS", value: timeLeft.days, isCrimson: false },
-            { label: "HOURS", value: timeLeft.hours, isCrimson: false },
-            { label: "MINS", value: timeLeft.minutes, isCrimson: false },
-            { label: "SECS", value: timeLeft.seconds, isCrimson: true },
+            { label: "Days", value: timeLeft.days, isCrimson: false },
+            { label: "Hours", value: timeLeft.hours, isCrimson: false },
+            { label: "Mins", value: timeLeft.minutes, isCrimson: false },
+            { label: "Secs", value: timeLeft.seconds, isCrimson: true },
           ].map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-[#FFFDF9] rounded-2xl border border-[#D4AF37]/50 p-3 sm:p-4 shadow-[0_4px_16px_rgba(140,107,28,0.06)] flex flex-col items-center justify-center transition-all hover:border-[#D4AF37] hover:scale-105"
-            >
-              <span className={`font-serif text-2xl sm:text-4xl font-bold leading-none ${item.isCrimson ? "text-[#8C1D24]" : "text-[#231C18]"}`}>
-                {String(item.value).padStart(2, "0")}
-              </span>
-              <span className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C6B1C] mt-1.5">
-                {item.label}
-              </span>
-            </div>
+            <React.Fragment key={idx}>
+              {idx > 0 && <div className="h-8 w-[1px] bg-[#E2D8C9] dark:bg-white/10" />}
+              <div className="text-center px-1 sm:px-2">
+                <span
+                  className={`font-serif text-2xl sm:text-4xl font-semibold leading-none block ${
+                    item.isCrimson
+                      ? "text-[#8F2837] dark:text-[#FFB4AB]"
+                      : "text-[#191410] dark:text-[#FAF5EB]"
+                  }`}
+                >
+                  {String(item.value).padStart(2, "0")}
+                </span>
+                <span className="font-sans text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9E7D46] dark:text-[#D4AF37] block mt-1.5">
+                  {item.label}
+                </span>
+              </div>
+            </React.Fragment>
           ))}
         </div>
 
