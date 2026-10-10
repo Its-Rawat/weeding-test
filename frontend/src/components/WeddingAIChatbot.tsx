@@ -69,7 +69,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
     {
       id: "welcome-1",
       sender: "bot",
-      text: `Namaste${guestName ? ` ${guestName}` : ""}! 🙏 I am your Wedding Concierge for Chandrika & Xudong's wedding celebrations.`,
+      text: `Namaste & Welcome${guestName ? ` ${guestName}` : ""}! 🐾✨ I am here to bring good fortune and help you with anything for Chandrika & Xudong's wedding celebration.`,
       timestamp: "Just now",
     },
     {
@@ -294,68 +294,111 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
     }
   };
 
+  const handleCatMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    const catImg = el.querySelector<HTMLImageElement>("#free-cat-img");
+    if (catImg) {
+      catImg.style.transform = `perspective(300px) rotateY(${x * 30}deg) rotateX(${-y * 20}deg) scale(1.08)`;
+    }
+  };
+
+  const handleCatMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const catImg = e.currentTarget.querySelector<HTMLImageElement>("#free-cat-img");
+    if (catImg) {
+      catImg.style.transform = "";
+    }
+  };
+
   return (
     <>
-      {/* FLOATING TRIGGER BUTTON (Only visible AFTER video page, elegant gold & royal crimson) */}
+      {/* FLOATING MANEKI NEKO LUCKY CAT TRIGGER (ZERO BOX/CIRCLE CONTAINER) */}
       <div
-        className={`fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 select-none transition-all duration-500 ease-out ${
+        className={`fixed bottom-6 right-4 sm:right-6 z-40 select-none transition-all duration-500 ease-out ${
           isVisible || isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 translate-y-8 pointer-events-none"
+            : "opacity-0 translate-y-12 pointer-events-none"
         }`}
       >
-        <button
+        <div
+          id="cat-trigger-zone"
           onClick={() => {
             setIsOpen((prev) => !prev);
             setHasOpened(true);
           }}
-          className="group relative flex items-center gap-2.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white shadow-[0_4px_20px_rgba(140,29,36,0.4)] border border-[#D4AF37]/50 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-          title="Ask Wedding AI Concierge"
+          onMouseMove={handleCatMouseMove}
+          onMouseLeave={handleCatMouseLeave}
+          className="relative group cursor-pointer flex flex-col items-center"
+          title="Ask Wedding Concierge"
         >
-          <div className="relative">
-            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
+          {/* Subtle Floating Speech Bubble (Appears on idle/hover) */}
+          <div
+            id="cat-speech-bubble"
+            className="animate-bubble mb-1 px-3 py-1 rounded-full bg-[#FAF5EB]/95 dark:bg-[#201819]/95 backdrop-blur-md border border-[#DDCFB5] dark:border-[#D4AF37]/40 shadow-sm text-[11px] font-serif font-bold text-[#7E1A27] dark:text-[#E5A8AD] tracking-wider transition-all duration-300 flex items-center gap-1.5 group-hover:scale-105"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-ping" />
+            <span>{isOpen ? "Close ✕" : "Ask Me! ✨"}</span>
           </div>
-          <span className="text-xs sm:text-sm font-serif tracking-wide font-medium">
-            Ask Wedding AI
-          </span>
-          {!hasOpened && (
-            <span className="absolute -top-2 -left-2 px-2 py-0.5 rounded-full bg-[#D4AF37] text-[10px] font-sans font-bold text-[#231C18] uppercase tracking-wider shadow-sm animate-bounce">
-              New
+
+          {/* The Cat Character */}
+          <div className="relative flex flex-col items-center">
+            {/* The Floating Cat Graphic */}
+            <img
+              id="free-cat-img"
+              src="/illustrations/lucky_cat.png"
+              alt="Maneki Neko Lucky Cat"
+              className="relative z-10 w-20 sm:w-24 h-auto object-contain animate-floating-cat group-hover:scale-110 active:scale-95 transition-transform duration-300 filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
+            />
+
+            {/* Natural Soft Ground Shadow (Breathes under cat's feet) */}
+            <div className="w-14 h-3 rounded-full bg-stone-900/40 blur-[3px] animate-shadow -mt-1.5 z-0" />
+
+            {/* Floating Sparkle Near Waving Paw */}
+            <span className="absolute top-1 right-0 text-sm text-[#D4AF37] opacity-90 animate-pulse pointer-events-none group-hover:scale-125 transition-transform">
+              ✨
             </span>
-          )}
-        </button>
+
+            {/* Floating Close Badge (Only appears when open) */}
+            <div
+              className={`absolute -top-1 -right-1 z-20 w-6 h-6 rounded-full bg-[#7E1A27] text-white text-xs font-bold flex items-center justify-center shadow-md transition-opacity duration-300 ${
+                isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              ✕
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* CHAT MODAL / DRAWER */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end sm:p-6 bg-black/40 backdrop-blur-xs animate-reveal">
-          <div className="relative w-full sm:w-[400px] h-[85vh] sm:h-[580px] max-h-[88vh] bg-[#FFFDF9] dark:bg-[#1A1414] rounded-t-3xl sm:rounded-3xl border border-[#D4AF37]/40 shadow-[0_20px_60px_rgba(0,0,0,0.35)] flex flex-col overflow-hidden text-[#231C18] dark:text-[#FAF5EB]">
+          <div className="relative w-full sm:w-[380px] h-[85vh] sm:h-[580px] max-h-[88vh] bg-[#FFFDF9] dark:bg-[#1A1414] rounded-t-3xl sm:rounded-3xl border border-[#D4AF37]/40 shadow-[0_25px_60px_rgba(50,30,10,0.25)] flex flex-col overflow-hidden text-[#231C18] dark:text-[#FAF5EB]">
             
             {/* 1. CHAT HEADER */}
-            <div className="px-5 py-4 bg-gradient-to-r from-[#8C1D24] via-[#750D14] to-[#8C1D24] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border border-[#D4AF37] bg-[#FAF5EB] text-[#8C1D24] flex items-center justify-center font-serif font-bold text-sm shadow-sm">
-                  C &amp; X
+            <div className="px-5 py-4 bg-gradient-to-r from-[#7E1A27] via-[#540F18] to-[#7E1A27] text-white flex items-center justify-between border-b border-amber-400/20">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-sm shadow-inner">
+                  🐾
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-sm sm:text-base tracking-wide flex items-center gap-1.5">
-                    <span>Wedding Concierge AI</span>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <h3 className="font-serif font-bold text-base text-[#F5E6C8] leading-tight">
+                    Wedding Concierge
                   </h3>
-                  <div className="flex items-center gap-1.5 text-[11px] text-amber-100/80">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Instant Answers &bull; Host Support</span>
-                  </div>
+                  <span className="text-[10px] text-amber-200/80 font-medium tracking-wider uppercase block">
+                    Your Friendly Ceremony Guide
+                  </span>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-colors cursor-pointer"
                 title="Close Chat"
               >
-                <X className="w-4 h-4 text-white" />
+                ✕
               </button>
             </div>
 
