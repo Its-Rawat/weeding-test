@@ -316,7 +316,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
     <>
       {/* FLOATING MANEKI NEKO LUCKY CAT TRIGGER (ZERO BOX/CIRCLE CONTAINER) */}
       <div
-        className={`fixed bottom-6 right-4 sm:right-6 z-40 select-none transition-all duration-500 ease-out ${
+        className={`fixed bottom-3 sm:bottom-6 right-2 sm:right-6 z-40 select-none transition-all duration-500 ease-out ${
           isVisible || isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-12 pointer-events-none"

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Hero from "./components/Hero";
 import CountdownSection from "./components/CountdownSection";
-import VenueSection from "./components/VenueSection";
 import EventDetails from "./components/EventDetails";
 import RSVPForm from "./components/RSVPForm";
 import PhotoMusicSection from "./components/PhotoMusicSection";
@@ -465,7 +464,6 @@ const App: React.FC = () => {
           allowedEvents={allowedEvents}
           guestName={personalizedGuestName}
         />
-        <VenueSection config={config} />
         <RSVPForm config={config} />
         <PhotoMusicSection config={config} />
       </main>
