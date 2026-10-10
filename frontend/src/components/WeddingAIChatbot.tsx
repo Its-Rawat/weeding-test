@@ -138,7 +138,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
       q.includes("date")
     ) {
       return {
-        reply: `⏰ **Ceremony Schedule & Timings:**\n\n🌿 **Mehendi Ceremony**\n• Sunday, 14 February 2027 • 04:00 PM onwards\n• Venue: Royal Courtyard, The Club International\n\n🌼 **Haldi Ceremony**\n• Monday, 15 February 2027 • 10:00 AM onwards\n• Venue: Poolside Pavilion\n\n🔥 **Wedding & Sacred Pheras**\n• Monday, 15 February 2027\n• Baraat Procession: 07:00 PM\n• Sacred Pheras: 08:30 PM under the Grand Mandap`,
+        reply: `⏰ **Ceremony Schedule & Timings:**\n\n🌿 **Mehendi Ceremony**\n• Sunday, 14 February 2027 • 04:00 PM onwards\n• Venue: Royal Courtyard, The Club International\n\n🌼 **Haldi Ceremony**\n• Monday, 15 February 2027 • 10:00 AM onwards\n• Venue: Poolside Pavilion\n\n👑 **Wedding Ceremony**\n• Monday, 15 February 2027\n• Baraat Procession: 07:00 PM\n• Wedding Ceremony: 08:30 PM under the Grand Mandap`,
       };
     }
 
@@ -153,7 +153,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
       q.includes("code")
     ) {
       return {
-        reply: `👗 **Suggested Dress Codes:**\n\n🌿 **Mehendi:** Vibrant Mehndi Greens, Mint & Pastel Florals.\n🌼 **Haldi:** Sunny Yellows, Ochre & Marigold Orange.\n🔥 **Wedding (Pheras):** Traditional Banarasi Silks & Regal Sherwanis / Formal Indian Festive.`,
+        reply: `👗 **Suggested Dress Codes:**\n\n🌿 **Mehendi:** Vibrant Mehndi Greens, Mint & Pastel Florals.\n🌼 **Haldi:** Sunny Yellows, Ochre & Marigold Orange.\n👑 **Wedding:** Traditional Banarasi Silks & Regal Sherwanis / Formal Indian Festive.`,
       };
     }
 

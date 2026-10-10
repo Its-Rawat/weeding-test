@@ -17,7 +17,7 @@ const DEFAULT_RAW: Record<string, string> = {
   VENUE_ADDRESS: "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)",
   VENUE_LAT: "28.5134",
   VENUE_LNG: "77.0275",
-  AKAD_TITLE: "Wedding Ceremony (Baraat & Pheras)",
+  AKAD_TITLE: "Wedding Ceremony",
   AKAD_DAY: "Monday",
   AKAD_DATE: "15 February 2027",
   AKAD_START: "19:00",

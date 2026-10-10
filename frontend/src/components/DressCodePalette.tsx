@@ -43,7 +43,7 @@ export default function DressCodePalette() {
       ceremony: "Vivah Sanskar & Royal Reception",
       date: "Saturday, 28 Nov",
       theme: "Heritage Banarasi Silks & Black Tie",
-      desc: "Regal Indian heritage attire (sherwanis, safas, silk sarees) or black tie formal evening wear for the sacred pheras and gala feast.",
+      desc: "Regal Indian heritage attire (sherwanis, safas, silk sarees) or black tie formal evening wear for the wedding ceremony and gala feast.",
       colors: [
         { name: "Banarasi Rani", hex: "#B73239" },
         { name: "Imperial Gold", hex: "#C5A059" },
