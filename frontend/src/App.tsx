@@ -62,13 +62,15 @@ const App: React.FC = () => {
     return () => window.removeEventListener("popstate", syncTokenData);
   }, []);
 
-  // SnorklTV / GSAP style buttery smooth momentum scrolling
+  // Lenis smooth momentum scrolling (for desktop wheel/pointer)
   useEffect(() => {
+    const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 1.5,
+      smoothWheel: !isTouch,
+      syncTouch: false,
+      touchMultiplier: 0, // Let native hardware momentum and scroll snap handle touch devices
     });
 
     (window as any).lenis = lenis;
@@ -92,7 +94,7 @@ const App: React.FC = () => {
             e.preventDefault();
             lenis.scrollTo(targetEl as HTMLElement, {
               offset: -20,
-              duration: 1.4,
+              duration: 1.2,
             });
           }
         }
@@ -106,6 +108,61 @@ const App: React.FC = () => {
       cancelAnimationFrame(animationFrameId);
       lenis.destroy();
       delete (window as any).lenis;
+    };
+  }, []);
+
+  // Strict Snap Lock Controller:
+  // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
+  useEffect(() => {
+    let isSnapping = false;
+    let scrollDebounce: any = null;
+
+    const snapToPage = (targetId: "video-hero" | "invitation") => {
+      if (isSnapping) return;
+      isSnapping = true;
+      const target = document.getElementById(targetId);
+      if (target) {
+        const targetTop = targetId === "video-hero" ? 0 : target.offsetTop;
+        window.scrollTo({ top: targetTop, behavior: "smooth" });
+      }
+      setTimeout(() => {
+        isSnapping = false;
+      }, 700);
+    };
+
+    const handleSettle = () => {
+      if (isSnapping) return;
+      const y = window.scrollY;
+      const vh = window.innerHeight;
+
+      // In-between zone between video (y = 0) and invitation (y = vh)
+      if (y > 20 && y < vh * 0.9) {
+        if (y > vh * 0.15) {
+          // If scrolled even 15% down, auto-glide completely to Page 2
+          snapToPage("invitation");
+        } else {
+          // If scrolled less than 15%, snap back to Page 1
+          snapToPage("video-hero");
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setTimeout(handleSettle, 60);
+    };
+
+    const handleScroll = () => {
+      clearTimeout(scrollDebounce);
+      scrollDebounce = setTimeout(handleSettle, 100);
+    };
+
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollDebounce);
     };
   }, []);
 

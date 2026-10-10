@@ -187,3 +187,14 @@
     background: #1e293b;
   }
 }
+
+/* Strict Snap Alignment: Never stop in-between Video and Invitation */
+#video-hero {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+#invitation {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
