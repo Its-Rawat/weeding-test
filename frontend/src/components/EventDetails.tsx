@@ -32,9 +32,16 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       ? allowedEvents.map(normalizeEvent)
       : null;
 
+  // If user enters WITHOUT RSVP code, only show Function 3 (Wedding only).
+  // If user enters with RSVP code, show only their allowed ceremonies.
   const displayCeremonies = normalizedAllowed
     ? ceremonies.filter((c) => normalizedAllowed.includes(c.key))
-    : ceremonies;
+    : ceremonies.filter(
+        (c) =>
+          c.key === "WEDDING" ||
+          c.id === 3 ||
+          c.title.toLowerCase().includes("wedding")
+      );
 
   const handleAddToCalendar = (evt: CelebrationEvent) => {
     const calendarEvent = {
@@ -77,7 +84,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
             </div>
           ) : (
             <p className="font-sans text-xs text-[#5A4D43] max-w-md mx-auto mt-2 leading-relaxed">
-              Please join us across two joyous days of love, music, and sacred traditions.
+              Please join us for the sacred wedding ceremony and auspicious pheras.
             </p>
           )}
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3 rounded-full" />

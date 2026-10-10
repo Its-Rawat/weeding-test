@@ -144,8 +144,7 @@ const App: React.FC = () => {
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
 
   useEffect(() => {
-    // Only buffer video if on phone screen (< 768px). On PC, video is never shown.
-    let videoReady = !isPhoneScreen;
+    let videoReady = false;
     let windowReady = false;
     let testVideo: HTMLVideoElement | null = null;
 
@@ -167,41 +166,34 @@ const App: React.FC = () => {
       ? "/Short_LandingPageVid.mp4?v=firstnames"
       : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
 
-    if (isPhoneScreen) {
-      // 1. Buffer the full-screen video only on phone screens
-      testVideo = document.createElement("video");
-      testVideo.src = landingVidSrc;
-      testVideo.preload = "auto";
-      testVideo.muted = true;
+    // Buffer the full-screen video
+    testVideo = document.createElement("video");
+    testVideo.src = landingVidSrc;
+    testVideo.preload = "auto";
+    testVideo.muted = true;
 
-      if (testVideo.readyState >= 3) {
-        videoReady = true;
-        setBufferProgress((p) => Math.max(p, 75));
-        checkComplete();
-      } else {
-        testVideo.onloadeddata = () => {
-          setBufferProgress((p) => Math.max(p, 50));
-        };
-        testVideo.oncanplay = () => {
-          videoReady = true;
-          setBufferProgress((p) => Math.max(p, 80));
-          checkComplete();
-        };
-        testVideo.oncanplaythrough = () => {
-          videoReady = true;
-          setBufferProgress((p) => Math.max(p, 95));
-          checkComplete();
-        };
-        testVideo.onerror = () => {
-          videoReady = true;
-          checkComplete();
-        };
-      }
-    } else {
-      // On PC screen, immediately advance progress
+    if (testVideo.readyState >= 3) {
       videoReady = true;
       setBufferProgress((p) => Math.max(p, 75));
       checkComplete();
+    } else {
+      testVideo.onloadeddata = () => {
+        setBufferProgress((p) => Math.max(p, 50));
+      };
+      testVideo.oncanplay = () => {
+        videoReady = true;
+        setBufferProgress((p) => Math.max(p, 80));
+        checkComplete();
+      };
+      testVideo.oncanplaythrough = () => {
+        videoReady = true;
+        setBufferProgress((p) => Math.max(p, 95));
+        checkComplete();
+      };
+      testVideo.onerror = () => {
+        videoReady = true;
+        checkComplete();
+      };
     }
 
     // 2. Buffer window resources (images, fonts, stylesheets)
@@ -310,9 +302,9 @@ const App: React.FC = () => {
   const footerDate = show14And15 ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
-      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ONLY ON PHONE SCREENS) */}
-      {isPhoneScreen && <VideoLanding config={config} videoSrc={landingVideoSrc} />}
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] snap-y snap-proximity">
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
+      <VideoLanding config={config} videoSrc={landingVideoSrc} />
 
       {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
       <Navbar theme={theme} toggleTheme={toggleTheme} />

@@ -8,8 +8,7 @@ interface VideoLandingProps {
 }
 
 const VideoLanding: React.FC<VideoLandingProps> = ({
-  config,
-  videoSrc = "/Short_LandingPageVid.mp4?v=firstnames",
+  videoSrc = "/Short_LandingPageVid_15Feb.mp4?v=weddingonly",
 }) => {
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -40,12 +39,63 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     };
   }, []);
 
-  // Auto-pause video frames when user scrolls down into invitation
+  // 1-Scroll transition: when user does 1 scroll down or swipe up on video, glide to the second page
   useEffect(() => {
+    let touchStartY = 0;
+    let isTransitioning = false;
+
+    const triggerScrollDown = () => {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      const target = document.getElementById("invitation");
+      if (target) {
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(target, {
+            duration: 1.2,
+            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          });
+        } else {
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 1400);
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (window.scrollY < 50 && e.deltaY > 10) {
+        e.preventDefault();
+        triggerScrollDown();
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (window.scrollY < 50 && !isTransitioning) {
+        const deltaY = touchStartY - e.touches[0].clientY;
+        if (deltaY > 15) {
+          triggerScrollDown();
+        }
+      }
+    };
+
+    const videoSection = document.getElementById("video-hero");
+    if (videoSection) {
+      videoSection.addEventListener("wheel", handleWheel, { passive: false });
+      videoSection.addEventListener("touchstart", handleTouchStart, { passive: true });
+      videoSection.addEventListener("touchmove", handleTouchMove, { passive: true });
+    }
+
+    // Auto-pause video frames when user scrolls down past video
     const handleScroll = () => {
       if (videoRef.current) {
         const rect = videoRef.current.getBoundingClientRect();
-        if (rect.bottom < window.innerHeight * 0.4) {
+        if (rect.bottom < window.innerHeight * 0.3) {
           if (!videoRef.current.paused) {
             videoRef.current.pause();
           }
@@ -57,7 +107,15 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      if (videoSection) {
+        videoSection.removeEventListener("wheel", handleWheel);
+        videoSection.removeEventListener("touchstart", handleTouchStart);
+        videoSection.removeEventListener("touchmove", handleTouchMove);
+      }
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const handleToggleSound = (e?: React.MouseEvent) => {
@@ -72,19 +130,21 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   };
 
   const handleScrollDown = () => {
-    const target =
-      document.getElementById("invitation") ||
-      document.getElementById("countdown") ||
-      document.getElementById("event");
+    const target = document.getElementById("invitation");
     if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+      const lenis = (window as any).lenis;
+      if (lenis) {
+        lenis.scrollTo(target, { duration: 1.2 });
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
   return (
     <section
       id="video-hero"
-      className="block md:hidden relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between"
+      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between snap-start snap-always"
     >
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, PERMANENTLY SILENT) */}
       <video
@@ -97,7 +157,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
         webkit-playsinline="true"
         preload="auto"
         onClick={handleToggleSound}
-        className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+        className="absolute inset-0 w-full h-full object-cover md:object-contain max-w-lg md:mx-auto cursor-pointer"
       />
 
       {/* TOP: MUSIC / SOUND TOGGLE (CONTROLS ADMIN-CONFIGURED AUDIO) */}
