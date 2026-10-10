@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, ArrowRight, RefreshCcw } from "lucide-react";
+import { Heart, Sparkles, ArrowRight, RefreshCcw } from "lucide-react";
 import type { AppConfig } from "../types";
 import { PersonalizedRSVPSection } from "./PersonalizedRSVPSection";
 
@@ -47,42 +47,33 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
   return (
     <section
       id="rsvp"
-      className="relative bg-[#FFFBF0] dark:bg-[#151111] py-20 sm:py-32 border-t border-[#374454]/15 dark:border-[#C5A059]/20 transition-colors duration-1000 overflow-hidden"
+      className="relative dark:bg-darkBg bg-[#FAF5EB] py-16 transition-colors duration-1000 md:py-28 border-t border-[#D4AF37]/20 overflow-hidden"
     >
-      <div className="container mx-auto max-w-4xl px-4 md:px-6 relative z-10">
-        
-        {/* Section Header (Huey Lightshop Style) */}
-        <div className="mb-12 space-y-3 text-center md:mb-16">
-          <div className="inline-flex items-center gap-2 text-xs text-[#8C1D24] dark:text-[#C5A059] tracking-[0.25em] uppercase font-sans font-semibold">
-            <span>🪷</span>
-            <span>Attendance &amp; Blessings</span>
-            <span>🪷</span>
-          </div>
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-28 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -bottom-28 right-10 w-96 h-96 rounded-full bg-gradient-to-tl from-[#8C1D24]/10 via-transparent to-transparent blur-3xl -z-10" />
 
-          <h2 className="font-editorial text-4xl sm:text-6xl tracking-tight text-[#232B35] dark:text-white font-normal">
+      <div className="container mx-auto max-w-4xl px-4 md:px-6 relative z-10">
+        {/* Section Header */}
+        <div className="mb-10 space-y-3 text-center md:mb-14">
+          <Heart className="text-[#8C1D24] dark:text-accent mx-auto mb-2 h-5 w-5 animate-pulse" />
+          <h2 className="font-serif text-4xl tracking-tight text-[#231C18] italic md:text-7xl dark:text-white">
             RSVP
           </h2>
-
-          <div className="flex items-center justify-center gap-3 my-2">
-            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
-            <span className="text-[#C5A059] text-xs">✦</span>
-            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
-          </div>
-
-          <p className="font-editorial italic text-sm sm:text-base text-[#556272] dark:text-stone-300">
-            Kindly confirm your auspicious presence at our royal celebrations
+          <p className="tracking-luxury text-[9px] font-bold text-[#8C6B1C] uppercase md:text-[11px] dark:text-slate-400">
+            Kindly confirm your auspicious presence
           </p>
         </div>
 
         {token ? (
-          /* Personalized Invitation View */
+          /* Personalized Invitation View (No Guest List) */
           <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-[#FFFBF0] dark:bg-[#1c1716] border border-[#374454]/20 dark:border-[#C5A059]/30 shadow-2xs">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-[#FFFDF9] border border-[#D4AF37]/50 shadow-xs">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#8C1D24]" />
-                <span className="font-editorial italic text-xs sm:text-sm text-[#232B35] dark:text-stone-200">
+                <span className="font-serif italic text-xs sm:text-sm text-[#231C18]">
                   Personalized RSVP Active:{" "}
-                  <code className="font-mono font-bold text-[#8C1D24] dark:text-[#E0A899] bg-[#FAF5EB] dark:bg-black/30 px-2 py-0.5 rounded border border-[#374454]/15">
+                  <code className="font-mono font-bold text-[#8C1D24] bg-[#FAF5EB] px-2 py-0.5 rounded border border-[#D4AF37]/40">
                     {token}
                   </code>
                 </span>
@@ -90,7 +81,7 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
               <button
                 type="button"
                 onClick={handleClearToken}
-                className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#374454] dark:text-[#C5A059] hover:underline cursor-pointer ml-auto"
+                className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B1C] hover:text-[#8C1D24] hover:underline cursor-pointer ml-auto"
               >
                 <RefreshCcw className="w-3 h-3" />
                 <span>Use Another Code</span>
@@ -100,24 +91,24 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
             <PersonalizedRSVPSection token={token} />
           </div>
         ) : (
-          /* Guest without invite link */
+          /* Guest without invite link: ONLY show "Have a personalized invitation code? Click here" button */
           <div className="max-w-md mx-auto text-center py-6">
             {!showTokenInput ? (
               <button
                 type="button"
                 onClick={() => setShowTokenInput(true)}
-                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#FFFBF0] hover:bg-[#FAF5EB] dark:bg-[#1c1716] dark:hover:bg-[#251e1c] border border-[#374454]/25 dark:border-[#C5A059]/40 text-xs sm:text-sm font-semibold text-[#374454] dark:text-stone-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+                className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full bg-[#FFFDF9] hover:bg-[#F3E7D5] border-2 border-[#D4AF37]/70 text-xs sm:text-sm font-semibold text-[#8C6B1C] hover:text-[#8C1D24] shadow-md hover:shadow-lg transition-all cursor-pointer group"
               >
-                <Sparkles className="w-4 h-4 text-[#C5A059] group-hover:rotate-12 transition-transform" />
+                <Sparkles className="w-4 h-4 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
                 <span>Have a personalized invitation code? Click here</span>
               </button>
             ) : (
               <form
                 onSubmit={handleOpenToken}
-                className="animate-reveal p-6 sm:p-8 rounded-2xl bg-[#FFFBF0] dark:bg-[#1c1716] border border-[#374454]/25 dark:border-[#C5A059]/40 shadow-md max-w-md mx-auto space-y-4 text-center"
+                className="animate-reveal p-6 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-[#D4AF37]/70 shadow-lg max-w-md mx-auto space-y-4 text-center"
               >
-                <div className="flex items-center justify-between text-xs text-[#556272] dark:text-stone-400 font-editorial border-b border-[#374454]/15 pb-2">
-                  <span className="font-medium text-[#232B35] dark:text-white">
+                <div className="flex items-center justify-between text-xs text-[#5A4D43] font-serif border-b border-[#D4AF37]/25 pb-2">
+                  <span className="font-medium text-[#231C18]">
                     Enter your personal invitation code:
                   </span>
                   <button
@@ -136,18 +127,18 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
                     placeholder="e.g. 7Kx92LmPq8Za"
                     value={manualTokenInput}
                     onChange={(e) => setManualTokenInput(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-xl border border-[#374454]/25 bg-[#FAF5EB] dark:bg-[#251e1c] text-sm font-mono text-[#232B35] dark:text-white focus:outline-none focus:border-[#374454] text-center uppercase tracking-widest shadow-inner"
+                    className="flex-1 px-4 py-3 rounded-2xl border border-[#D4AF37]/50 bg-[#FAF5EB] text-sm font-mono text-[#231C18] focus:outline-none focus:border-[#8C1D24] text-center uppercase tracking-widest shadow-inner"
                   />
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-xl bg-[#374454] hover:bg-[#232B35] text-[#FFFBF0] text-xs font-bold uppercase tracking-wider shadow-sm cursor-pointer flex items-center gap-1.5 transition-all"
+                    className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer flex items-center gap-1.5 transition-all"
                   >
                     <span>Open</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="text-[11px] text-[#556272] dark:text-stone-400 font-editorial italic text-center">
-                  *Your unique code was shared on your invitation link or WhatsApp message.
+                <p className="text-[11px] text-[#8C6B1C] font-serif italic text-center">
+                  Please enter the private code provided with your invitation.
                 </p>
               </form>
             )}

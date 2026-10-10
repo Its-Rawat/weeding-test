@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Heart,
   Mail,
   Calendar,
   MapPin,
@@ -25,9 +24,11 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     const handleScroll = () => {
       const isPhone = window.innerWidth < 768;
       if (!isPhone) {
+        // On PC (no landing video), floating navigation dock is always accessible
         setIsVisible(true);
         return;
       }
+      // On phone, navbar is hidden on the landing video, and appears at the bottom once user scrolls down
       const threshold = window.innerHeight * 0.35;
       if (window.scrollY > threshold) {
         setIsVisible(true);
@@ -38,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleScroll);
-    handleScroll();
+    handleScroll(); // Initial check
 
     const handleMusicPlayState = (e: any) => {
       if (e.detail?.isPlaying !== undefined) {
@@ -61,8 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
 
   const navItems = [
     { icon: Mail, label: "Invitation", href: "#invitation" },
-    { icon: Heart, label: "Couple", href: "#couple" },
-    { icon: Calendar, label: "Ceremonies", href: "#event" },
+    { icon: Calendar, label: "Celebrations", href: "#event" },
     { icon: MapPin, label: "Venue", href: "#venue" },
     { icon: Music, label: "Melodies", href: "#photo-music" },
     { icon: Send, label: "RSVP", href: "#rsvp", isRsvp: true },
@@ -78,19 +78,19 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
   };
 
   const itemBaseClass =
-    "p-2 sm:p-2.5 rounded-full text-[#374454] dark:text-stone-300 hover:text-[#8C1D24] dark:hover:text-[#C5A059] hover:bg-[#FAF5EB] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
+    "p-2 sm:p-2.5 rounded-full text-[#4A3E36] dark:text-slate-200 hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-[#FAF5EB] dark:hover:bg-white/10 transition-all group relative flex items-center justify-center active:scale-95 cursor-pointer";
   const tooltipClass =
-    "absolute -top-9 left-1/2 -translate-x-1/2 bg-[#232B35] dark:bg-[#C5A059] text-white dark:text-[#232B35] text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block";
+    "absolute -top-9 left-1/2 -translate-x-1/2 bg-[#231C18] dark:bg-[#D4AF37] text-white dark:text-[#231C18] text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block";
 
   return (
     <nav
-      className={`fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-lg transition-all duration-500 ease-out select-none pointer-events-none ${
+      className={`fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md transition-all duration-500 ease-out select-none pointer-events-none ${
         isVisible
           ? "translate-y-0 opacity-100"
           : "translate-y-24 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="pointer-events-auto flex items-center justify-between gap-0.5 sm:gap-1 rounded-full border border-[#374454]/25 dark:border-[#C5A059]/40 bg-[#FFFBF0]/92 dark:bg-[#1a1715]/92 p-1.5 shadow-[0_12px_35px_rgba(55,68,84,0.15)] backdrop-blur-2xl transition-colors duration-500">
+      <div className="pointer-events-auto flex items-center justify-between gap-0.5 sm:gap-1 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/92 dark:bg-[#1a1715]/92 p-1.5 shadow-[0_12px_35px_rgba(140,107,28,0.2)] backdrop-blur-2xl transition-colors duration-500">
         
         {navItems.map((item) => {
           if (item.isRsvp) {
@@ -98,10 +98,10 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
               <button
                 key={item.label}
                 onClick={(e) => handleNavClick(e, item.href)}
-                className="py-1.5 px-3.5 sm:px-4 rounded-full bg-[#374454] hover:bg-[#232B35] text-[#FFFBF0] shadow-sm active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer border border-[#374454]/30"
+                className="py-1.5 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] text-white shadow-md active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer border border-[#FFD54F]/70"
                 title={item.label}
               >
-                <item.icon className="h-3.5 w-3.5 text-[#C5A059]" />
+                <item.icon className="h-3.5 w-3.5 text-[#FFE082]" />
                 <span className="text-[10.5px] uppercase tracking-wider">RSVP</span>
                 <span className={tooltipClass}>Confirm Attendance</span>
               </button>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Hero from "./components/Hero";
 import CountdownSection from "./components/CountdownSection";
-import CoupleProfile from "./components/CoupleProfile";
 import VenueSection from "./components/VenueSection";
 import EventDetails from "./components/EventDetails";
 import RSVPForm from "./components/RSVPForm";
@@ -159,15 +158,14 @@ const App: React.FC = () => {
       }
     };
 
-    const hasMehendiNow = Boolean(
+    // Only show 14 & 15 Feb video if guest has special RSVP code explicitly containing Mehendi (14th Feb).
+    // For default visitors with NO RSVP code, or wedding-only guests, show 15th Feb video.
+    const show14And15Now = Boolean(
       allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
     );
-    const isWeddingOnlyNow = Boolean(
-      allowedEvents && allowedEvents.length > 0 && !hasMehendiNow
-    );
-    const landingVidSrc = isWeddingOnlyNow
-      ? "/Short_LandingPageVid_15Feb.mp4?v=weddingonly"
-      : "/Short_LandingPageVid.mp4?v=firstnames";
+    const landingVidSrc = show14And15Now
+      ? "/Short_LandingPageVid.mp4?v=firstnames"
+      : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
 
     if (isPhoneScreen) {
       // 1. Buffer the full-screen video only on phone screens
@@ -300,20 +298,19 @@ const App: React.FC = () => {
     return <WeddingLoader progress={bufferProgress} />;
   }
 
-  const hasMehendi = Boolean(
+  // Only show 14 & 15 Feb video if guest has special RSVP code containing Mehendi (14th Feb).
+  // When opening with NO special RSVP code, show 15th Feb video.
+  const show14And15 = Boolean(
     allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
   );
-  const isWeddingOnly = Boolean(
-    allowedEvents && allowedEvents.length > 0 && !hasMehendi
-  );
-  const landingVideoSrc = isWeddingOnly
-    ? "/Short_LandingPageVid_15Feb.mp4?v=weddingonly"
-    : "/Short_LandingPageVid.mp4?v=firstnames";
+  const landingVideoSrc = show14And15
+    ? "/Short_LandingPageVid.mp4?v=firstnames"
+    : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
 
-  const footerDate = hasMehendi ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
+  const footerDate = show14And15 ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FFFBF0] text-[#374454] dark:bg-[#151111] dark:text-[#FAF5EB] font-editorial">
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB]">
       {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (ONLY ON PHONE SCREENS) */}
       {isPhoneScreen && <VideoLanding config={config} videoSrc={landingVideoSrc} />}
 
@@ -341,7 +338,6 @@ const App: React.FC = () => {
       {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
       <main className="relative z-10 space-y-0">
         <CountdownSection config={config} allowedEvents={allowedEvents} />
-        <CoupleProfile config={config} />
         <EventDetails
           config={config}
           allowedEvents={allowedEvents}
@@ -355,15 +351,15 @@ const App: React.FC = () => {
       <MusicPlayer url={config.music.url} />
 
       {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
-      <footer className="dark:bg-[#1c1716] relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FFFBF0] px-6 transition-colors duration-1000 border-t border-[#374454]/15 dark:border-[#C5A059]/20">
+      <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
         {/* Romantic Proposal Night Bridge Ambient Backdrop */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <img
             src="/couple/ring_reveal.jpg"
             alt="Proposal Bridge"
-            className="w-full h-full object-cover object-center opacity-15 dark:opacity-10 filter blur-[1px] scale-105"
+            className="w-full h-full object-cover object-center opacity-20 dark:opacity-10 filter blur-[1px] scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FFFBF0] via-[#FFFBF0]/90 to-[#FFFBF0] dark:from-[#151111] dark:via-[#151111]/92 dark:to-[#151111]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EB] via-[#FAF5EB]/90 to-[#FAF5EB] dark:from-darkBg dark:via-darkBg/92 dark:to-darkBg" />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
@@ -372,50 +368,50 @@ const App: React.FC = () => {
 
         <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center gap-12 md:gap-24 py-16">
           <div className="space-y-4 text-center md:space-y-6">
-            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#374454] dark:text-[#C5A059] uppercase">
+            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#8C6B1C] uppercase">
               Save The Date
             </span>
-            <h2 className="font-editorial text-6xl sm:text-8xl md:text-[9rem] leading-none text-[#232B35] py-2 dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
+            <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
               <span>{config.couple.bride.name}</span>
-              <span className="text-[#C5A059] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
+              <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
               <span>{config.couple.groom.name}</span>
             </h2>
             <div className="flex items-center justify-center gap-4 md:gap-6">
-              <div className="bg-[#374454]/25 dark:bg-[#C5A059]/40 h-px w-10 md:w-20"></div>
-              <p className="font-sans text-[#374454] dark:text-[#C5A059] text-[12px] font-bold tracking-[0.4em] uppercase md:text-[16px]">
+              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
+              <p className="font-sans text-[#8C6B1C] dark:text-accent text-[12px] font-bold tracking-[0.4em] uppercase md:text-[18px]">
                 {footerDate}
               </p>
-              <div className="bg-[#374454]/25 dark:bg-[#C5A059]/40 h-px w-10 md:w-20"></div>
+              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
             </div>
           </div>
 
           <div className="space-y-12 text-center md:space-y-16">
             <div className="group relative inline-block px-4">
-              <Quote className="text-[#374454] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
+              <Quote className="text-[#8C6B1C] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
               <div className="space-y-6">
-                <p className="mx-auto max-w-2xl font-editorial text-lg leading-relaxed text-balance text-[#556272] italic md:text-3xl dark:text-stone-300">
+                <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#5A4D43] italic md:text-3xl dark:text-slate-400">
                   "{config.text.closing.text}"
                 </p>
-                <p className="font-editorial text-xl font-normal text-[#232B35] dark:text-white">
+                <p className="font-serif text-xl font-medium text-[#231C18] dark:text-white">
                   {config.text.closing.salam}
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-6 border-t border-[#374454]/15 dark:border-[#C5A059]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
-              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#374454] dark:text-[#C5A059] md:text-[12px]">
+            <div className="flex flex-col items-center gap-6 border-t border-[#D4AF37]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
+              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#8C6B1C] md:text-[13px]">
                 {config.text.closing.signature}
               </p>
-              <p className="font-editorial text-3xl sm:text-4xl md:text-5xl text-[#232B35] dark:text-white py-1">
+              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
                 {config.couple.bride.name} &amp; {config.couple.groom.name}
               </p>
-              <p className="font-sans text-[11px] text-[#556272] uppercase tracking-widest">{config.text.closing.family}</p>
+              <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
 
               {/* Host Credit & Contact */}
               <div className="pt-4">
                 <a
                   href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-                  className="group inline-flex items-center gap-2 rounded-full border border-[#374454]/25 dark:border-[#C5A059]/40 bg-[#FFFBF0] dark:bg-[#251e1c] px-5 py-2.5 text-xs text-[#232B35] dark:text-stone-200 transition-all duration-300 hover:border-[#8C1D24] shadow-2xs"
+                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
                   title="Contact Host: Aditya Rawat (adi2002rawat@gmail.com)"
                 >
                   <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />

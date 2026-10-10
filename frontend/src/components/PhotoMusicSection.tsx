@@ -17,23 +17,13 @@ interface Track {
 
 const WEDDING_PLAYLIST: Track[] = [
   {
-    id: "track-etching",
-    title: "Chaudhary • Vintage Royal Etching",
-    shortLabel: "Resort Bridge Etching",
-    artist: "Traditional Folk & Sitar Symphony",
-    poster: "/illustrations/couple_etching.jpg",
-    src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
-    mainColor: "#374454",
-    tag: "Artistic Etching",
-  },
-  {
     id: "track-1",
     title: "Kudmayi • Royal Symphony",
     shortLabel: "Kudmayi • Royal Symphony",
     artist: "Shahid Mallya • Traditional Sitar",
     poster: "/couple/formal_portrait.jpg",
     src: "https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3",
-    mainColor: "#C5A059",
+    mainColor: "#D4AF37",
     tag: "Formal Portrait",
   },
   {
@@ -143,30 +133,32 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = ({ config }) 
   return (
     <section
       id="photo-music"
-      className="relative py-16 sm:py-24 px-4 sm:px-6 bg-[#FFFBF0] dark:bg-[#151111] text-[#232B35] dark:text-[#FAF5EB] border-t border-[#374454]/15 dark:border-[#C5A059]/20 overflow-hidden transition-colors duration-700"
+      className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-hidden transition-colors duration-700"
     >
+      {/* 2026 Gradient Atmospheric Ambient Lighting Glows */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#D4AF37]/25 via-[#F7D8A5]/15 to-transparent blur-[110px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-[#8C1D24]/20 via-[#D4AF37]/10 to-transparent blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-radial from-white/40 dark:from-white/5 to-transparent blur-3xl -z-10" />
+
       <div className="container mx-auto max-w-5xl relative z-10">
-        {/* Section Header (Huey Lightshop Editorial Style) */}
-        <div className="mb-10 sm:mb-14 text-center space-y-3">
-          <div className="inline-flex items-center gap-2 text-xs text-[#8C1D24] dark:text-[#C5A059] tracking-[0.25em] uppercase font-sans font-semibold">
-            <span>🪷</span>
-            <span>Melodies &amp; Memories</span>
-            <span>🪷</span>
+        {/* Section Header */}
+        <div className="mb-8 sm:mb-12 text-center space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
+            <Radio className="w-3.5 h-3.5 text-[#8C1D24] dark:text-accent animate-pulse" />
+            <span className="font-sans text-[10px] font-bold tracking-[0.25em] uppercase text-[#8C6B1C] dark:text-accent">
+              Melodies &amp; Memories
+            </span>
           </div>
 
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl text-[#232B35] dark:text-white font-normal">
+          <h2 className="font-serif italic text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white font-normal">
             Moments in Melody
           </h2>
 
-          <div className="flex items-center justify-center gap-3 my-2">
-            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
-            <span className="text-[#C5A059] text-xs">✦</span>
-            <div className="h-px w-12 bg-[#374454]/25 dark:bg-[#C5A059]/40" />
-          </div>
-
-          <p className="font-editorial italic text-sm sm:text-base text-[#556272] dark:text-stone-300 max-w-md mx-auto leading-relaxed">
-            Every snapshot carries a song. Explore our wedding celebration playlist paired with our favorite hand-drawn memories.
+          <p className="font-serif italic text-xs sm:text-sm text-[#5A4D43] dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            Every snapshot carries a song. Explore our celebration playlist paired with our favorite memories.
           </p>
+
+          <div className="w-14 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full mt-2" />
         </div>
 
         {/* Compact Level-2026 Stage: Song Player Card + Song Wheel / Playlist */}

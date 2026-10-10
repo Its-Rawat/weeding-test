@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Sparkles, Clock, Heart } from "lucide-react";
 import type { AppConfig } from "../types";
 
 interface CountdownProps {
@@ -56,27 +57,27 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
   }, [targetIso]);
 
   return (
-    <section
-      id="countdown"
-      className="relative py-14 sm:py-20 px-4 bg-[#FFFBF0] dark:bg-[#151111] text-center border-t border-[#374454]/15 dark:border-[#C5A059]/20 transition-colors duration-1000 overflow-hidden"
-    >
+    <section id="countdown" className="relative py-12 sm:py-16 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] text-center border-y border-[#D4AF37]/30 overflow-hidden">
+      {/* 2026 Ambient Gradient Lighting */}
+      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent rounded-full blur-3xl -z-10" />
+
       <div className="max-w-xl mx-auto relative z-10">
         
-        {/* Section Header (Huey Lightshop Minimalist Style) */}
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="w-8 h-px bg-[#374454]/25 dark:bg-[#C5A059]/40" />
-          <span className="text-[#C5A059] text-xs">✦</span>
-          <div className="w-8 h-px bg-[#374454]/25 dark:bg-[#C5A059]/40" />
+        {/* Section Header */}
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
+          <Heart className="w-3.5 h-3.5 text-[#8C1D24] fill-[#8C1D24]/20" />
+          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
         </div>
 
-        <h3 className="font-editorial italic text-2xl sm:text-3xl text-[#232B35] dark:text-white font-normal mb-1">
-          Countdown to the Sacred Vows
+        <h3 className="font-serif italic text-2xl sm:text-3xl text-[#231C18] font-normal mb-1">
+          Countdown to the Royal Nuptials
         </h3>
-        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#556272] dark:text-[#C5A059] font-medium mb-6 sm:mb-8">
-          Under The Holy Mandap • {celebrationSubtitle}
+        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
+          Until We Celebrate Under The Mandap • {celebrationSubtitle}
         </p>
 
-        {/* Minimalist 4-Box Grid with Fine Hairline Borders */}
+        {/* Minimalist 4-Box Grid */}
         <div className="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto">
           {[
             { label: "DAYS", value: timeLeft.days, isCrimson: false },
@@ -86,16 +87,12 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
           ].map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#FFFBF0] dark:bg-[#1c1716] rounded-xl border border-[#374454]/20 dark:border-[#C5A059]/30 p-3 sm:p-4 shadow-2xs flex flex-col items-center justify-center transition-all hover:border-[#374454]/40"
+              className="bg-[#FFFDF9] rounded-2xl border border-[#D4AF37]/50 p-3 sm:p-4 shadow-[0_4px_16px_rgba(140,107,28,0.06)] flex flex-col items-center justify-center transition-all hover:border-[#D4AF37] hover:scale-105"
             >
-              <span
-                className={`font-editorial text-2xl sm:text-4xl font-normal leading-none ${
-                  item.isCrimson ? "text-[#8C1D24] dark:text-[#E0A899]" : "text-[#232B35] dark:text-white"
-                }`}
-              >
+              <span className={`font-serif text-2xl sm:text-4xl font-bold leading-none ${item.isCrimson ? "text-[#8C1D24]" : "text-[#231C18]"}`}>
                 {String(item.value).padStart(2, "0")}
               </span>
-              <span className="font-sans text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.2em] text-[#556272] dark:text-[#C5A059] mt-2">
+              <span className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C6B1C] mt-1.5">
                 {item.label}
               </span>
             </div>
