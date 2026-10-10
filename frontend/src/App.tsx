@@ -15,6 +15,7 @@ import StoryModal from "./components/StoryModal";
 import { useConfig } from "./hooks/useConfig";
 import { Heart, Quote, Mail } from "lucide-react";
 import { personalizedRsvpService } from "./services/personalizedRsvpService";
+import WeddingAIChatbot from "./components/WeddingAIChatbot";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 
@@ -111,7 +112,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Strict Snap Lock Controller:
+  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
   // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
   useEffect(() => {
     let isSnapping = false;
@@ -123,11 +124,43 @@ const App: React.FC = () => {
       const target = document.getElementById(targetId);
       if (target) {
         const targetTop = targetId === "video-hero" ? 0 : target.offsetTop;
-        window.scrollTo({ top: targetTop, behavior: "smooth" });
+        const lenis = (window as any).lenis;
+        if (lenis && !("ontouchstart" in window)) {
+          lenis.scrollTo(targetTop, { duration: 0.9, immediate: false });
+        } else {
+          window.scrollTo({ top: targetTop, behavior: "smooth" });
+        }
       }
       setTimeout(() => {
         isSnapping = false;
-      }, 700);
+      }, 750);
+    };
+
+    // Desktop mouse wheel handler: intercepts wheel events around Page 1 and Page 2 boundary
+    const handleWheel = (e: WheelEvent) => {
+      if (isSnapping) return;
+      const y = window.scrollY;
+      const vh = window.innerHeight;
+
+      // On Page 1 (Video): any downward scroll glides to Page 2
+      if (y < 40 && e.deltaY > 4) {
+        e.preventDefault();
+        snapToPage("invitation");
+      }
+      // On Page 2 (Invitation): any upward scroll glides to Page 1
+      else if (Math.abs(y - vh) < 60 && e.deltaY < -4) {
+        e.preventDefault();
+        snapToPage("video-hero");
+      }
+      // In dead zone between Page 1 and Page 2: immediately finish glide
+      else if (y > 20 && y < vh * 0.92) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+          snapToPage("invitation");
+        } else {
+          snapToPage("video-hero");
+        }
+      }
     };
 
     const handleSettle = () => {
@@ -138,10 +171,8 @@ const App: React.FC = () => {
       // In-between zone between video (y = 0) and invitation (y = vh)
       if (y > 20 && y < vh * 0.9) {
         if (y > vh * 0.15) {
-          // If scrolled even 15% down, auto-glide completely to Page 2
           snapToPage("invitation");
         } else {
-          // If scrolled less than 15%, snap back to Page 1
           snapToPage("video-hero");
         }
       }
@@ -153,13 +184,15 @@ const App: React.FC = () => {
 
     const handleScroll = () => {
       clearTimeout(scrollDebounce);
-      scrollDebounce = setTimeout(handleSettle, 100);
+      scrollDebounce = setTimeout(handleSettle, 90);
     };
 
+    window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
+      window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("scroll", handleScroll);
       clearTimeout(scrollDebounce);
@@ -398,6 +431,7 @@ const App: React.FC = () => {
       </main>
 
       <MusicPlayer url={config.music.url} />
+      <WeddingAIChatbot guestName={personalizedGuestName} />
 
       {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
       <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">

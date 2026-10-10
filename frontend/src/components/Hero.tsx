@@ -27,7 +27,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* 1. Full-Bleed Couple Photo on the Resort Bridge */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
-          src="/couple/resort_bridge_night.jpg"
+          src="/couple/resort_bridge_landscape_hd.jpg"
           alt="Chandrika & Xudong"
           className="w-full h-full object-cover object-[center_35%] scale-100 transition-transform duration-[2.4s] ease-out"
         />
