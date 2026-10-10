@@ -301,8 +301,12 @@ export const PersonalizedRSVPSection: React.FC<PersonalizedRSVPProps> = ({ token
               <button
                 type="button"
                 onClick={() => {
-                  document.getElementById("event")?.scrollIntoView({ behavior: "smooth" }) ||
-                  document.getElementById("venue")?.scrollIntoView({ behavior: "smooth" });
+                  const ev = document.getElementById("event");
+                  if (ev) {
+                    ev.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    document.getElementById("venue")?.scrollIntoView({ behavior: "smooth" });
+                  }
                 }}
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-xs font-bold text-white uppercase tracking-wider shadow-md transition-all cursor-pointer"
               >
