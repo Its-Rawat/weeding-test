@@ -48,19 +48,15 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       isTransitioning = true;
       const target = document.getElementById("invitation");
       if (target) {
-        const targetTop = target.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({
-          top: targetTop,
-          behavior: "smooth",
-        });
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       setTimeout(() => {
         isTransitioning = false;
-      }, 800);
+      }, 700);
     };
 
     const handleWheel = (e: WheelEvent) => {
-      if (window.scrollY < 50 && e.deltaY > 10) {
+      if (window.scrollY < 50 && e.deltaY > 5) {
         e.preventDefault();
         triggerScrollDown();
       }
@@ -68,15 +64,19 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
 
     let touchStartY = 0;
     const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
+      if (e.touches.length > 0) {
+        touchStartY = e.touches[0].clientY;
+      }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (window.scrollY < 30) {
+      const invitationEl = document.getElementById("invitation");
+      const invTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
+      if (window.scrollY < invTop * 0.4 && e.changedTouches.length > 0) {
         const touchEndY = e.changedTouches[0].clientY;
         const diff = touchStartY - touchEndY;
-        // User swiped up by more than 35px -> smoothly transition to page 2
-        if (diff > 35) {
+        // User swiped up by more than 20px -> smoothly glide to page 2
+        if (diff > 20) {
           triggerScrollDown();
         }
       }
@@ -130,18 +130,14 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   const handleScrollDown = () => {
     const target = document.getElementById("invitation");
     if (target) {
-      const targetTop = target.getBoundingClientRect().top + window.pageYOffset;
-      window.scrollTo({
-        top: targetTop,
-        behavior: "smooth",
-      });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
     <section
       id="video-hero"
-      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between scroll-mt-0"
+      className="relative w-full h-screen h-[100svh] min-h-screen min-h-[100svh] overflow-hidden bg-black select-none flex flex-col justify-between scroll-mt-0"
     >
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, PERMANENTLY SILENT) */}
       <video

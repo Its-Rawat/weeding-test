@@ -28,7 +28,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       id="invitation"
-      className="relative w-full h-[100dvh] min-h-[100dvh] flex flex-col justify-between items-center px-4 sm:px-8 py-6 sm:py-10 md:py-14 overflow-hidden text-center select-none scroll-mt-0"
+      className="relative w-full h-screen h-[100svh] min-h-screen min-h-[100svh] flex flex-col justify-between items-center px-4 sm:px-8 pt-6 sm:pt-10 md:pt-14 pb-20 sm:pb-24 md:pb-12 overflow-hidden text-center select-none scroll-mt-0"
     >
       {/* 1. Full-Bleed Couple Media on the Resort Bridge:
           - Desktop / Laptop (>= 768px): Crisp HD Looping Video (gemini_generated_video_b0b01e67.mp4)

@@ -112,36 +112,28 @@ const App: React.FC = () => {
   }, []);
 
   // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
+  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
   // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
   useEffect(() => {
     let isSnapping = false;
     let touchStartY = 0;
     let touchStartX = 0;
+    let scrollSettleTimer: any = null;
 
     const snapToPage = (targetId: "video-hero" | "invitation") => {
       if (isSnapping) return;
       isSnapping = true;
 
       const target = document.getElementById(targetId);
-      const targetTop = targetId === "video-hero" ? 0 : (target ? target.offsetTop : window.innerHeight);
-
-      const lenis = (window as any).lenis;
-      if (lenis && !("ontouchstart" in window)) {
-        lenis.scrollTo(targetTop, {
-          duration: 0.85,
-          lock: true,
-          onComplete: () => {
-            setTimeout(() => {
-              isSnapping = false;
-            }, 100);
-          },
-        });
-      } else {
-        window.scrollTo({ top: targetTop, behavior: "smooth" });
-        setTimeout(() => {
-          isSnapping = false;
-        }, 600);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (targetId === "video-hero") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
+
+      setTimeout(() => {
+        isSnapping = false;
+      }, 700);
     };
 
     // Desktop mouse wheel handler: intercepts wheel events around Page 1 and Page 2 boundary
@@ -159,21 +151,21 @@ const App: React.FC = () => {
       }
 
       // 1. On Page 1 (Video Hero): any downward wheel scroll glides to Page 2
-      if (y < 40 && e.deltaY > 2) {
+      if (y < 40 && e.deltaY > 0) {
         e.preventDefault();
         snapToPage("invitation");
         return;
       }
 
       // 2. On Page 2 (Invitation) or between Page 1 & 2: any upward wheel scroll glides to Page 1
-      if (y <= invitationTop + 40 && e.deltaY < -2) {
+      if (y <= invitationTop + 30 && e.deltaY < 0 && y > 10) {
         e.preventDefault();
         snapToPage("video-hero");
         return;
       }
 
       // 3. In the transition zone between Page 1 and Page 2:
-      if (y > 20 && y < invitationTop - 20) {
+      if (y > 10 && y < invitationTop - 10) {
         e.preventDefault();
         if (e.deltaY > 0) {
           snapToPage("invitation");
@@ -182,8 +174,6 @@ const App: React.FC = () => {
         }
         return;
       }
-
-      // 4. Past Page 2 (y > invitationTop + 40): let normal scroll happen down to ceremonies, venue, RSVP!
     };
 
     // Mobile touch gestures:
@@ -199,21 +189,30 @@ const App: React.FC = () => {
 
       const touchEndY = e.changedTouches[0].clientY;
       const touchEndX = e.changedTouches[0].clientX;
-      const deltaY = touchStartY - touchEndY; // > 0 means swiped UP (scrolling DOWN)
+      const deltaY = touchStartY - touchEndY; // > 0 means swiped UP (user wants to scroll DOWN)
       const deltaX = touchStartX - touchEndX;
 
       // Ignore horizontal swipes or subtle micro-taps
-      if (Math.abs(deltaY) < 25 || Math.abs(deltaX) > Math.abs(deltaY) * 1.5) return;
+      if (Math.abs(deltaY) < 20 || Math.abs(deltaX) > Math.abs(deltaY) * 1.5) return;
 
       const y = window.scrollY;
       const invitationEl = document.getElementById("invitation");
       const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
 
-      // Only assist snapping around the hero / invitation boundary
-      if (y > invitationTop + 50) return;
+      // If on Page 1 (y < 40) and user swiped UP: glide immediately to Page 2!
+      if (y < 40 && deltaY > 0) {
+        snapToPage("invitation");
+        return;
+      }
+
+      // If around top of Page 2 (y <= invitationTop + 30) and user swiped DOWN: glide back to Page 1!
+      if (y <= invitationTop + 30 && deltaY < 0 && y > 10) {
+        snapToPage("video-hero");
+        return;
+      }
 
       // If user stopped in the transition zone between Page 1 and Page 2:
-      if (y > 30 && y < invitationTop - 30) {
+      if (y > 10 && y < invitationTop - 10) {
         if (deltaY > 0) {
           snapToPage("invitation");
         } else {
@@ -222,14 +221,50 @@ const App: React.FC = () => {
       }
     };
 
+    let lastScrollY = window.scrollY;
+    let scrollDirection: "down" | "up" = "down";
+
+    // Debounced Settle Guard: guarantees user NEVER gets stuck half-way
+    const handleScrollSettle = () => {
+      const y = window.scrollY;
+      if (y > lastScrollY + 2) {
+        scrollDirection = "down";
+      } else if (y < lastScrollY - 2) {
+        scrollDirection = "up";
+      }
+      lastScrollY = y;
+
+      if (isSnapping) return;
+      clearTimeout(scrollSettleTimer);
+      scrollSettleTimer = setTimeout(() => {
+        if (isSnapping) return;
+        const currentY = window.scrollY;
+        const invitationEl = document.getElementById("invitation");
+        if (!invitationEl) return;
+        const invitationTop = invitationEl.offsetTop;
+
+        // If the scroll settled anywhere in the transition zone between Page 1 and Page 2:
+        if (currentY > 10 && currentY < invitationTop - 10) {
+          if (scrollDirection === "down" || currentY >= invitationTop * 0.15) {
+            snapToPage("invitation");
+          } else {
+            snapToPage("video-hero");
+          }
+        }
+      }, 70);
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("scroll", handleScrollSettle, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("scroll", handleScrollSettle);
+      clearTimeout(scrollSettleTimer);
     };
   }, []);
 
@@ -389,9 +424,7 @@ const App: React.FC = () => {
     }, observerOptions);
 
     const sections = document.querySelectorAll(
-      isPhoneScreen
-        ? "section:not(#video-hero)"
-        : "section:not(#video-hero):not(#invitation)"
+      "section:not(#video-hero):not(#invitation)"
     );
     sections.forEach((section) => {
       section.classList.add(
