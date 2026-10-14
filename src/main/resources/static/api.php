@@ -88,6 +88,16 @@ $pdo->exec("
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS guest_inquiries (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        guest_name VARCHAR(255) NOT NULL,
+        contact VARCHAR(255) DEFAULT NULL,
+        query TEXT NOT NULL,
+        created_at VARCHAR(100) DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
 try {
     $cols = $pdo->query("SHOW COLUMNS FROM guest_invitations")->fetchAll(PDO::FETCH_COLUMN);
     if (!in_array('type', $cols)) {
@@ -212,6 +222,188 @@ if ($route === 'config') {
         echo json_encode(['success' => true]);
         exit;
     }
+}
+
+// --- AI CHATBOT (Google Gemini 1.5 Flash / OpenAI GPT-4o-mini) ---
+if (($route === 'chat' || $route === 'ai/chat' || (isset($_GET['action']) && $_GET['action'] === 'chat')) && $method === 'POST') {
+    header('Content-Type: application/json');
+    $body = getJsonInput();
+    $userMsg = trim($body['message'] ?? '');
+    $history = is_array($body['history'] ?? null) ? $body['history'] : [];
+    $guestName = trim($body['guestName'] ?? '');
+
+    if (empty($userMsg)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Message is required']);
+        exit;
+    }
+
+    // 1. Fetch AI Key from config table or env
+    $apiKey = '';
+    $provider = 'gemini';
+    $modelName = 'gemini-1.5-flash';
+
+    $cfgStmt = $pdo->prepare("SELECT config_key, config_value FROM config WHERE config_key IN ('AI_API_KEY', 'AI_PROVIDER', 'AI_MODEL')");
+    $cfgStmt->execute();
+    while ($row = $cfgStmt->fetch()) {
+        if ($row['config_key'] === 'AI_API_KEY') $apiKey = trim($row['config_value']);
+        if ($row['config_key'] === 'AI_PROVIDER') $provider = trim($row['config_value']);
+        if ($row['config_key'] === 'AI_MODEL') $modelName = trim($row['config_value']);
+    }
+
+    if (empty($apiKey)) {
+        $apiKey = getenv('GEMINI_API_KEY') ?: (getenv('OPENAI_API_KEY') ?: '');
+    }
+
+    // Auto-detect provider if key starts with sk-
+    if (!empty($apiKey) && str_starts_with($apiKey, 'sk-')) {
+        $provider = 'openai';
+    }
+
+    if (empty($apiKey)) {
+        echo json_encode([
+            'success' => false,
+            'requiresKey' => true,
+            'message' => 'AI API key not configured yet. Please configure your Gemini or OpenAI API key in the admin dashboard.'
+        ]);
+        exit;
+    }
+
+    // 2. Build Rich Grounded System Prompt
+    $systemInstruction = "You are the Lucky Cat (Maneki-Neko) auspicious wedding concierge for Chandrika & Xudong's cross-cultural royal celebration.
+You bring double happiness (双喜), blessings, and warm hospitality to every guest.
+
+OFFICIAL WEDDING DETAILS:
+- Couple: Chandrika (Daughter of Mr. & Mrs. Sharma) & Xudong (Son of Mr. & Mrs. Wang).
+- Dates: 14 & 15 February 2027.
+- Venue: The Club International, Sector 109, B3 Lane, Babupur Village, Palam Vihar, Gurugram (Gurgaon), Haryana 122017.
+- Venue Logistics:
+  * Airport: ~20-25 mins from Delhi IGI Airport via Dwarka Expressway / Sector 109.
+  * Nearest Metro: Dwarka Sector 21 (Blue Line / Airport Express) or MG Road.
+  * Parking: Complimentary valet parking available at the main entrance.
+- Celebrations Schedule:
+  * Mehendi: Sunday, 14 Feb 2027, 04:00 PM onwards, Royal Courtyard. Dress code: Vibrant Mehndi Greens, Mint & Pastel Florals.
+  * Haldi: Monday, 15 Feb 2027, 10:00 AM onwards, Poolside Pavilion. Dress code: Sunny Yellows, Ochre & Marigold Orange.
+  * Baraat Procession: Monday, 15 Feb 2027, 07:00 PM.
+  * Wedding Ceremony: Monday, 15 Feb 2027, 08:30 PM under the Grand Mandap. Dress code: Traditional Banarasi Silks & Regal Sherwanis / Formal Indian Festive.
+- Dining: Royal banquet featuring live chaat stations, exquisite vegetarian delicacies, and authentic festive regional dishes at all ceremonies.
+- Cultural Etiquette (Indian-Chinese Fusion):
+  * International/Chinese guests: Festive pastels or Indian ethnic attire (kurtas/sarees/lehengas) are warmly welcomed. Avoid all-black or plain white funeral attire.
+  * Blessings / Gifts: Your warm presence is the greatest gift. Double happiness (双喜) blessings or traditional contributions are gratefully accepted.
+- Escalation & Host: Aditya Rawat & Family. Official contact email: rsvp@chandrikawedsxudong.com.
+
+BEHAVIORAL GUIDELINES:
+- Greet with warmth (and double happiness 🐾✨) when appropriate.
+- Be concise, helpful, and courteous (2-4 sentences max unless detailed directions are requested).
+- If the guest writes in Hindi, reply in Hindi/Hinglish. If in Chinese, reply in Mandarin. Otherwise English.
+- If a guest inquiry requires personal coordination (e.g. flight pickup, room change, special dietary allergies not listed), answer helpfully and suggest emailing rsvp@chandrikawedsxudong.com.";
+
+    if ($provider === 'openai') {
+        $messages = [
+            ['role' => 'system', 'content' => $systemInstruction]
+        ];
+        foreach (array_slice($history, -6) as $h) {
+            $role = ($h['sender'] ?? '') === 'user' ? 'user' : 'assistant';
+            $messages[] = ['role' => $role, 'content' => $h['text'] ?? ''];
+        }
+        $messages[] = ['role' => 'user', 'content' => $userMsg];
+
+        $payload = json_encode([
+            'model' => $modelName ?: 'gpt-4o-mini',
+            'messages' => $messages,
+            'max_tokens' => 350,
+            'temperature' => 0.7
+        ]);
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        $res = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && $res) {
+            $data = json_decode($res, true);
+            $reply = $data['choices'][0]['message']['content'] ?? '';
+            echo json_encode(['success' => true, 'reply' => $reply]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'OpenAI API call failed', 'details' => $res]);
+        }
+        exit;
+    } else {
+        $contents = [];
+        foreach (array_slice($history, -6) as $h) {
+            $role = ($h['sender'] ?? '') === 'user' ? 'user' : 'model';
+            $contents[] = [
+                'role' => $role,
+                'parts' => [['text' => $h['text'] ?? '']]
+            ];
+        }
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $userMsg]]
+        ];
+
+        $payload = json_encode([
+            'system_instruction' => [
+                'parts' => [['text' => $systemInstruction]]
+            ],
+            'contents' => $contents,
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 350
+            ]
+        ]);
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/" . ($modelName ?: "gemini-1.5-flash") . ":generateContent?key=" . urlencode($apiKey);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        $res = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && $res) {
+            $data = json_decode($res, true);
+            $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            echo json_encode(['success' => true, 'reply' => $reply]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Gemini API call failed', 'details' => $res]);
+        }
+        exit;
+    }
+}
+
+// --- INQUIRY ESCALATION (POST /api/inquiry) ---
+if (($route === 'inquiry' || (isset($_GET['action']) && $_GET['action'] === 'inquiry')) && $method === 'POST') {
+    header('Content-Type: application/json');
+    $body = getJsonInput();
+    $guestName = trim($body['name'] ?? 'Guest');
+    $contact = trim($body['contact'] ?? '');
+    $query = trim($body['query'] ?? '');
+    $createdAt = date('c');
+
+    if (empty($query)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Query is required']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO guest_inquiries (guest_name, contact, query, created_at) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$guestName, $contact, $query, $createdAt]);
+    $newId = $pdo->lastInsertId();
+
+    echo json_encode(['success' => true, 'id' => $newId, 'message' => 'Inquiry registered successfully']);
+    exit;
 }
 
 // --- RSVP: GET & POST ---

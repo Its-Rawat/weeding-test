@@ -20,6 +20,11 @@ const Hero: React.FC<HeroProps> = ({
   const show14And15 = !isExplicitlyWeddingOnly;
   const formattedDate = show14And15 ? "14 & 15 February 2027" : "15 February 2027";
 
+  // Randomly select between final1 and final2 on each page load/reload
+  const [selectedHeroImage] = React.useState(() => {
+    return Math.random() < 0.5 ? "/couple/final1.jpg" : "/couple/final2.jpg";
+  });
+
   return (
     <section
       id="invitation"
@@ -27,7 +32,7 @@ const Hero: React.FC<HeroProps> = ({
     >
       {/* 1. Full-Bleed Couple Media on the Resort Bridge:
           - Desktop / Laptop (>= 768px): Crisp HD Looping Video (gemini_generated_video_b0b01e67.mp4)
-          - Mobile devices (< 768px): Vertical photo (old pic)
+          - Mobile devices (< 768px): Vertical photo (randomly final1 or final2)
       */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Desktop & Laptop Screens (PC, Laptop, iPad Landscape): High-Definition Video */}
@@ -38,16 +43,17 @@ const Hero: React.FC<HeroProps> = ({
             muted
             playsInline
             preload="auto"
+            poster={selectedHeroImage}
             className="w-full h-full object-cover object-center"
           >
             <source src="/gemini_generated_video_b0b01e67.mp4" type="video/mp4" />
           </video>
         </div>
 
-        {/* Mobile Screens (Phone portrait): Vertical photo (old pic) */}
+        {/* Mobile Screens (Phone portrait): Vertical HD photo (randomly final1 or final2) */}
         <div className="block md:hidden absolute inset-0 w-full h-full">
           <img
-            src="/couple/resort_bridge_night.jpg"
+            src={selectedHeroImage}
             alt="Chandrika & Xudong"
             className="w-full h-full object-cover object-[center_35%]"
           />

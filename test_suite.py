@@ -188,10 +188,14 @@ def main():
         print(f"Mobile portrait image visible: {mobile_img_visible} (expected True)", flush=True)
         assert mobile_img_visible, "Mobile portrait image should be visible!"
 
+        mobile_img_src = page_mobile.eval_on_selector("#invitation img", "el => el.src")
+        print(f"Mobile Image Source: {mobile_img_src}", flush=True)
+        assert "final1.jpg" in mobile_img_src or "final2.jpg" in mobile_img_src, "Mobile image must be final1.jpg or final2.jpg!"
+
         mobile_shot = os.path.join(OUTPUT_DIR, "test_mobile_page2.png")
         page_mobile.screenshot(path=mobile_shot)
         print(f"Mobile screenshot saved to: {mobile_shot}", flush=True)
-        results.append("✓ Mobile Page 2 verified (clean vertical image, video hidden)")
+        results.append(f"✓ Mobile Page 2 verified (HD vertical portrait randomly selected: {os.path.basename(mobile_img_src)}, video hidden)")
 
         # -------------------------------------------------------------
         # TEST 3: CELEBRATIONS COMPACT TABS & "PHERAS" REMOVAL

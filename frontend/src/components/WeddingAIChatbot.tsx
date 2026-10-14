@@ -208,7 +208,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
     };
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputValue).trim();
     if (!text) return;
 
@@ -219,10 +219,62 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
       timestamp: "Just now",
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const nextHistory = [...messages, userMsg];
+    setMessages(nextHistory);
     setInputValue("");
     setIsTyping(true);
 
+    try {
+      // 1. Try Live Hostinger AI Endpoint (Gemini 1.5 Flash / OpenAI)
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          history: nextHistory.slice(-6).map((m) => ({
+            sender: m.sender,
+            text: m.text,
+          })),
+          guestName: guestName || null,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data && data.success && data.reply) {
+          const lowerReply = data.reply.toLowerCase();
+          let action: Message["action"] = undefined;
+          if (lowerReply.includes("map") || lowerReply.includes("direction") || lowerReply.includes("location")) {
+            action = {
+              type: "maps",
+              data: { url: "https://maps.google.com/?q=The+Club+International+Sector+109+Gurgaon" },
+            };
+          } else if (lowerReply.includes("rsvp@chandrikawedsxudong.com") || lowerReply.includes("email") || lowerReply.includes("inquiry")) {
+            action = {
+              type: "escalate",
+              data: { originalQuery: text },
+            };
+            setEscalateQuery(text);
+            setInquirySent(false);
+          }
+
+          const botMsg: Message = {
+            id: "bot-" + Date.now(),
+            sender: "bot",
+            text: data.reply,
+            action,
+            timestamp: "Just now",
+          };
+          setMessages((prev) => [...prev, botMsg]);
+          setIsTyping(false);
+          return;
+        }
+      }
+    } catch {
+      // Offline / fallback to local knowledge base
+    }
+
+    // 2. Resilient Local Knowledge Base Fallback
     setTimeout(() => {
       const response = processQuery(text);
       const botMsg: Message = {
@@ -239,7 +291,7 @@ export const WeddingAIChatbot: React.FC<WeddingAIChatbotProps> = ({ guestName })
         setEscalateQuery(text);
         setInquirySent(false);
       }
-    }, 600);
+    }, 400);
   };
 
   const handleSendInquiry = async () => {
