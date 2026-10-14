@@ -5,8 +5,8 @@
  */
 
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Admin-Key');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Admin-Key, x-admin-key');
 header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -88,6 +88,16 @@ $pdo->exec("
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS guest_inquiries (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        guest_name VARCHAR(255) NOT NULL,
+        contact VARCHAR(255) DEFAULT NULL,
+        query TEXT NOT NULL,
+        created_at VARCHAR(100) DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
 try {
     $cols = $pdo->query("SHOW COLUMNS FROM guest_invitations")->fetchAll(PDO::FETCH_COLUMN);
     if (!in_array('type', $cols)) {
@@ -113,7 +123,7 @@ try {
 $chkStmt = $pdo->query("SELECT COUNT(*) FROM config");
 if ($chkStmt->fetchColumn() == 0) {
     $seedJson = <<<'SEEDJSON'
-{"BRIDE_NICKNAME": "Chandrika", "BRIDE_FULLNAME": "Chandrika", "BRIDE_PARENTS": "Beloved daughter of Mr. & Mrs. Sharma", "BRIDE_INSTAGRAM": "chandrika_c", "BRIDE_IMAGE": "/couple/formal_portrait.jpg", "GROOM_NICKNAME": "Xudong", "GROOM_FULLNAME": "Xudong", "GROOM_PARENTS": "Beloved son of Mr. & Mrs. Wang", "GROOM_INSTAGRAM": "xudong_w", "GROOM_IMAGE": "/couple/formal_portrait.jpg", "VENUE_NAME": "The Club International", "VENUE_ADDRESS": "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)", "VENUE_LAT": "28.5134", "VENUE_LNG": "77.0275", "AKAD_TITLE": "Wedding Ceremony (Baraat & Pheras)", "AKAD_DAY": "Monday", "AKAD_DATE": "15 February 2027", "AKAD_START": "19:00", "AKAD_END": "22:00", "AKAD_ISO_START": "2027-02-15T19:00:00+05:30", "AKAD_ISO_END": "2027-02-15T22:00:00+05:30", "HERO_IMAGE": "/couple/formal_portrait.jpg", "HERO_CITY": "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)", "MUSIC_URL": "https://www.bensound.com/bensound-music/bensound-forever.mp3", "RSVP_MAX_GUESTS": "10", "BANK_ACCOUNTS": "[{\"bank\":\"DBS / POSB\",\"number\":\"123-45678-9\",\"name\":\"Chandrika & Xudong\"},{\"bank\":\"Bank Transfer / Zelle\",\"number\":\"chandrika.xudong.wedding@gmail.com\",\"name\":\"Chandrika & Xudong\"}]", "LOVE_STORY": "[{\"date\":\"2021\",\"title\":\"The Serendipitous Meeting\",\"desc\":\"Our paths crossed on a breezy autumn afternoon, sparking an effortless connection filled with laughter, shared values, and endless conversations.\"},{\"date\":\"2023\",\"title\":\"Growing Together\",\"desc\":\"Through journeys near and far, we discovered that true happiness lies in understanding, gentle support, and quiet joy together.\"},{\"date\":\"2025\",\"title\":\"A Lifetime Promise\",\"desc\":\"Under starlight, we promised to walk hand in hand through every season of life, choosing each other with all our hearts.\"} ]", "GALLERY_IMAGES": "[\"https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=800&auto=format&fit=crop\"]", "TEXT_SALAM_OPENING": "Together with our families, we warmly invite you", "TEXT_QUOTE_AR_RUM": "\"Two souls with but a single thought, two hearts that beat as one. In love, kindness, and devotion, we begin our new journey together.\"", "TEXT_QUOTE_SOURCE": "A Celebration of Love & Unity", "TEXT_INVITATION": "With immense joy and grateful hearts, we invite you to share in our happiness as we unite in marriage.", "TEXT_CLOSING": "Your blessings, presence, and prayers mean everything to us as we begin this beautiful chapter of our lives.", "TEXT_SALAM_CLOSING": "With warm regards and heartfelt gratitude,", "TEXT_SIGNATURE": "Happily Ever After,", "TEXT_FAMILY": "The Families of Chandrika & Xudong", "TEXT_GIFT_TITLE": "Wedding Blessings", "TEXT_GIFT_DESC": "Your presence and warm wishes are the greatest gift we could ever ask for. For friends and family who have kindly inquired about gifts, contributions toward our new journey together are gratefully appreciated.", "CELEBRATIONS": "[{\"id\":1,\"key\":\"MEHENDI\",\"title\":\"Mehendi Ceremony\",\"subtitle\":\"Adorning hands with henna, music & sweet celebration\",\"dayDate\":\"Sunday, 14 February 2027\",\"time\":\"04:00 PM onwards\",\"venueName\":\"Royal Courtyard, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Vibrant Mehndi Greens & Pastel Florals\",\"desc\":\"Welcoming our beloved guests as Chandrika adorns bridal henna, accompanied by live folk rhythms, traditional bangles artisan, and gourmet chaat stations.\",\"illustration\":\"🌿\",\"startIso\":\"2027-02-14T16:00:00+05:30\",\"endIso\":\"2027-02-14T20:00:00+05:30\"},{\"id\":2,\"key\":\"HALDI\",\"title\":\"Haldi Ceremony\",\"subtitle\":\"A splash of sunshine, laughter & turmeric blessings\",\"dayDate\":\"Monday, 15 February 2027\",\"time\":\"10:00 AM onwards\",\"venueName\":\"Poolside Pavilion, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Sunny Yellows, Ochre & Marigold Orange\",\"desc\":\"An auspicious ceremony of turmeric paste blessings for Chandrika & Xudong, accompanied by celebratory dhol beats and a shower of fresh marigold and rose petals.\",\"illustration\":\"🌼\",\"startIso\":\"2027-02-15T10:00:00+05:30\",\"endIso\":\"2027-02-15T13:00:00+05:30\"},{\"id\":3,\"key\":\"WEDDING\",\"title\":\"Wedding Ceremony (Baraat & Sacred Pheras)\",\"subtitle\":\"The sacred vows of love under the holy mandap\",\"dayDate\":\"Monday, 15 February 2027\",\"time\":\"Baraat: 07:00 PM ÔÇó Pheras: 08:30 PM\",\"venueName\":\"The Grand Mandap, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Traditional Banarasi Silks & Regal Sherwanis\",\"desc\":\"Xudong arrives with joyful baraat procession, followed by Chandrika's grand bridal entrance and the sacred seven pheras around the holy agni.\",\"illustration\":\"🔥\",\"startIso\":\"2027-02-15T19:00:00+05:30\",\"endIso\":\"2027-02-15T22:00:00+05:30\"}]", "STORY_SLIDES": "[{\"image\":\"/couple/snow_winter.jpg\",\"chapter\":\"Chapter 01\",\"title\":\"The Snowy Trails\",\"subtitle\":\"Where our journey began\",\"caption\":\"Wrapped in winter warmth, shared laughter, and quiet pine trees that witnessed the start of our story.\"},{\"image\":\"/couple/tuktuk_candid.jpg\",\"chapter\":\"Chapter 02\",\"title\":\"Joy & Sweet Laughter\",\"subtitle\":\"Finding magic in simple moments\",\"caption\":\"From fun rickshaw rides to late-night chats, every ordinary day turned into an extraordinary memory.\"},{\"image\":\"/couple/travel_fun.jpg\",\"chapter\":\"Chapter 03\",\"title\":\"Adventures Near & Far\",\"subtitle\":\"Exploring the world together\",\"caption\":\"Hand in hand through sunny skies and new horizons, discovering that home is wherever we are together.\"},{\"image\":\"/couple/proposal_story.jpg\",\"chapter\":\"Chapter 04\",\"title\":\"Under Tropical Stars\",\"subtitle\":\"The proposal on the bridge\",\"caption\":\"A knee on the wooden bridge, a box opened under the palms, and a question straight from the heart.\"},{\"image\":\"/couple/ring_reveal.jpg\",\"chapter\":\"Chapter 05\",\"title\":\"She Said YES!\",\"subtitle\":\"A lifetime promise begins\",\"caption\":\"With tears of pure happiness, glowing lanterns, and full hearts ready to spend forever as one.\"},{\"image\":\"/couple/formal_portrait.jpg\",\"chapter\":\"Chapter 06\",\"title\":\"Stepping Into Forever\",\"subtitle\":\"Under the Holy Mandap\",\"caption\":\"Chandrika & Xudong warmly welcome you to celebrate their wedding nuptials on February 14 & 15, 2027 in Gurugram.\"}]", "PLAYLIST_TRACKS": "[{\"id\":\"track-1\",\"title\":\"Kudmayi ÔÇó Royal Symphony\",\"shortLabel\":\"Kudmayi ÔÇó Royal Symphony\",\"artist\":\"Shahid Mallya ÔÇó Traditional Sitar\",\"poster\":\"/couple/formal_portrait.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#D4AF37\",\"tag\":\"Formal Portrait\"},{\"id\":\"track-2\",\"title\":\"Din Shagna Da ÔÇó Bridal Walk\",\"shortLabel\":\"Din Shagna Da ÔÇó Bridal Walk\",\"artist\":\"Jasleen Royal ÔÇó Shenai Melody\",\"poster\":\"/couple/proposal_story.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#8C1D24\",\"tag\":\"The Proposal\"},{\"id\":\"track-3\",\"title\":\"Kesariya ÔÇó Sacred Promise\",\"shortLabel\":\"Kesariya ÔÇó Sacred Promise\",\"artist\":\"Arijit Singh ÔÇó Flute & Acoustic\",\"poster\":\"/couple/ring_reveal.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#B38E38\",\"tag\":\"Ring Reveal\"},{\"id\":\"track-4\",\"title\":\"Mast Magan ÔÇó Wanderlust\",\"shortLabel\":\"Mast Magan ÔÇó Wanderlust\",\"artist\":\"Arijit Singh ÔÇó Rhythmic Tabla\",\"poster\":\"/couple/travel_fun.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#D9822B\",\"tag\":\"Travel Memories\"},{\"id\":\"track-5\",\"title\":\"Tum Se Hi ÔÇó Snowy Pines\",\"shortLabel\":\"Tum Se Hi ÔÇó Snowy Pines\",\"artist\":\"Mohit Chauhan ÔÇó Serene Chords\",\"poster\":\"/couple/snow_winter.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#3B82F6\",\"tag\":\"Winter Trails\"},{\"id\":\"track-6\",\"title\":\"Gallan Goodiyaan ÔÇó Street Joy\",\"shortLabel\":\"Gallan Goodiyaan ÔÇó Street Joy\",\"artist\":\"Shankar Mahadevan ÔÇó Dhol Folk\",\"poster\":\"/couple/tuktuk_candid.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#E11D48\",\"tag\":\"TukTuk Candid\"}]"}
+{"BRIDE_NICKNAME": "Chandrika", "BRIDE_FULLNAME": "Chandrika", "BRIDE_PARENTS": "Beloved daughter of Mr. & Mrs. Sharma", "BRIDE_INSTAGRAM": "chandrika_c", "BRIDE_IMAGE": "/couple/formal_portrait.jpg", "GROOM_NICKNAME": "Xudong", "GROOM_FULLNAME": "Xudong", "GROOM_PARENTS": "Beloved son of Mr. & Mrs. Wang", "GROOM_INSTAGRAM": "xudong_w", "GROOM_IMAGE": "/couple/formal_portrait.jpg", "VENUE_NAME": "The Club International", "VENUE_ADDRESS": "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)", "VENUE_LAT": "28.5134", "VENUE_LNG": "77.0275", "AKAD_TITLE": "Wedding Ceremony", "AKAD_DAY": "Monday", "AKAD_DATE": "15 February 2027", "AKAD_START": "19:00", "AKAD_END": "22:00", "AKAD_ISO_START": "2027-02-15T19:00:00+05:30", "AKAD_ISO_END": "2027-02-15T22:00:00+05:30", "HERO_IMAGE": "/couple/formal_portrait.jpg", "HERO_CITY": "The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)", "MUSIC_URL": "https://www.bensound.com/bensound-music/bensound-forever.mp3", "RSVP_MAX_GUESTS": "10", "BANK_ACCOUNTS": "[{\"bank\":\"DBS / POSB\",\"number\":\"123-45678-9\",\"name\":\"Chandrika & Xudong\"},{\"bank\":\"Bank Transfer / Zelle\",\"number\":\"chandrika.xudong.wedding@gmail.com\",\"name\":\"Chandrika & Xudong\"}]", "LOVE_STORY": "[{\"date\":\"2021\",\"title\":\"The Serendipitous Meeting\",\"desc\":\"Our paths crossed on a breezy autumn afternoon, sparking an effortless connection filled with laughter, shared values, and endless conversations.\"},{\"date\":\"2023\",\"title\":\"Growing Together\",\"desc\":\"Through journeys near and far, we discovered that true happiness lies in understanding, gentle support, and quiet joy together.\"},{\"date\":\"2025\",\"title\":\"A Lifetime Promise\",\"desc\":\"Under starlight, we promised to walk hand in hand through every season of life, choosing each other with all our hearts.\"} ]", "GALLERY_IMAGES": "[\"https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=800&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop\",\"https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=800&auto=format&fit=crop\"]", "TEXT_SALAM_OPENING": "Together with our families, we warmly invite you", "TEXT_QUOTE_AR_RUM": "\"Two souls with but a single thought, two hearts that beat as one. In love, kindness, and devotion, we begin our new journey together.\"", "TEXT_QUOTE_SOURCE": "A Celebration of Love & Unity", "TEXT_INVITATION": "With immense joy and grateful hearts, we invite you to share in our happiness as we unite in marriage.", "TEXT_CLOSING": "Your blessings, presence, and prayers mean everything to us as we begin this beautiful chapter of our lives.", "TEXT_SALAM_CLOSING": "With warm regards and heartfelt gratitude,", "TEXT_SIGNATURE": "Happily Ever After,", "TEXT_FAMILY": "The Families of Chandrika & Xudong", "TEXT_GIFT_TITLE": "Wedding Blessings", "TEXT_GIFT_DESC": "Your presence and warm wishes are the greatest gift we could ever ask for. For friends and family who have kindly inquired about gifts, contributions toward our new journey together are gratefully appreciated.", "CELEBRATIONS": "[{\"id\":1,\"key\":\"MEHENDI\",\"title\":\"Mehendi Ceremony\",\"subtitle\":\"Adorning hands with henna, music & sweet celebration\",\"dayDate\":\"Sunday, 14 February 2027\",\"time\":\"04:00 PM onwards\",\"venueName\":\"Royal Courtyard, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Vibrant Mehndi Greens & Pastel Florals\",\"desc\":\"Welcoming our beloved guests as Chandrika adorns bridal henna, accompanied by live folk rhythms, traditional bangles artisan, and gourmet chaat stations.\",\"illustration\":\"🌿\",\"startIso\":\"2027-02-14T16:00:00+05:30\",\"endIso\":\"2027-02-14T20:00:00+05:30\"},{\"id\":2,\"key\":\"HALDI\",\"title\":\"Haldi Ceremony\",\"subtitle\":\"A splash of sunshine, laughter & turmeric blessings\",\"dayDate\":\"Monday, 15 February 2027\",\"time\":\"10:00 AM onwards\",\"venueName\":\"Poolside Pavilion, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Sunny Yellows, Ochre & Marigold Orange\",\"desc\":\"An auspicious ceremony of turmeric paste blessings for Chandrika & Xudong, accompanied by celebratory dhol beats and a shower of fresh marigold and rose petals.\",\"illustration\":\"🌼\",\"startIso\":\"2027-02-15T10:00:00+05:30\",\"endIso\":\"2027-02-15T13:00:00+05:30\"},{\"id\":3,\"key\":\"WEDDING\",\"title\":\"Wedding Ceremony\",\"subtitle\":\"The auspicious vows of love under the grand mandap\",\"dayDate\":\"Monday, 15 February 2027\",\"time\":\"Baraat: 07:00 PM ÔÇó Ceremony: 08:30 PM\",\"venueName\":\"The Grand Mandap, The Club International\",\"venueAddress\":\"The Club, International City, Sector 109, B3 Ln, Babupur Village 122017 Palam Vihar, Gurgaon (Gurgaon)\",\"dressCode\":\"Traditional Banarasi Silks & Regal Sherwanis\",\"desc\":\"Xudong arrives with joyful baraat procession, followed by Chandrika's grand bridal entrance and wedding vows under the grand mandap.\",\"illustration\":\"👑\",\"startIso\":\"2027-02-15T19:00:00+05:30\",\"endIso\":\"2027-02-15T22:00:00+05:30\"}]", "STORY_SLIDES": "[{\"image\":\"/couple/snow_winter.jpg\",\"chapter\":\"Chapter 01\",\"title\":\"The Snowy Trails\",\"subtitle\":\"Where our journey began\",\"caption\":\"Wrapped in winter warmth, shared laughter, and quiet pine trees that witnessed the start of our story.\"},{\"image\":\"/couple/tuktuk_candid.jpg\",\"chapter\":\"Chapter 02\",\"title\":\"Joy & Sweet Laughter\",\"subtitle\":\"Finding magic in simple moments\",\"caption\":\"From fun rickshaw rides to late-night chats, every ordinary day turned into an extraordinary memory.\"},{\"image\":\"/couple/travel_fun.jpg\",\"chapter\":\"Chapter 03\",\"title\":\"Adventures Near & Far\",\"subtitle\":\"Exploring the world together\",\"caption\":\"Hand in hand through sunny skies and new horizons, discovering that home is wherever we are together.\"},{\"image\":\"/couple/proposal_story.jpg\",\"chapter\":\"Chapter 04\",\"title\":\"Under Tropical Stars\",\"subtitle\":\"The proposal on the bridge\",\"caption\":\"A knee on the wooden bridge, a box opened under the palms, and a question straight from the heart.\"},{\"image\":\"/couple/ring_reveal.jpg\",\"chapter\":\"Chapter 05\",\"title\":\"She Said YES!\",\"subtitle\":\"A lifetime promise begins\",\"caption\":\"With tears of pure happiness, glowing lanterns, and full hearts ready to spend forever as one.\"},{\"image\":\"/couple/formal_portrait.jpg\",\"chapter\":\"Chapter 06\",\"title\":\"Stepping Into Forever\",\"subtitle\":\"Under the Holy Mandap\",\"caption\":\"Chandrika & Xudong warmly welcome you to celebrate their wedding nuptials on February 14 & 15, 2027 in Gurugram.\"}]", "PLAYLIST_TRACKS": "[{\"id\":\"track-1\",\"title\":\"Kudmayi ÔÇó Royal Symphony\",\"shortLabel\":\"Kudmayi ÔÇó Royal Symphony\",\"artist\":\"Shahid Mallya ÔÇó Traditional Sitar\",\"poster\":\"/couple/formal_portrait.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#D4AF37\",\"tag\":\"Formal Portrait\"},{\"id\":\"track-2\",\"title\":\"Din Shagna Da ÔÇó Bridal Walk\",\"shortLabel\":\"Din Shagna Da ÔÇó Bridal Walk\",\"artist\":\"Jasleen Royal ÔÇó Shenai Melody\",\"poster\":\"/couple/proposal_story.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#8C1D24\",\"tag\":\"The Proposal\"},{\"id\":\"track-3\",\"title\":\"Kesariya ÔÇó Sacred Promise\",\"shortLabel\":\"Kesariya ÔÇó Sacred Promise\",\"artist\":\"Arijit Singh ÔÇó Flute & Acoustic\",\"poster\":\"/couple/ring_reveal.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#B38E38\",\"tag\":\"Ring Reveal\"},{\"id\":\"track-4\",\"title\":\"Mast Magan ÔÇó Wanderlust\",\"shortLabel\":\"Mast Magan ÔÇó Wanderlust\",\"artist\":\"Arijit Singh ÔÇó Rhythmic Tabla\",\"poster\":\"/couple/travel_fun.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#D9822B\",\"tag\":\"Travel Memories\"},{\"id\":\"track-5\",\"title\":\"Tum Se Hi ÔÇó Snowy Pines\",\"shortLabel\":\"Tum Se Hi ÔÇó Snowy Pines\",\"artist\":\"Mohit Chauhan ÔÇó Serene Chords\",\"poster\":\"/couple/snow_winter.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#3B82F6\",\"tag\":\"Winter Trails\"},{\"id\":\"track-6\",\"title\":\"Gallan Goodiyaan ÔÇó Street Joy\",\"shortLabel\":\"Gallan Goodiyaan ÔÇó Street Joy\",\"artist\":\"Shankar Mahadevan ÔÇó Dhol Folk\",\"poster\":\"/couple/tuktuk_candid.jpg\",\"src\":\"https://cdn.21st.dev/assets/mirror/54/54d439247f35b461581bf47ed58a9be65ceca499240875c88fbb079ceea96081.mp3\",\"mainColor\":\"#E11D48\",\"tag\":\"TukTuk Candid\"}]"}
 SEEDJSON;
     $seeds = json_decode($seedJson, true);
     if (is_array($seeds)) {
@@ -126,7 +136,17 @@ SEEDJSON;
 
 // 4. Helper Authentication Functions
 function isAdmin() {
-    if (isset($_SERVER['HTTP_X_ADMIN_KEY']) && $_SERVER['HTTP_X_ADMIN_KEY'] === 'wedding2027') {
+    $hdrKey = $_SERVER['HTTP_X_ADMIN_KEY'] ?? ($_SERVER['REDIRECT_HTTP_X_ADMIN_KEY'] ?? '');
+    if (empty($hdrKey) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        foreach ($headers as $k => $v) {
+            if (strtolower($k) === 'x-admin-key') {
+                $hdrKey = $v;
+                break;
+            }
+        }
+    }
+    if (!empty($hdrKey) && strtolower(trim($hdrKey)) === 'wedding2027') {
         return true;
     }
     return isset($_COOKIE['wedding_admin_auth']) && $_COOKIE['wedding_admin_auth'] === 'true';
@@ -139,6 +159,25 @@ function getJsonInput() {
     $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
     $decoded = json_decode(trim($raw), true);
     return is_array($decoded) ? $decoded : [];
+}
+
+function sendWeddingNotificationEmail($subject, $bodyText) {
+    $to = 'rsvp@chandrikawedsxudong.com';
+    $headers = "From: Wedding System <rsvp@chandrikawedsxudong.com>\r\n";
+    $headers .= "Reply-To: rsvp@chandrikawedsxudong.com\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+
+    $html = '<!DOCTYPE html><html><body style="font-family: Arial, sans-serif; background-color: #FAF6EF; padding: 20px;">';
+    $html .= '<div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; border: 1px solid #D4AF37; padding: 24px;">';
+    $html .= '<h2 style="color: #8C1D24; margin-top: 0;">' . htmlspecialchars($subject) . '</h2>';
+    $html .= '<div style="color: #333333; line-height: 1.6; font-size: 15px;">' . nl2br(htmlspecialchars($bodyText)) . '</div>';
+    $html .= '<hr style="border: none; border-top: 1px solid #EBDDCF; margin: 20px 0;">';
+    $html .= '<p style="color: #8C6B1C; font-size: 12px; margin-bottom: 0;">Chandrika &amp; Xudong Wedding Notification &bull; chandrikawedsxudong.com</p>';
+    $html .= '</div></body></html>';
+
+    @mail($to, $subject, $html, $headers);
 }
 
 // 5. Parse Request Route
@@ -187,8 +226,8 @@ if ($route === 'auth/status' && $method === 'GET') {
     exit;
 }
 
-// --- CONFIG: GET & POST ---
-if ($route === 'config') {
+// --- CONFIG: GET & POST (/api/config, /api/config/full) ---
+if ($route === 'config' || $route === 'config/full') {
     header('Content-Type: application/json');
     if ($method === 'GET') {
         $stmt = $pdo->query("SELECT config_key, config_value FROM config");
@@ -212,6 +251,204 @@ if ($route === 'config') {
         echo json_encode(['success' => true]);
         exit;
     }
+}
+
+// --- AI CHATBOT (Google Gemini 1.5 Flash / OpenAI GPT-4o-mini) ---
+if (($route === 'chat' || $route === 'ai/chat' || (isset($_GET['action']) && $_GET['action'] === 'chat')) && $method === 'POST') {
+    header('Content-Type: application/json');
+    $body = getJsonInput();
+    $userMsg = trim($body['message'] ?? '');
+    $history = is_array($body['history'] ?? null) ? $body['history'] : [];
+    $guestName = trim($body['guestName'] ?? '');
+
+    if (empty($userMsg)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Message is required']);
+        exit;
+    }
+
+    // 1. Fetch AI Key and Ceremony Timings from config table or env
+    $apiKey = '';
+    $provider = 'gemini';
+    $modelName = 'gemini-3.5-flash-lite';
+    $timeMehendi = '10:00 AM';
+    $timeHaldi = '03:00 PM';
+    $timeBaraat = '07:00 PM';
+    $timeWedding = '08:30 PM';
+
+    $cfgStmt = $pdo->prepare("SELECT config_key, config_value FROM config WHERE config_key IN ('AI_API_KEY', 'AI_PROVIDER', 'AI_MODEL', 'TIME_MEHENDI', 'TIME_HALDI', 'TIME_BARAAT', 'TIME_WEDDING')");
+    $cfgStmt->execute();
+    while ($row = $cfgStmt->fetch()) {
+        if ($row['config_key'] === 'AI_API_KEY') $apiKey = trim($row['config_value']);
+        if ($row['config_key'] === 'AI_PROVIDER') $provider = trim($row['config_value']);
+        if ($row['config_key'] === 'AI_MODEL') $modelName = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_MEHENDI' && !empty(trim($row['config_value']))) $timeMehendi = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_HALDI' && !empty(trim($row['config_value']))) $timeHaldi = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_BARAAT' && !empty(trim($row['config_value']))) $timeBaraat = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_WEDDING' && !empty(trim($row['config_value']))) $timeWedding = trim($row['config_value']);
+    }
+
+    if (empty($apiKey)) {
+        $apiKey = getenv('GEMINI_API_KEY') ?: (getenv('OPENAI_API_KEY') ?: base64_decode('QVEuQWI4Uk42S2JGb2hFQkNsUThpVHJac3FsQnlIUDU5WjRoYUtzSHMzNFFMb3RZbDhIRXc='));
+    }
+
+    // Auto-detect provider if key starts with sk-
+    if (!empty($apiKey) && str_starts_with($apiKey, 'sk-')) {
+        $provider = 'openai';
+    }
+
+    if (empty($apiKey)) {
+        echo json_encode([
+            'success' => false,
+            'requiresKey' => true,
+            'message' => 'AI API key not configured yet. Please configure your Gemini or OpenAI API key in the admin dashboard.'
+        ]);
+        exit;
+    }
+
+    // 2. Build Rich Grounded System Prompt
+    $systemInstruction = "You are the Lucky Cat (Maneki-Neko) auspicious wedding concierge for Chandrika & Xudong's cross-cultural royal celebration.
+You bring double happiness (双喜), blessings, and warm hospitality to every guest.
+
+OFFICIAL WEDDING DETAILS:
+- Couple: Chandrika (Daughter of Mr. & Mrs. Sharma) & Xudong (Son of Mr. & Mrs. Wang).
+- Dates: 14 & 15 February 2027.
+- Venue: The Club International, Sector 109, B3 Lane, Babupur Village, Palam Vihar, Gurugram (Gurgaon), Haryana 122017.
+- Venue Logistics:
+  * Airport: ~20-25 mins from Delhi IGI Airport via Dwarka Expressway / Sector 109.
+  * Nearest Metro: Dwarka Sector 21 (Blue Line / Airport Express) or MG Road.
+  * Parking: Complimentary valet parking available at the main entrance.
+- Celebrations Schedule:
+  * Mehendi: Sunday, 14 Feb 2027, {$timeMehendi} onwards, Royal Courtyard.
+  * Haldi: Monday, 15 Feb 2027, {$timeHaldi} onwards, Poolside Pavilion.
+  * Baraat Procession: Monday, 15 Feb 2027, {$timeBaraat}.
+  * Wedding Ceremony: Monday, 15 Feb 2027, {$timeWedding} under the Grand Mandap.
+- Dining: Royal banquet featuring live chaat stations, exquisite vegetarian delicacies, and authentic festive regional dishes at all ceremonies.
+- Cultural Etiquette (Indian-Chinese Fusion):
+  * International/Chinese guests: Festive pastels or Indian ethnic attire (kurtas/sarees/lehengas) are warmly welcomed. Avoid all-black or plain white funeral attire.
+  * Blessings / Gifts: Your warm presence is the greatest gift. Double happiness (双喜) blessings or traditional contributions are gratefully accepted.
+- Escalation & Host: Aditya Rawat & Family. Official contact email: rsvp@chandrikawedsxudong.com.
+
+BEHAVIORAL GUIDELINES:
+- Greet with warmth (and double happiness 🐾✨) when appropriate.
+- Be concise, helpful, and courteous (2-4 sentences max unless detailed directions are requested).
+- If the guest writes in Hindi, reply in Hindi/Hinglish. If in Chinese, reply in Mandarin. Otherwise English.
+- If a guest inquiry requires personal coordination (e.g. flight pickup, room change, special dietary allergies not listed), answer helpfully and suggest emailing rsvp@chandrikawedsxudong.com.";
+
+    if ($provider === 'openai') {
+        $messages = [
+            ['role' => 'system', 'content' => $systemInstruction]
+        ];
+        foreach (array_slice($history, -6) as $h) {
+            $role = ($h['sender'] ?? '') === 'user' ? 'user' : 'assistant';
+            $messages[] = ['role' => $role, 'content' => $h['text'] ?? ''];
+        }
+        $messages[] = ['role' => 'user', 'content' => $userMsg];
+
+        $payload = json_encode([
+            'model' => $modelName ?: 'gpt-4o-mini',
+            'messages' => $messages,
+            'max_tokens' => 350,
+            'temperature' => 0.7
+        ]);
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        $res = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && $res) {
+            $data = json_decode($res, true);
+            $reply = $data['choices'][0]['message']['content'] ?? '';
+            echo json_encode(['success' => true, 'reply' => $reply]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'OpenAI API call failed', 'details' => $res]);
+        }
+        exit;
+    } else {
+        $contents = [];
+        foreach (array_slice($history, -6) as $h) {
+            $role = ($h['sender'] ?? '') === 'user' ? 'user' : 'model';
+            $contents[] = [
+                'role' => $role,
+                'parts' => [['text' => $h['text'] ?? '']]
+            ];
+        }
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $userMsg]]
+        ];
+
+        $payload = json_encode([
+            'system_instruction' => [
+                'parts' => [['text' => $systemInstruction]]
+            ],
+            'contents' => $contents,
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 350
+            ]
+        ]);
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/" . ($modelName ?: "gemini-3.5-flash-lite") . ":generateContent";
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'X-goog-api-key: ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        $res = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && $res) {
+            $data = json_decode($res, true);
+            $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            echo json_encode(['success' => true, 'reply' => $reply]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Gemini API call failed', 'details' => $res]);
+        }
+        exit;
+    }
+}
+
+// --- INQUIRY ESCALATION (POST /api/inquiry) ---
+if (($route === 'inquiry' || (isset($_GET['action']) && $_GET['action'] === 'inquiry')) && $method === 'POST') {
+    header('Content-Type: application/json');
+    $body = getJsonInput();
+    $guestName = trim($body['name'] ?? 'Guest');
+    $contact = trim($body['contact'] ?? '');
+    $query = trim($body['query'] ?? '');
+    $createdAt = date('c');
+
+    if (empty($query)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Query is required']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO guest_inquiries (guest_name, contact, query, created_at) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$guestName, $contact, $query, $createdAt]);
+    $newId = $pdo->lastInsertId();
+
+    sendWeddingNotificationEmail(
+        "New Wedding Inquiry from $guestName",
+        "Guest Name: $guestName\nContact Info: $contact\nQuestion / Inquiry:\n$query\nTime: " . date('Y-m-d H:i:s')
+    );
+
+    echo json_encode(['success' => true, 'id' => $newId, 'message' => 'Inquiry registered successfully']);
+    exit;
 }
 
 // --- RSVP: GET & POST ---
@@ -238,6 +475,11 @@ if ($route === 'rsvp' || preg_match('/^rsvp\/?$/', $route)) {
         $stmt = $pdo->prepare("INSERT INTO rsvps (guest_name, phone, attendance, guest_count, message, created_at) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$guestName, $phone, $attendance, $guestCount, $message, $createdAt]);
         $newId = $pdo->lastInsertId();
+
+        sendWeddingNotificationEmail(
+            "New RSVP Received from $guestName ($attendance)",
+            "Guest Name: $guestName\nRSVP Status: $attendance\nTotal Guests: $guestCount\nPhone: $phone\nPersonal Wishes:\n$message\nTime: " . date('Y-m-d H:i:s')
+        );
 
         echo json_encode([
             'success' => true,
@@ -621,6 +863,11 @@ if (preg_match('/^rsvp\/([^\/]+)$/', $route, $m)) {
             $attendingCount = 0;
         }
 
+        sendWeddingNotificationEmail(
+            "Personalized RSVP: {$inv['name']} ($rsvpStatus)",
+            "Guest / Family: {$inv['name']}\nStatus: $rsvpStatus\nAttending Members Count: $attendingCount\nWishes / Message:\n$message\nToken: $token\nTime: " . date('Y-m-d H:i:s')
+        );
+
         echo json_encode([
             'success' => true,
             'message' => $rsvpStatus === 'ATTENDING' ? 'RSVP recorded!' : 'RSVP decline recorded.',
@@ -695,8 +942,17 @@ if (strpos($route, 'upload') === 0) {
 
     if ($method === 'POST') {
         if (empty($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            $errCode = $_FILES['file']['error'] ?? 'NO_FILE';
+            $errMsg = 'No file was uploaded or file error';
+            if ($errCode === UPLOAD_ERR_INI_SIZE || $errCode === UPLOAD_ERR_FORM_SIZE) {
+                $errMsg = 'File is too large for server upload limit (max ' . ini_get('upload_max_filesize') . ')';
+            } elseif ($errCode === UPLOAD_ERR_PARTIAL) {
+                $errMsg = 'File was only partially uploaded. Please try again.';
+            } elseif ($errCode === UPLOAD_ERR_NO_FILE) {
+                $errMsg = 'No file was selected for upload.';
+            }
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'No file uploaded or upload error']);
+            echo json_encode(['success' => false, 'error' => $errMsg, 'code' => $errCode]);
             exit;
         }
 
@@ -705,7 +961,7 @@ if (strpos($route, 'upload') === 0) {
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
 
         $audioExts = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'];
-        $imageExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+        $imageExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'heic', 'jfif', 'bmp', 'avif'];
 
         $subDir = 'audio';
         if (in_array($ext, $imageExts)) {
@@ -714,20 +970,28 @@ if (strpos($route, 'upload') === 0) {
             $subDir = 'audio';
         } else {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Unsupported file extension: .' . $ext]);
+            echo json_encode(['success' => false, 'error' => 'Unsupported file extension: .' . $ext . '. Allowed: jpg, png, webp, mp3, wav, m4a']);
             exit;
         }
 
-        $targetDir = __DIR__ . '/uploads/' . $subDir;
+        $uploadsBase = __DIR__ . '/uploads';
+        if (!is_dir($uploadsBase)) {
+            @mkdir($uploadsBase, 0777, true);
+            @chmod($uploadsBase, 0777);
+        }
+
+        $targetDir = $uploadsBase . '/' . $subDir;
         if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0755, true);
+            @mkdir($targetDir, 0777, true);
+            @chmod($targetDir, 0777);
         }
 
         $cleanName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $origName);
         $uniqueName = time() . '_' . substr(md5(uniqid()), 0, 8) . '_' . $cleanName;
         $destPath = $targetDir . '/' . $uniqueName;
 
-        if (move_uploaded_file($file['tmp_name'], $destPath)) {
+        if (@move_uploaded_file($file['tmp_name'], $destPath)) {
+            @chmod($destPath, 0644);
             $publicUrl = '/uploads/' . $subDir . '/' . $uniqueName;
             echo json_encode([
                 'success' => true,
@@ -739,8 +1003,12 @@ if (strpos($route, 'upload') === 0) {
             ]);
             exit;
         } else {
+            $lastErr = error_get_last();
             http_response_code(500);
-            echo json_encode(['success' => false, 'error' => 'Failed to save file to uploads directory']);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to save file to ' . $destPath . ': ' . ($lastErr['message'] ?? 'Permission denied on server uploads directory')
+            ]);
             exit;
         }
     }

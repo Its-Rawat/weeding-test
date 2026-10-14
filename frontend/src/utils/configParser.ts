@@ -172,11 +172,37 @@ export function parseConfig(raw: Record<string, string>): AppConfig {
     }
   };
 
+  const ceremonyTimings = {
+    baraat: raw.TIME_BARAAT || "07:00 PM",
+    wedding: raw.TIME_WEDDING || "08:30 PM",
+    haldi: raw.TIME_HALDI || "10:00 AM onwards",
+    mehendi: raw.TIME_MEHENDI || "04:00 PM onwards",
+  };
+
   const parsedCeremonies = parseJson<CelebrationEvent[]>(raw.CELEBRATIONS, DEFAULT_CEREMONIES);
-  const celebrations =
+  const baseCeremonies =
     Array.isArray(parsedCeremonies) && parsedCeremonies.length > 0
       ? parsedCeremonies
       : DEFAULT_CEREMONIES;
+
+  const celebrations = baseCeremonies.map((c) => {
+    const upper = (c.key || c.title || "").toUpperCase();
+    if (upper.includes("MEH")) {
+      return { ...c, time: ceremonyTimings.mehendi };
+    }
+    if (upper.includes("HALD")) {
+      return { ...c, time: ceremonyTimings.haldi };
+    }
+    if (upper.includes("WED")) {
+      return {
+        ...c,
+        baraatTime: ceremonyTimings.baraat,
+        weddingTime: ceremonyTimings.wedding,
+        time: `Baraat: ${ceremonyTimings.baraat} • Ceremony: ${ceremonyTimings.wedding}`,
+      };
+    }
+    return c;
+  });
 
   const parsedSlides = parseJson<StorySlide[]>(raw.STORY_SLIDES, DEFAULT_STORY_SLIDES);
   const storySlides =
@@ -279,5 +305,6 @@ export function parseConfig(raw: Record<string, string>): AppConfig {
     celebrations,
     storySlides,
     playlistTracks,
+    ceremonyTimings,
   };
 }

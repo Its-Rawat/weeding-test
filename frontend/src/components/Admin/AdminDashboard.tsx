@@ -326,6 +326,35 @@ const CONFIG_SECTIONS: { title: string; fields: ConfigField[] }[] = [
     ],
   },
   {
+    title: "Ceremony & Function Timings",
+    fields: [
+      {
+        key: "TIME_MEHENDI",
+        label: "Mehendi Ceremony Timing",
+        type: "text",
+        placeholder: "04:00 PM onwards",
+      },
+      {
+        key: "TIME_HALDI",
+        label: "Haldi Ceremony Timing",
+        type: "text",
+        placeholder: "10:00 AM onwards",
+      },
+      {
+        key: "TIME_BARAAT",
+        label: "Baraat Procession Timing",
+        type: "text",
+        placeholder: "07:00 PM",
+      },
+      {
+        key: "TIME_WEDDING",
+        label: "Wedding Ceremony Timing",
+        type: "text",
+        placeholder: "08:30 PM",
+      },
+    ],
+  },
+  {
     title: "Wedding Ceremony",
     fields: [
       { key: "AKAD_TITLE", label: "Ceremony Title", type: "text" },

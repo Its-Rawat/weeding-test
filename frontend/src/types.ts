@@ -81,6 +81,12 @@ export interface AppConfig {
   celebrations: CelebrationEvent[];
   storySlides: StorySlide[];
   playlistTracks?: TrackItem[];
+  ceremonyTimings?: {
+    baraat?: string;
+    wedding?: string;
+    haldi?: string;
+    mehendi?: string;
+  };
 }
 
 export interface TrackItem {
@@ -101,6 +107,8 @@ export interface CelebrationEvent {
   subtitle: string;
   dayDate: string;
   time: string;
+  baraatTime?: string;
+  weddingTime?: string;
   venueName: string;
   venueAddress: string;
   dressCode: string;

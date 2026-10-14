@@ -236,6 +236,17 @@ def main():
         assert "Baraat" in wedding_content
         print("✓ Switched to Wedding Ceremony tab successfully", flush=True)
 
+        # CRITICAL TEST: Check that "Attire" does NOT appear anywhere in #event for any ceremony
+        assert "attire" not in event_content.lower(), "FATAL: 'Attire' found in celebration details!"
+        assert "attire" not in haldi_content.lower(), "FATAL: 'Attire' found in Haldi celebration details!"
+        assert "attire" not in wedding_content.lower(), "FATAL: 'Attire' found in Wedding celebration details!"
+        print("✓ Verified: 'Attire' section is completely removed from all 3 functions!", flush=True)
+
+        # CRITICAL TEST: Check that "Sacred Itinerary" does NOT appear
+        full_page_text = page_desktop.text_content("body")
+        assert "sacred itinerary" not in full_page_text.lower(), "FATAL: 'Sacred Itinerary' found on the page!"
+        print("✓ Verified: 'Sacred Itinerary' is completely removed (replaced with modern 'Celebrations')!", flush=True)
+
         # CRITICAL TEST: Check that "Pheras" or "Sacred Pheras" does NOT appear anywhere in #event
         assert "phera" not in wedding_content.lower(), "FATAL: 'Pheras' found in Wedding Ceremony text!"
         print("✓ Verified: 'Pheras' is completely absent from celebrations!", flush=True)
@@ -243,18 +254,24 @@ def main():
         # CRITICAL TEST: Check that "Prefer continuous scrolling" does NOT appear anywhere in #event
         assert "continuous scrolling" not in event_content.lower(), "FATAL: 'Prefer continuous scrolling' found in celebrations!"
         print("✓ Verified: 'Prefer continuous scrolling' is completely removed!", flush=True)
-        results.append("✓ Celebrations compact tab switcher works smoothly in 1 scroll view with zero 'Pheras' and zero continuous scroll toggle")
+        results.append("✓ Celebrations compact tab switcher works smoothly: Attire removed, Sacred Itinerary removed, zero Pheras, zero continuous scroll toggle")
 
         ceremony_shot = os.path.join(OUTPUT_DIR, "test_ceremonies_tabs.png")
         page_desktop.screenshot(path=ceremony_shot)
 
         # -------------------------------------------------------------
-        # TEST 4: DARK MODE & COUNTDOWN TIMER VISIBILITY
+        # TEST 4: DARK MODE & COUNTDOWN TIMER VISIBILITY & HUMANIZED TEXT
         # -------------------------------------------------------------
-        print("\n--- TEST 4: Dark Mode & Timer Visibility Verification ---", flush=True)
+        print("\n--- TEST 4: Dark Mode & Humanized Countdown Verification ---", flush=True)
         # Scroll to countdown
         page_desktop.evaluate("document.getElementById('countdown').scrollIntoView({ behavior: 'instant' })")
         time.sleep(0.5)
+
+        countdown_text = page_desktop.text_content("#countdown")
+        assert "countdown to the royal nuptials" not in countdown_text.lower(), "FATAL: 'Countdown to the Royal Nuptials' still found!"
+        assert "counting down to our wedding day" in countdown_text.lower(), "FATAL: Humanized countdown title not found!"
+        print("✓ Verified: Countdown text humanized to 'Counting Down to Our Wedding Day'!", flush=True)
+        results.append("✓ Countdown text humanized: 'Countdown to the Royal Nuptials' replaced with warm, simple title")
 
         # Enable dark mode
         page_desktop.evaluate("document.documentElement.classList.add('dark')")

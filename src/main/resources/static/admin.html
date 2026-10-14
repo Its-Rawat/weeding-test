@@ -1222,6 +1222,12 @@
       </div>
 
       <div class="button-group">
+        <!-- Function Timings Button -->
+        <button class="btn btn-outline" onclick="openTimingsModal()" title="Edit timings for Baraat, Wedding, Haldi & Mehendi">
+          <i class="fa-solid fa-clock" style="color: var(--accent-gold);"></i>
+          <span>Function Timings</span>
+        </button>
+
         <!-- Playlist & Wheel Scroll Names Button -->
         <button class="btn btn-outline" onclick="openPlaylistModal()" title="Edit wedding playlist tracks and dial scroll names">
           <i class="fa-solid fa-compact-disc" style="color: var(--accent-gold);"></i>
@@ -1540,6 +1546,58 @@
           <button type="button" class="btn btn-outline" onclick="closeModal('aiConfigModal')">Cancel</button>
           <button type="button" class="btn btn-primary" id="saveAiBtn" onclick="saveAIConfig()">
             <i class="fa-solid fa-floppy-disk"></i> Save AI Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CEREMONY & FUNCTION TIMINGS EDITOR -->
+  <div class="modal-backdrop" id="timingsModal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clock" style="color: var(--accent-gold);"></i> Ceremony & Function Timings</h3>
+        <button class="modal-close" onclick="closeModal('timingsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: #FAF5EB; border-left: 4px solid var(--accent-gold); padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem;">
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
+            Update event timings dynamically across the wedding website. Changes will update instantly for all guests visiting <a href="https://chandrikawedsxudong.com" target="_blank" style="color: var(--primary-crimson); font-weight: 600;">chandrikawedsxudong.com</a>.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="timingMehendi">🌿 Mehendi Ceremony</label>
+            <input type="text" id="timingMehendi" placeholder="e.g. 10:00 AM" />
+            <small style="color: var(--text-light); font-size: 0.75rem;">Default: 10:00 AM</small>
+          </div>
+
+          <div class="form-group">
+            <label for="timingHaldi">✨ Haldi Ceremony</label>
+            <input type="text" id="timingHaldi" placeholder="e.g. 03:00 PM" />
+            <small style="color: var(--text-light); font-size: 0.75rem;">Default: 03:00 PM</small>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+          <div class="form-group">
+            <label for="timingBaraat">🥁 Baraat Arrival</label>
+            <input type="text" id="timingBaraat" placeholder="e.g. 07:00 PM" />
+            <small style="color: var(--text-light); font-size: 0.75rem;">Default: 07:00 PM</small>
+          </div>
+
+          <div class="form-group">
+            <label for="timingWedding">💍 Wedding Ceremony</label>
+            <input type="text" id="timingWedding" placeholder="e.g. 08:30 PM" />
+            <small style="color: var(--text-light); font-size: 0.75rem;">Default: 08:30 PM</small>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding-right: 0; padding-left: 0; margin-top: 1.5rem; margin-bottom: -0.5rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('timingsModal')">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveTimingsBtn" onclick="saveCeremonyTimings()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Timings
           </button>
         </div>
       </div>
@@ -2876,6 +2934,72 @@
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save AI Settings';
+      }
+    }
+
+    // ==========================================
+    // CEREMONY & FUNCTION TIMINGS
+    // ==========================================
+    async function openTimingsModal() {
+      openModal('timingsModal');
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/config`);
+        if (resp.ok) {
+          const cfg = await resp.json();
+          document.getElementById('timingMehendi').value = cfg.TIME_MEHENDI || '10:00 AM';
+          document.getElementById('timingHaldi').value = cfg.TIME_HALDI || '03:00 PM';
+          document.getElementById('timingBaraat').value = cfg.TIME_BARAAT || '07:00 PM';
+          document.getElementById('timingWedding').value = cfg.TIME_WEDDING || '08:30 PM';
+        }
+      } catch (e) {
+        console.warn('Failed to load timing config from server', e);
+      }
+      if (!document.getElementById('timingMehendi').value) document.getElementById('timingMehendi').value = '10:00 AM';
+      if (!document.getElementById('timingHaldi').value) document.getElementById('timingHaldi').value = '03:00 PM';
+      if (!document.getElementById('timingBaraat').value) document.getElementById('timingBaraat').value = '07:00 PM';
+      if (!document.getElementById('timingWedding').value) document.getElementById('timingWedding').value = '08:30 PM';
+    }
+
+    async function saveCeremonyTimings() {
+      const saveBtn = document.getElementById('saveTimingsBtn');
+      const mehendi = (document.getElementById('timingMehendi').value || '').trim() || '10:00 AM';
+      const haldi = (document.getElementById('timingHaldi').value || '').trim() || '03:00 PM';
+      const baraat = (document.getElementById('timingBaraat').value || '').trim() || '07:00 PM';
+      const wedding = (document.getElementById('timingWedding').value || '').trim() || '08:30 PM';
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="loader-inline"></span> Saving...';
+
+      try {
+        const payload = {
+          TIME_MEHENDI: mehendi,
+          TIME_HALDI: haldi,
+          TIME_BARAAT: baraat,
+          TIME_WEDDING: wedding
+        };
+
+        const resp = await fetch(`${apiBaseUrl}/api/config`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-ADMIN-KEY': 'wedding2027'
+          },
+          credentials: 'include',
+          body: JSON.stringify(payload)
+        });
+
+        if (!resp.ok) {
+          throw new Error(`Server returned HTTP ${resp.status}`);
+        }
+
+        showToast('Ceremony & function timings saved successfully!', 'success');
+        closeModal('timingsModal');
+      } catch (err) {
+        console.error('Error saving ceremony timings:', err);
+        showToast('Failed to save ceremony timings. Check connection.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Timings';
       }
     }
   </script>

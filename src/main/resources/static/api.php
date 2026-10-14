@@ -267,17 +267,25 @@ if (($route === 'chat' || $route === 'ai/chat' || (isset($_GET['action']) && $_G
         exit;
     }
 
-    // 1. Fetch AI Key from config table or env
+    // 1. Fetch AI Key and Ceremony Timings from config table or env
     $apiKey = '';
     $provider = 'gemini';
     $modelName = 'gemini-3.5-flash-lite';
+    $timeMehendi = '10:00 AM';
+    $timeHaldi = '03:00 PM';
+    $timeBaraat = '07:00 PM';
+    $timeWedding = '08:30 PM';
 
-    $cfgStmt = $pdo->prepare("SELECT config_key, config_value FROM config WHERE config_key IN ('AI_API_KEY', 'AI_PROVIDER', 'AI_MODEL')");
+    $cfgStmt = $pdo->prepare("SELECT config_key, config_value FROM config WHERE config_key IN ('AI_API_KEY', 'AI_PROVIDER', 'AI_MODEL', 'TIME_MEHENDI', 'TIME_HALDI', 'TIME_BARAAT', 'TIME_WEDDING')");
     $cfgStmt->execute();
     while ($row = $cfgStmt->fetch()) {
         if ($row['config_key'] === 'AI_API_KEY') $apiKey = trim($row['config_value']);
         if ($row['config_key'] === 'AI_PROVIDER') $provider = trim($row['config_value']);
         if ($row['config_key'] === 'AI_MODEL') $modelName = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_MEHENDI' && !empty(trim($row['config_value']))) $timeMehendi = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_HALDI' && !empty(trim($row['config_value']))) $timeHaldi = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_BARAAT' && !empty(trim($row['config_value']))) $timeBaraat = trim($row['config_value']);
+        if ($row['config_key'] === 'TIME_WEDDING' && !empty(trim($row['config_value']))) $timeWedding = trim($row['config_value']);
     }
 
     if (empty($apiKey)) {
@@ -311,10 +319,10 @@ OFFICIAL WEDDING DETAILS:
   * Nearest Metro: Dwarka Sector 21 (Blue Line / Airport Express) or MG Road.
   * Parking: Complimentary valet parking available at the main entrance.
 - Celebrations Schedule:
-  * Mehendi: Sunday, 14 Feb 2027, 04:00 PM onwards, Royal Courtyard. Dress code: Vibrant Mehndi Greens, Mint & Pastel Florals.
-  * Haldi: Monday, 15 Feb 2027, 10:00 AM onwards, Poolside Pavilion. Dress code: Sunny Yellows, Ochre & Marigold Orange.
-  * Baraat Procession: Monday, 15 Feb 2027, 07:00 PM.
-  * Wedding Ceremony: Monday, 15 Feb 2027, 08:30 PM under the Grand Mandap. Dress code: Traditional Banarasi Silks & Regal Sherwanis / Formal Indian Festive.
+  * Mehendi: Sunday, 14 Feb 2027, {$timeMehendi} onwards, Royal Courtyard.
+  * Haldi: Monday, 15 Feb 2027, {$timeHaldi} onwards, Poolside Pavilion.
+  * Baraat Procession: Monday, 15 Feb 2027, {$timeBaraat}.
+  * Wedding Ceremony: Monday, 15 Feb 2027, {$timeWedding} under the Grand Mandap.
 - Dining: Royal banquet featuring live chaat stations, exquisite vegetarian delicacies, and authentic festive regional dishes at all ceremonies.
 - Cultural Etiquette (Indian-Chinese Fusion):
   * International/Chinese guests: Festive pastels or Indian ethnic attire (kurtas/sarees/lehengas) are warmly welcomed. Avoid all-black or plain white funeral attire.

@@ -71,10 +71,10 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
         </div>
 
         <h3 className="font-serif italic text-2xl sm:text-3xl text-[#231C18] dark:text-[#FAF5EB] font-normal mb-1">
-          Countdown to the Royal Nuptials
+          Counting Down to Our Wedding Day
         </h3>
         <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] dark:text-[#D4AF37] font-semibold mb-6 sm:mb-8">
-          Until We Celebrate Under The Mandap • {celebrationSubtitle}
+          Until We Celebrate Together • {celebrationSubtitle}
         </p>
 
         {/* Minimalist Hairline Countdown (Zero box cards) */}
