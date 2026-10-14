@@ -2615,8 +2615,15 @@
                 <input type="text" value="${escapeHtml(track.mainColor || '#D4AF37')}" placeholder="#D4AF37" oninput="updateTrackInMemory(${index}, 'mainColor', this.value)" />
               </div>
               <div class="form-group track-grid-full">
-                <label>Cover Photo URL / Path</label>
-                <input type="text" value="${escapeHtml(track.poster || '')}" placeholder="/couple/formal_portrait.jpg" oninput="updateTrackInMemory(${index}, 'poster', this.value)" />
+                <label>Cover Photo Artwork</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="text" id="trackPosterInput_${index}" value="${escapeHtml(track.poster || '')}" placeholder="/couple/formal_portrait.jpg" oninput="updateTrackInMemory(${index}, 'poster', this.value)" style="flex: 1;" />
+                  <label class="btn btn-outline" style="font-size: 0.8rem; padding: 0.55rem 0.85rem; cursor: pointer; white-space: nowrap; margin-bottom: 0;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Image
+                    <input type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic" style="display: none;" onchange="handleUploadTrackImage(${index}, event)" />
+                  </label>
+                </div>
+                <small style="color: var(--text-muted); font-size: 0.75rem;">Upload custom photo or enter existing path (e.g. /couple/formal_portrait.jpg)</small>
               </div>
               <div class="form-group track-grid-full">
                 <label>Audio Stream MP3 URL</label>
@@ -2679,6 +2686,42 @@
         currentPlaylist = JSON.parse(JSON.stringify(DEFAULT_PLAYLIST_TRACKS));
         renderPlaylistEditor();
         showToast('Reset to original default songs. Click Save to persist.', 'info');
+      }
+    async function handleUploadTrackImage(index, event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      showToast(`Uploading ${file.name}...`, 'info');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/upload/image`, {
+          method: 'POST',
+          headers: {
+            'X-ADMIN-KEY': 'wedding2027'
+          },
+          credentials: 'include',
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          throw new Error(errData.error || `Upload failed with status ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        if (data.url) {
+          currentPlaylist[index].poster = data.url;
+          const input = document.getElementById(`trackPosterInput_${index}`);
+          if (input) input.value = data.url;
+          showToast(`Uploaded ${file.name} successfully! Click Save to apply.`, 'success');
+        }
+      } catch (err) {
+        console.error('Image upload failed:', err);
+        showToast(`Image upload failed: ${err.message}`, 'error');
+      } finally {
+        event.target.value = '';
       }
     }
 

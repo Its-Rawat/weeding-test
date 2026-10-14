@@ -39,7 +39,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     };
   }, []);
 
-  // 1-Scroll transition: when user scrolls down on video, smoothly glide to the second page
+  // 1-Scroll transition: when user scrolls or swipes down on video, smoothly glide to the second page
   useEffect(() => {
     let isTransitioning = false;
 
@@ -48,19 +48,15 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       isTransitioning = true;
       const target = document.getElementById("invitation");
       if (target) {
-        const lenis = (window as any).lenis;
-        if (lenis && !("ontouchstart" in window)) {
-          lenis.scrollTo(target, {
-            duration: 1.0,
-            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          });
-        } else {
-          target.scrollIntoView({ behavior: "smooth" });
-        }
+        const targetTop = target.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({
+          top: targetTop,
+          behavior: "smooth",
+        });
       }
       setTimeout(() => {
         isTransitioning = false;
-      }, 1000);
+      }, 800);
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -70,9 +66,27 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       }
     };
 
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (window.scrollY < 30) {
+        const touchEndY = e.changedTouches[0].clientY;
+        const diff = touchStartY - touchEndY;
+        // User swiped up by more than 35px -> smoothly transition to page 2
+        if (diff > 35) {
+          triggerScrollDown();
+        }
+      }
+    };
+
     const videoSection = document.getElementById("video-hero");
     if (videoSection) {
       videoSection.addEventListener("wheel", handleWheel, { passive: false });
+      videoSection.addEventListener("touchstart", handleTouchStart, { passive: true });
+      videoSection.addEventListener("touchend", handleTouchEnd, { passive: true });
     }
 
     // Auto-pause video frames when user scrolls down past video
@@ -95,6 +109,8 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     return () => {
       if (videoSection) {
         videoSection.removeEventListener("wheel", handleWheel);
+        videoSection.removeEventListener("touchstart", handleTouchStart);
+        videoSection.removeEventListener("touchend", handleTouchEnd);
       }
       window.removeEventListener("scroll", handleScroll);
     };
@@ -114,19 +130,18 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   const handleScrollDown = () => {
     const target = document.getElementById("invitation");
     if (target) {
-      const lenis = (window as any).lenis;
-      if (lenis && !("ontouchstart" in window)) {
-        lenis.scrollTo(target, { duration: 1.0 });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+      const targetTop = target.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: targetTop,
+        behavior: "smooth",
+      });
     }
   };
 
   return (
     <section
       id="video-hero"
-      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between snap-start snap-always"
+      className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden bg-black select-none flex flex-col justify-between scroll-mt-0"
     >
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, PERMANENTLY SILENT) */}
       <video

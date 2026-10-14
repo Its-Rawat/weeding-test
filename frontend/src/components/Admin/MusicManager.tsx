@@ -58,6 +58,7 @@ export const MusicManager: React.FC = () => {
 
   // New song form state
   const [newTitle, setNewTitle] = useState("");
+  const [newShortLabel, setNewShortLabel] = useState("");
   const [newArtist, setNewArtist] = useState("");
   const [newTag, setNewTag] = useState("Celebration");
   const [newColor, setNewColor] = useState("#D4AF37");
@@ -79,12 +80,23 @@ export const MusicManager: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/config/full", { credentials: "include" });
-      const raw = res.ok ? await res.json() : {};
-
-      if (raw.PLAYLIST_TRACKS) {
+      let raw: any = {};
+      try {
+        const res = await fetch("/api/config", { credentials: "include" });
+        if (res.ok) raw = await res.json();
+      } catch (e) {
+        console.warn("fetch /api/config failed, trying fallback", e);
+      }
+      if (!raw || Object.keys(raw).length === 0) {
         try {
-          const parsed = JSON.parse(raw.PLAYLIST_TRACKS);
+          const resFull = await fetch("/api/config/full", { credentials: "include" });
+          if (resFull.ok) raw = await resFull.json();
+        } catch {}
+      }
+
+      if (raw && raw.PLAYLIST_TRACKS) {
+        try {
+          const parsed = typeof raw.PLAYLIST_TRACKS === "string" ? JSON.parse(raw.PLAYLIST_TRACKS) : raw.PLAYLIST_TRACKS;
           if (Array.isArray(parsed) && parsed.length > 0) {
             setTracks(parsed);
           } else {
@@ -97,7 +109,7 @@ export const MusicManager: React.FC = () => {
         setTracks(DEFAULT_PLAYLIST_TRACKS);
       }
 
-      setBgMusicUrl(raw.MUSIC_URL || "https://www.bensound.com/bensound-music/bensound-forever.mp3");
+      setBgMusicUrl(raw?.MUSIC_URL || "https://www.bensound.com/bensound-music/bensound-forever.mp3");
     } catch (e) {
       console.error(e);
       setTracks(DEFAULT_PLAYLIST_TRACKS);
@@ -287,7 +299,7 @@ export const MusicManager: React.FC = () => {
     const newTrack: TrackItem = {
       id: `track-${Date.now()}`,
       title: newTitle.trim(),
-      shortLabel: `${newTitle.trim()} • ${newTag.trim() || "Wedding"}`,
+      shortLabel: newShortLabel.trim() || `${newTitle.trim()} • ${newTag.trim() || "Wedding"}`,
       artist: newArtist.trim() || "Wedding Celebration",
       tag: newTag.trim() || "Celebration",
       mainColor: newColor,
@@ -300,6 +312,7 @@ export const MusicManager: React.FC = () => {
 
     // Reset and close
     setNewTitle("");
+    setNewShortLabel("");
     setNewArtist("");
     setNewTag("Celebration");
     setNewColor("#D4AF37");
@@ -517,6 +530,9 @@ export const MusicManager: React.FC = () => {
                       <div className="absolute bottom-2 left-2 right-2 text-white">
                         <p className="truncate font-serif text-sm font-bold">{track.title}</p>
                         <p className="truncate text-[11px] text-white/70">{track.artist}</p>
+                        <p className="truncate text-[10px] text-amber-300 font-semibold mt-0.5 flex items-center gap-1">
+                          <Disc className="h-2.5 w-2.5 shrink-0" /> Wheel: {track.shortLabel || track.title}
+                        </p>
                       </div>
                     </div>
 
@@ -690,6 +706,22 @@ export const MusicManager: React.FC = () => {
             </div>
 
             <form onSubmit={handleAddNewSong} className="space-y-4">
+              {/* Wheel Dial Display Name */}
+              <div className="rounded-xl border-2 border-amber-300 bg-amber-50/50 p-3 dark:border-amber-700/60 dark:bg-amber-950/20">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1 flex items-center justify-between">
+                  <span>Wheel Dial Display Name (shortLabel) *</span>
+                  <span className="text-[9px] bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full font-bold">Rotates on Wheel</span>
+                </label>
+                <input
+                  type="text"
+                  value={newShortLabel}
+                  onChange={(e) => setNewShortLabel(e.target.value)}
+                  placeholder={newTitle ? `${newTitle} • ${newTag}` : "e.g. Kudmayi • Royal Symphony"}
+                  className="w-full rounded-lg border border-amber-300 bg-white p-2.5 text-sm font-semibold text-amber-900 outline-none focus:ring-2 focus:ring-amber-500 dark:border-amber-700 dark:bg-slate-900 dark:text-white"
+                />
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">This exact name rotates on the circular wheel dial in the Melodies section.</p>
+              </div>
+
               {/* Title & Artist */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -942,6 +974,23 @@ export const MusicManager: React.FC = () => {
             </div>
 
             <form onSubmit={handleSaveEditTrack} className="space-y-4">
+              {/* Wheel Dial Display Name */}
+              <div className="rounded-xl border-2 border-amber-300 bg-amber-50/50 p-3 dark:border-amber-700/60 dark:bg-amber-950/20">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1 flex items-center justify-between">
+                  <span>Wheel Dial Display Name (shortLabel) *</span>
+                  <span className="text-[9px] bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full font-bold">Rotates on Wheel</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingTrack.shortLabel || editingTrack.title}
+                  onChange={(e) => setEditingTrack({ ...editingTrack, shortLabel: e.target.value })}
+                  placeholder="e.g. Kudmayi • Royal Symphony"
+                  className="w-full rounded-lg border border-amber-300 bg-white p-2.5 text-sm font-semibold text-amber-900 outline-none focus:ring-2 focus:ring-amber-500 dark:border-amber-700 dark:bg-slate-900 dark:text-white"
+                />
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">This exact name is displayed on the spinning wheel labels that guests scroll through.</p>
+              </div>
+
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                   Title

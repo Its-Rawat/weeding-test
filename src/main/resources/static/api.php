@@ -161,6 +161,25 @@ function getJsonInput() {
     return is_array($decoded) ? $decoded : [];
 }
 
+function sendWeddingNotificationEmail($subject, $bodyText) {
+    $to = 'rsvp@chandrikawedsxudong.com';
+    $headers = "From: Wedding System <rsvp@chandrikawedsxudong.com>\r\n";
+    $headers .= "Reply-To: rsvp@chandrikawedsxudong.com\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+
+    $html = '<!DOCTYPE html><html><body style="font-family: Arial, sans-serif; background-color: #FAF6EF; padding: 20px;">';
+    $html .= '<div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; border: 1px solid #D4AF37; padding: 24px;">';
+    $html .= '<h2 style="color: #8C1D24; margin-top: 0;">' . htmlspecialchars($subject) . '</h2>';
+    $html .= '<div style="color: #333333; line-height: 1.6; font-size: 15px;">' . nl2br(htmlspecialchars($bodyText)) . '</div>';
+    $html .= '<hr style="border: none; border-top: 1px solid #EBDDCF; margin: 20px 0;">';
+    $html .= '<p style="color: #8C6B1C; font-size: 12px; margin-bottom: 0;">Chandrika &amp; Xudong Wedding Notification &bull; chandrikawedsxudong.com</p>';
+    $html .= '</div></body></html>';
+
+    @mail($to, $subject, $html, $headers);
+}
+
 // 5. Parse Request Route
 $route = isset($_GET['route']) ? trim($_GET['route'], '/') : '';
 if (empty($route)) {
@@ -207,8 +226,8 @@ if ($route === 'auth/status' && $method === 'GET') {
     exit;
 }
 
-// --- CONFIG: GET & POST ---
-if ($route === 'config') {
+// --- CONFIG: GET & POST (/api/config, /api/config/full) ---
+if ($route === 'config' || $route === 'config/full') {
     header('Content-Type: application/json');
     if ($method === 'GET') {
         $stmt = $pdo->query("SELECT config_key, config_value FROM config");
@@ -415,6 +434,11 @@ if (($route === 'inquiry' || (isset($_GET['action']) && $_GET['action'] === 'inq
     $stmt->execute([$guestName, $contact, $query, $createdAt]);
     $newId = $pdo->lastInsertId();
 
+    sendWeddingNotificationEmail(
+        "New Wedding Inquiry from $guestName",
+        "Guest Name: $guestName\nContact Info: $contact\nQuestion / Inquiry:\n$query\nTime: " . date('Y-m-d H:i:s')
+    );
+
     echo json_encode(['success' => true, 'id' => $newId, 'message' => 'Inquiry registered successfully']);
     exit;
 }
@@ -443,6 +467,11 @@ if ($route === 'rsvp' || preg_match('/^rsvp\/?$/', $route)) {
         $stmt = $pdo->prepare("INSERT INTO rsvps (guest_name, phone, attendance, guest_count, message, created_at) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$guestName, $phone, $attendance, $guestCount, $message, $createdAt]);
         $newId = $pdo->lastInsertId();
+
+        sendWeddingNotificationEmail(
+            "New RSVP Received from $guestName ($attendance)",
+            "Guest Name: $guestName\nRSVP Status: $attendance\nTotal Guests: $guestCount\nPhone: $phone\nPersonal Wishes:\n$message\nTime: " . date('Y-m-d H:i:s')
+        );
 
         echo json_encode([
             'success' => true,
@@ -826,6 +855,11 @@ if (preg_match('/^rsvp\/([^\/]+)$/', $route, $m)) {
             $attendingCount = 0;
         }
 
+        sendWeddingNotificationEmail(
+            "Personalized RSVP: {$inv['name']} ($rsvpStatus)",
+            "Guest / Family: {$inv['name']}\nStatus: $rsvpStatus\nAttending Members Count: $attendingCount\nWishes / Message:\n$message\nToken: $token\nTime: " . date('Y-m-d H:i:s')
+        );
+
         echo json_encode([
             'success' => true,
             'message' => $rsvpStatus === 'ATTENDING' ? 'RSVP recorded!' : 'RSVP decline recorded.',
@@ -900,8 +934,17 @@ if (strpos($route, 'upload') === 0) {
 
     if ($method === 'POST') {
         if (empty($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            $errCode = $_FILES['file']['error'] ?? 'NO_FILE';
+            $errMsg = 'No file was uploaded or file error';
+            if ($errCode === UPLOAD_ERR_INI_SIZE || $errCode === UPLOAD_ERR_FORM_SIZE) {
+                $errMsg = 'File is too large for server upload limit (max ' . ini_get('upload_max_filesize') . ')';
+            } elseif ($errCode === UPLOAD_ERR_PARTIAL) {
+                $errMsg = 'File was only partially uploaded. Please try again.';
+            } elseif ($errCode === UPLOAD_ERR_NO_FILE) {
+                $errMsg = 'No file was selected for upload.';
+            }
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'No file uploaded or upload error']);
+            echo json_encode(['success' => false, 'error' => $errMsg, 'code' => $errCode]);
             exit;
         }
 
@@ -910,7 +953,7 @@ if (strpos($route, 'upload') === 0) {
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
 
         $audioExts = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'];
-        $imageExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+        $imageExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'heic', 'jfif', 'bmp', 'avif'];
 
         $subDir = 'audio';
         if (in_array($ext, $imageExts)) {
@@ -919,20 +962,28 @@ if (strpos($route, 'upload') === 0) {
             $subDir = 'audio';
         } else {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Unsupported file extension: .' . $ext]);
+            echo json_encode(['success' => false, 'error' => 'Unsupported file extension: .' . $ext . '. Allowed: jpg, png, webp, mp3, wav, m4a']);
             exit;
         }
 
-        $targetDir = __DIR__ . '/uploads/' . $subDir;
+        $uploadsBase = __DIR__ . '/uploads';
+        if (!is_dir($uploadsBase)) {
+            @mkdir($uploadsBase, 0777, true);
+            @chmod($uploadsBase, 0777);
+        }
+
+        $targetDir = $uploadsBase . '/' . $subDir;
         if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0755, true);
+            @mkdir($targetDir, 0777, true);
+            @chmod($targetDir, 0777);
         }
 
         $cleanName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $origName);
         $uniqueName = time() . '_' . substr(md5(uniqid()), 0, 8) . '_' . $cleanName;
         $destPath = $targetDir . '/' . $uniqueName;
 
-        if (move_uploaded_file($file['tmp_name'], $destPath)) {
+        if (@move_uploaded_file($file['tmp_name'], $destPath)) {
+            @chmod($destPath, 0644);
             $publicUrl = '/uploads/' . $subDir . '/' . $uniqueName;
             echo json_encode([
                 'success' => true,
@@ -944,8 +995,12 @@ if (strpos($route, 'upload') === 0) {
             ]);
             exit;
         } else {
+            $lastErr = error_get_last();
             http_response_code(500);
-            echo json_encode(['success' => false, 'error' => 'Failed to save file to uploads directory']);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to save file to ' . $destPath . ': ' . ($lastErr['message'] ?? 'Permission denied on server uploads directory')
+            ]);
             exit;
         }
     }
