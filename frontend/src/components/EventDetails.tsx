@@ -52,16 +52,12 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       ? allowedEvents.map(normalizeEvent)
       : null;
 
-  // If user enters WITHOUT RSVP code, only show Function 3 (Wedding only).
-  // If user enters with RSVP code, show only their allowed ceremonies.
-  const displayCeremonies = normalizedAllowed
-    ? ceremonies.filter((c) => normalizedAllowed.includes(c.key))
-    : ceremonies.filter(
-        (c) =>
-          c.key === "WEDDING" ||
-          c.id === 3 ||
-          c.title.toLowerCase().includes("wedding")
-      );
+  // If user enters with a personalized RSVP token with restricted allowedEvents, show only their allowed ceremonies.
+  // On root endpoint / general invitation (https://chandrikawedsxudong.com/), show all ceremonies (Mehendi, Haldi, Wedding) in the compact tabs!
+  const displayCeremonies =
+    normalizedAllowed && normalizedAllowed.length > 0
+      ? ceremonies.filter((c) => normalizedAllowed.includes(c.key))
+      : ceremonies;
 
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
   const [viewMode, setViewMode] = React.useState<"tabs" | "list">("tabs");
