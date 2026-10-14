@@ -60,7 +60,6 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       : ceremonies;
 
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
-  const [viewMode, setViewMode] = React.useState<"tabs" | "list">("tabs");
   const touchStartXRef = React.useRef(0);
 
   const handleAddToCalendar = (evt: CelebrationEvent) => {
@@ -253,7 +252,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
         )}
 
         {/* COMPACT VIEW MODE (TABS): Shows all ceremonies in 1 screen / few scrolls */}
-        {isMultiEvent && viewMode === "tabs" && (
+        {isMultiEvent && (
           <div className="space-y-8" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             {/* Interactive Luxury Segmented Tab Switcher */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 p-1 sm:p-1.5 rounded-full bg-[#EFE7D8]/80 dark:bg-white/5 border border-[#D4AF37]/40 shadow-xs max-w-md mx-auto">
@@ -323,34 +322,13 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
                   <span>→</span>
                 </button>
               </div>
-
-              {/* View Mode Toggle */}
-              <div className="text-center">
-                <button
-                  onClick={() => setViewMode("list")}
-                  className="text-[11px] font-sans font-medium text-stone-500 hover:text-[#8C1D24] dark:text-stone-400 dark:hover:text-[#D4AF37] underline underline-offset-4 cursor-pointer transition-colors"
-                >
-                  Prefer continuous scrolling? View all celebrations together ↓
-                </button>
-              </div>
             </div>
           </div>
         )}
 
-        {/* FULL LIST VIEW MODE: Either single event OR user toggled to view all together */}
-        {(!isMultiEvent || viewMode === "list") && (
+        {/* SINGLE EVENT VIEW MODE: When guest token only allows 1 specific ceremony */}
+        {!isMultiEvent && (
           <div className="space-y-12 sm:space-y-16">
-            {isMultiEvent && (
-              <div className="text-center pb-2">
-                <button
-                  onClick={() => setViewMode("tabs")}
-                  className="text-xs font-sans font-semibold text-[#8C1D24] dark:text-[#D4AF37] px-4 py-1.5 rounded-full border border-[#D4AF37]/50 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-all"
-                >
-                  ↑ Switch to compact 1-screen tab view
-                </button>
-              </div>
-            )}
-
             {displayCeremonies.map((evt, index) => (
               <React.Fragment key={evt.id}>
                 {index > 0 && (

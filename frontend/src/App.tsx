@@ -528,13 +528,13 @@ const App: React.FC = () => {
               {/* Host Credit & Contact */}
               <div className="pt-4">
                 <a
-                  href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+                  href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
                   className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
-                  title="Contact Host: Aditya Rawat (adi2002rawat@gmail.com)"
+                  title="Contact Host: Aditya Rawat (rsvp@chandrikawedsxudong.com)"
                 >
                   <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />
                   <span>
-                    Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong> (adi2002rawat@gmail.com)
+                    Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)
                   </span>
                 </a>
               </div>

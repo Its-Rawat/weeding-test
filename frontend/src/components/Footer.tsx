@@ -45,9 +45,9 @@ export const Footer: React.FC<{ coupleNames?: string }> = ({
         </p>
 
         <div className="pt-6 border-t border-[#C5A059]/20 flex flex-col items-center gap-2 text-[11px] text-stone-500 font-serif">
-          <span>Host: <strong>Aditya Rawat</strong> (adi2002rawat@gmail.com)</span>
+          <span>Host: <strong>Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)</span>
           <a
-            href="mailto:adi2002rawat@gmail.com?subject=Wedding%20Inquiry%20-%20Aditya%20%26%20Ananya"
+            href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
             className="inline-flex items-center gap-1.5 text-[#5C6B50] hover:text-[#722F37] transition-colors"
           >
             <Mail className="w-3 h-3 text-[#C5A059]" />

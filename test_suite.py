@@ -235,7 +235,11 @@ def main():
         # CRITICAL TEST: Check that "Pheras" or "Sacred Pheras" does NOT appear anywhere in #event
         assert "phera" not in wedding_content.lower(), "FATAL: 'Pheras' found in Wedding Ceremony text!"
         print("✓ Verified: 'Pheras' is completely absent from celebrations!", flush=True)
-        results.append("✓ Celebrations compact tab switcher works smoothly in 1 scroll view and has zero 'Pheras' references")
+
+        # CRITICAL TEST: Check that "Prefer continuous scrolling" does NOT appear anywhere in #event
+        assert "continuous scrolling" not in event_content.lower(), "FATAL: 'Prefer continuous scrolling' found in celebrations!"
+        print("✓ Verified: 'Prefer continuous scrolling' is completely removed!", flush=True)
+        results.append("✓ Celebrations compact tab switcher works smoothly in 1 scroll view with zero 'Pheras' and zero continuous scroll toggle")
 
         ceremony_shot = os.path.join(OUTPUT_DIR, "test_ceremonies_tabs.png")
         page_desktop.screenshot(path=ceremony_shot)
@@ -262,6 +266,16 @@ def main():
         page_desktop.screenshot(path=timer_shot)
         print(f"Dark mode timer screenshot saved to: {timer_shot}", flush=True)
         results.append("✓ Dark mode countdown timer has dark surface background and high-contrast visible text")
+
+        # -------------------------------------------------------------
+        # TEST 5: FOOTER HOST EMAIL VERIFICATION
+        # -------------------------------------------------------------
+        print("\n--- TEST 5: Footer Host Email Verification ---", flush=True)
+        footer_html = page_desktop.content()
+        assert "rsvp@chandrikawedsxudong.com" in footer_html, "FATAL: rsvp@chandrikawedsxudong.com must be present!"
+        assert "adi2002rawat@gmail.com" not in footer_html, "FATAL: adi2002rawat@gmail.com must NOT be present!"
+        print("✓ Verified: Host email is rsvp@chandrikawedsxudong.com and old email is eliminated!", flush=True)
+        results.append("✓ Host email successfully updated to rsvp@chandrikawedsxudong.com (old email eliminated)")
 
         # Clean up
         browser.close()

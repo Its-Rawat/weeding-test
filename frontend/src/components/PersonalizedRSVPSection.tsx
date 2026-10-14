@@ -189,7 +189,7 @@ export const PersonalizedRSVPSection: React.FC<PersonalizedRSVPProps> = ({ token
           This invitation link ({invitation?.name || "Guest"}) has been marked inactive. For assistance, please contact the host directly.
         </p>
         <a
-          href="mailto:adi2002rawat@gmail.com"
+          href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
           className="inline-block px-5 py-2 rounded-full bg-[#FAF5EB] hover:bg-[#F3E7D5] border border-[#D4AF37]/50 text-xs font-bold text-[#231C18] uppercase tracking-wider transition-colors"
         >
           Contact Host
