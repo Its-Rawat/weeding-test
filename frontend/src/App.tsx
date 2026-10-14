@@ -209,20 +209,15 @@ const App: React.FC = () => {
       const invitationEl = document.getElementById("invitation");
       const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
 
-      // 1. On Page 1 and swiped UP (scrolling DOWN) -> snap to Page 2
-      if (y < 40 && deltaY > 25) {
-        snapToPage("invitation");
-      }
-      // 2. On Page 2 and swiped DOWN (scrolling UP towards Page 1) -> snap to Page 1
-      else if (y <= invitationTop + 40 && deltaY < -25) {
-        snapToPage("video-hero");
-      }
-      // 3. Trapped in-between:
-      else if (y > 20 && y < invitationTop - 20) {
-        if (deltaY < 0) {
-          snapToPage("video-hero");
-        } else {
+      // Only assist snapping around the hero / invitation boundary
+      if (y > invitationTop + 50) return;
+
+      // If user stopped in the transition zone between Page 1 and Page 2:
+      if (y > 30 && y < invitationTop - 30) {
+        if (deltaY > 0) {
           snapToPage("invitation");
+        } else {
+          snapToPage("video-hero");
         }
       }
     };
@@ -419,11 +414,13 @@ const App: React.FC = () => {
     return <WeddingLoader progress={bufferProgress} />;
   }
 
-  // Only show 14 & 15 Feb video if guest has special RSVP code containing Mehendi (14th Feb).
-  // When opening with NO special RSVP code, show 15th Feb video.
-  const show14And15 = Boolean(
-    allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+  // On root endpoint (https://chandrikawedsxudong.com/) or general invitation, and for guests invited to Mehendi,
+  // show 14 & 15 Feb video and footer date.
+  // Only show 15 Feb video if a personalized token is present and explicitly excludes Mehendi.
+  const isExplicitlyWeddingOnly = Boolean(
+    allowedEvents && allowedEvents.length > 0 && !allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
   );
+  const show14And15 = !isExplicitlyWeddingOnly;
   const landingVideoSrc = show14And15
     ? "/Short_LandingPageVid.mp4?v=firstnames"
     : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
@@ -431,7 +428,7 @@ const App: React.FC = () => {
   const footerDate = show14And15 ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
 
   return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] snap-y snap-proximity">
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] snap-y snap-mandatory">
       {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
       <VideoLanding config={config} videoSrc={landingVideoSrc} />
 

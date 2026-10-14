@@ -11,37 +11,48 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({
   allowedEvents,
 }) => {
-  // If guest is invited to Mehendi (14th Feb), show 14 & 15 February 2027.
-  // When visitor enters without an RSVP code (or wedding only), show 15 February 2027.
-  const hasMehendi = Boolean(
-    allowedEvents && allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+  // On root endpoint / general invitation (https://chandrikawedsxudong.com/), or for guests invited to Mehendi,
+  // show 14 & 15 February 2027.
+  // Only show 15 February 2027 if a personalized token is present and explicitly excludes Mehendi.
+  const isExplicitlyWeddingOnly = Boolean(
+    allowedEvents && allowedEvents.length > 0 && !allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
   );
-
-  const formattedDate = hasMehendi ? "14 & 15 February 2027" : "15 February 2027";
+  const show14And15 = !isExplicitlyWeddingOnly;
+  const formattedDate = show14And15 ? "14 & 15 February 2027" : "15 February 2027";
 
   return (
     <section
       id="invitation"
       className="relative w-full h-[100dvh] min-h-[100dvh] flex flex-col justify-between items-center px-4 sm:px-8 py-10 sm:py-14 md:py-16 overflow-hidden text-center select-none snap-start snap-always"
     >
-      {/* 1. Full-Bleed Couple Photo on the Resort Bridge:
-          - Desktop / Laptop (>= 768px): HD Landscape image
+      {/* 1. Full-Bleed Couple Media on the Resort Bridge:
+          - Desktop / Laptop (>= 768px): Crisp HD Looping Video (gemini_generated_video_b0b01e67.mp4)
           - Mobile devices (< 768px): Vertical photo (old pic)
       */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <picture className="w-full h-full block">
-          {/* Desktop & Laptop Screens (PC, Laptop, iPad Landscape) */}
-          <source
-            media="(min-width: 768px)"
-            srcSet="/couple/resort_bridge_landscape_hd.jpg"
-          />
-          {/* Mobile Screens (Phone portrait) */}
+        {/* Desktop & Laptop Screens (PC, Laptop, iPad Landscape): High-Definition Video */}
+        <div className="hidden md:block absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover object-center"
+          >
+            <source src="/gemini_generated_video_b0b01e67.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        {/* Mobile Screens (Phone portrait): Vertical photo (old pic) */}
+        <div className="block md:hidden absolute inset-0 w-full h-full">
           <img
             src="/couple/resort_bridge_night.jpg"
             alt="Chandrika & Xudong"
-            className="w-full h-full object-cover object-[center_35%] scale-100 transition-transform duration-[2.4s] ease-out"
+            className="w-full h-full object-cover object-[center_35%]"
           />
-        </picture>
+        </div>
+
         {/* Luxury Vignette Scrim:
             - Darkened top night sky so top text is crystal-clear
             - Soft transparent center so Bride & Groom faces and bodies are fully visible and illuminated

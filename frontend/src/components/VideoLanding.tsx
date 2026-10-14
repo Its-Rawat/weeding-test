@@ -39,9 +39,8 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     };
   }, []);
 
-  // 1-Scroll transition: when user does 1 scroll down or swipe up on video, glide to the second page
+  // 1-Scroll transition: when user scrolls down on video, smoothly glide to the second page
   useEffect(() => {
-    let touchStartY = 0;
     let isTransitioning = false;
 
     const triggerScrollDown = () => {
@@ -50,9 +49,9 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       const target = document.getElementById("invitation");
       if (target) {
         const lenis = (window as any).lenis;
-        if (lenis) {
+        if (lenis && !("ontouchstart" in window)) {
           lenis.scrollTo(target, {
-            duration: 1.2,
+            duration: 1.0,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           });
         } else {
@@ -61,7 +60,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       }
       setTimeout(() => {
         isTransitioning = false;
-      }, 1400);
+      }, 1000);
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -71,24 +70,9 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       }
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (window.scrollY < 50 && !isTransitioning) {
-        const deltaY = touchStartY - e.touches[0].clientY;
-        if (deltaY > 15) {
-          triggerScrollDown();
-        }
-      }
-    };
-
     const videoSection = document.getElementById("video-hero");
     if (videoSection) {
       videoSection.addEventListener("wheel", handleWheel, { passive: false });
-      videoSection.addEventListener("touchstart", handleTouchStart, { passive: true });
-      videoSection.addEventListener("touchmove", handleTouchMove, { passive: true });
     }
 
     // Auto-pause video frames when user scrolls down past video
@@ -111,8 +95,6 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     return () => {
       if (videoSection) {
         videoSection.removeEventListener("wheel", handleWheel);
-        videoSection.removeEventListener("touchstart", handleTouchStart);
-        videoSection.removeEventListener("touchmove", handleTouchMove);
       }
       window.removeEventListener("scroll", handleScroll);
     };
@@ -133,8 +115,8 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
     const target = document.getElementById("invitation");
     if (target) {
       const lenis = (window as any).lenis;
-      if (lenis) {
-        lenis.scrollTo(target, { duration: 1.2 });
+      if (lenis && !("ontouchstart" in window)) {
+        lenis.scrollTo(target, { duration: 1.0 });
       } else {
         target.scrollIntoView({ behavior: "smooth" });
       }

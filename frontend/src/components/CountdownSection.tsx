@@ -57,28 +57,28 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
   }, [targetIso]);
 
   return (
-    <section id="countdown" className="relative py-12 sm:py-16 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] text-center border-y border-[#D4AF37]/30 overflow-hidden">
+    <section id="countdown" className="relative py-12 sm:py-16 px-4 bg-gradient-to-b from-[#FAF5EB] via-[#FFFDF9] to-[#FAF5EB] dark:from-[#151111] dark:via-[#1F1718] dark:to-[#151111] text-center border-y border-[#D4AF37]/30 dark:border-white/10 transition-colors duration-700 overflow-hidden">
       {/* 2026 Ambient Gradient Lighting */}
-      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent rounded-full blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-[#D4AF37]/15 via-[#F7D8A5]/10 to-transparent dark:from-[#D4AF37]/10 dark:via-transparent dark:to-transparent rounded-full blur-3xl -z-10" />
 
       <div className="max-w-xl mx-auto relative z-10">
         
         {/* Section Header */}
         <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
-          <Heart className="w-3.5 h-3.5 text-[#8C1D24] fill-[#8C1D24]/20" />
-          <div className="w-8 h-0.5 bg-[#D4AF37]/50" />
+          <div className="w-8 h-0.5 bg-[#D4AF37]/50 dark:bg-[#D4AF37]/40" />
+          <Heart className="w-3.5 h-3.5 text-[#8C1D24] dark:text-[#FFB4AB] fill-[#8C1D24]/20 dark:fill-[#FFB4AB]/20" />
+          <div className="w-8 h-0.5 bg-[#D4AF37]/50 dark:bg-[#D4AF37]/40" />
         </div>
 
-        <h3 className="font-serif italic text-2xl sm:text-3xl text-[#231C18] font-normal mb-1">
+        <h3 className="font-serif italic text-2xl sm:text-3xl text-[#231C18] dark:text-[#FAF5EB] font-normal mb-1">
           Countdown to the Royal Nuptials
         </h3>
-        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] font-semibold mb-6 sm:mb-8">
+        <p className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#8C6B1C] dark:text-[#D4AF37] font-semibold mb-6 sm:mb-8">
           Until We Celebrate Under The Mandap • {celebrationSubtitle}
         </p>
 
         {/* Minimalist Hairline Countdown (Zero box cards) */}
-        <div className="flex items-center justify-center gap-4 sm:gap-8 max-w-md mx-auto py-5 border-y border-[#E2D8C9] dark:border-white/10">
+        <div className="flex items-center justify-center gap-4 sm:gap-8 max-w-md mx-auto py-5 border-y border-[#E2D8C9] dark:border-white/15">
           {[
             { label: "Days", value: timeLeft.days, isCrimson: false },
             { label: "Hours", value: timeLeft.hours, isCrimson: false },
@@ -86,7 +86,7 @@ const CountdownSection: React.FC<CountdownProps> = ({ config, allowedEvents }) =
             { label: "Secs", value: timeLeft.seconds, isCrimson: true },
           ].map((item, idx) => (
             <React.Fragment key={idx}>
-              {idx > 0 && <div className="h-8 w-[1px] bg-[#E2D8C9] dark:bg-white/10" />}
+              {idx > 0 && <div className="h-8 w-[1px] bg-[#E2D8C9] dark:bg-white/15" />}
               <div className="text-center px-1 sm:px-2">
                 <span
                   className={`font-serif text-2xl sm:text-4xl font-semibold leading-none block ${
