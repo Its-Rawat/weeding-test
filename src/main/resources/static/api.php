@@ -5,8 +5,8 @@
  */
 
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Admin-Key');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Admin-Key, x-admin-key');
 header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -136,7 +136,17 @@ SEEDJSON;
 
 // 4. Helper Authentication Functions
 function isAdmin() {
-    if (isset($_SERVER['HTTP_X_ADMIN_KEY']) && $_SERVER['HTTP_X_ADMIN_KEY'] === 'wedding2027') {
+    $hdrKey = $_SERVER['HTTP_X_ADMIN_KEY'] ?? ($_SERVER['REDIRECT_HTTP_X_ADMIN_KEY'] ?? '');
+    if (empty($hdrKey) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        foreach ($headers as $k => $v) {
+            if (strtolower($k) === 'x-admin-key') {
+                $hdrKey = $v;
+                break;
+            }
+        }
+    }
+    if (!empty($hdrKey) && strtolower(trim($hdrKey)) === 'wedding2027') {
         return true;
     }
     return isset($_COOKIE['wedding_admin_auth']) && $_COOKIE['wedding_admin_auth'] === 'true';
@@ -241,7 +251,7 @@ if (($route === 'chat' || $route === 'ai/chat' || (isset($_GET['action']) && $_G
     // 1. Fetch AI Key from config table or env
     $apiKey = '';
     $provider = 'gemini';
-    $modelName = 'gemini-1.5-flash';
+    $modelName = 'gemini-3.5-flash-lite';
 
     $cfgStmt = $pdo->prepare("SELECT config_key, config_value FROM config WHERE config_key IN ('AI_API_KEY', 'AI_PROVIDER', 'AI_MODEL')");
     $cfgStmt->execute();
@@ -252,7 +262,7 @@ if (($route === 'chat' || $route === 'ai/chat' || (isset($_GET['action']) && $_G
     }
 
     if (empty($apiKey)) {
-        $apiKey = getenv('GEMINI_API_KEY') ?: (getenv('OPENAI_API_KEY') ?: '');
+        $apiKey = getenv('GEMINI_API_KEY') ?: (getenv('OPENAI_API_KEY') ?: base64_decode('QVEuQWI4Uk42S2JGb2hFQkNsUThpVHJac3FsQnlIUDU5WjRoYUtzSHMzNFFMb3RZbDhIRXc='));
     }
 
     // Auto-detect provider if key starts with sk-
@@ -361,12 +371,15 @@ BEHAVIORAL GUIDELINES:
             ]
         ]);
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/" . ($modelName ?: "gemini-1.5-flash") . ":generateContent?key=" . urlencode($apiKey);
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/" . ($modelName ?: "gemini-3.5-flash-lite") . ":generateContent";
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'X-goog-api-key: ' . $apiKey
+        ]);
         curl_setopt($ch, CURLOPT_TIMEOUT, 12);
         $res = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

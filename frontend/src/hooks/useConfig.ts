@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AppConfig } from "../types";
-import { parseConfig, DEFAULT_CEREMONIES, DEFAULT_STORY_SLIDES } from "../utils/configParser";
+import { parseConfig, DEFAULT_CEREMONIES, DEFAULT_STORY_SLIDES, DEFAULT_PLAYLIST_TRACKS } from "../utils/configParser";
 
 const DEFAULT_RAW: Record<string, string> = {
   BRIDE_NICKNAME: "Chandrika",
@@ -43,6 +43,7 @@ const DEFAULT_RAW: Record<string, string> = {
   TEXT_GIFT_DESC: "",
   CELEBRATIONS: JSON.stringify(DEFAULT_CEREMONIES),
   STORY_SLIDES: JSON.stringify(DEFAULT_STORY_SLIDES),
+  PLAYLIST_TRACKS: JSON.stringify(DEFAULT_PLAYLIST_TRACKS),
 };
 
 let cache: { data: AppConfig; raw: Record<string, string> } | null = null;
