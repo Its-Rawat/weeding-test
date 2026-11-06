@@ -64,7 +64,7 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = ({ config }) 
   return (
     <section
       id="photo-music"
-      className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-hidden transition-colors duration-700"
+      className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-visible overflow-x-clip transition-colors duration-700"
     >
       {/* Ambient Gradient Lighting */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#F7D8A5]/10 to-transparent blur-[110px]" />

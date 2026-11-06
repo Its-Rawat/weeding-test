@@ -1,12 +1,11 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Sparkles, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Skiper 16 Card Stack Scroll Component — React + Framer Motion
- * Adapted from Skiper UI (@skiper-ui/skiper16: Card stack scroll)
- * Features stacked cards with scroll-triggered sticky reveal and depth scaling.
+ * Skiper 16 Sticky Card Stack Scroll Component — React + Framer Motion
+ * Direct faithful implementation of https://skiper-ui.com/v1/preview/skiper16
+ * Creates an authentic physical card deck that sticks and scales as you scroll.
  */
 
 export interface StackPhoto {
@@ -40,19 +39,19 @@ const StickyCard: React.FC<StickyCardProps> = ({
   return (
     <div
       ref={container}
-      className="sticky top-20 sm:top-24 md:top-28 flex items-center justify-center pointer-events-auto"
+      className="sticky top-0 flex items-center justify-center pointer-events-auto"
     >
       <motion.div
         style={{
           scale,
-          top: `calc(${i * 22}px)`,
+          top: `calc(12vh + ${i * 22}px)`,
         }}
         className={cn(
-          "relative flex flex-col overflow-hidden origin-top",
-          "w-[90vw] max-w-[360px] sm:max-w-[460px] md:max-w-[540px]",
-          "h-[400px] sm:h-[460px] md:h-[500px]",
-          "rounded-3xl border border-[#D4AF37]/60 shadow-[0_25px_60px_rgba(0,0,0,0.35)]",
-          "bg-[#1A1412] dark:bg-[#120F0E] transition-shadow duration-500"
+          "rounded-3xl sm:rounded-4xl relative flex flex-col overflow-hidden origin-top",
+          "w-[90vw] max-w-[350px] sm:max-w-[460px] md:max-w-[540px]",
+          "h-[380px] sm:h-[440px] md:h-[480px]",
+          "border border-[#D4AF37]/60 shadow-[0_20px_50px_rgba(0,0,0,0.45)]",
+          "bg-[#1A1412] text-white select-none"
         )}
       >
         {/* Full-bleed Photo */}
@@ -64,28 +63,20 @@ const StickyCard: React.FC<StickyCardProps> = ({
         />
 
         {/* Cinematic Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10 pointer-events-none" />
-
-        {/* Golden Hairline Corner Accents */}
-        <div className="absolute top-3 left-3 text-[10px] text-[#D4AF37]/70 font-serif select-none pointer-events-none">
-          ✦
-        </div>
-        <div className="absolute top-3 right-3 text-[10px] text-[#D4AF37]/70 font-serif select-none pointer-events-none">
-          ✦
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
 
         {/* Card Header Tag */}
         <div className="absolute top-3.5 left-4 right-4 flex items-center justify-between">
-          <span className="px-3 py-1 rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] bg-black/50 backdrop-blur-md text-[#FFE082] border border-[#D4AF37]/50 shadow-sm">
+          <span className="px-3 py-1 rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] bg-black/60 backdrop-blur-md text-[#FFE082] border border-[#D4AF37]/50 shadow-sm">
             {item.tag}
           </span>
-          <span className="text-[11px] font-serif font-light text-white/70 italic bg-black/40 px-2 py-0.5 rounded-full border border-white/10">
+          <span className="text-[11px] font-serif font-light text-white/70 italic bg-black/50 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15">
             {i + 1} / {totalCards}
           </span>
         </div>
 
         {/* Bottom Editorial Caption */}
-        <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-white space-y-1.5">
+        <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 space-y-1.5">
           <h3 className="font-serif italic text-2xl sm:text-3xl text-[#FFFDF9] font-normal drop-shadow-md">
             {item.title}
           </h3>
@@ -111,13 +102,16 @@ export const Skiper16CardStack: React.FC<{
   return (
     <div
       ref={container}
-      className={cn("relative flex w-full flex-col items-center justify-start pb-24", className)}
+      className={cn(
+        "relative flex w-full flex-col items-center justify-start pb-[80vh] pt-4",
+        className
+      )}
     >
       {photos.map((photo, i) => {
-        // Calculate progressive scaling for each card in the stack
-        const targetScale = Math.max(0.78, 1 - (photos.length - i - 1) * 0.045);
+        // Faithful Skiper 16 math: each card scales down as the stack accumulates
+        const targetScale = Math.max(0.7, 1 - (photos.length - i - 1) * 0.05);
         const step = 1 / Math.max(1, photos.length);
-        const start = i * step * 0.7;
+        const range: [number, number] = [i * step * 0.8, 1];
 
         return (
           <StickyCard
@@ -125,7 +119,7 @@ export const Skiper16CardStack: React.FC<{
             i={i}
             item={photo}
             progress={scrollYProgress}
-            range={[start, 1]}
+            range={range}
             targetScale={targetScale}
             totalCards={photos.length}
           />

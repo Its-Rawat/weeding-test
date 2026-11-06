@@ -813,7 +813,7 @@ const App: React.FC = () => {
 
   return (
 
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] scroll-smooth">
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-clip bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] scroll-smooth">
 
       {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
 
