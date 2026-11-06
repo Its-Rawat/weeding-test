@@ -13,6 +13,15 @@ export default defineConfig({
   build: {
     outDir: '../src/main/resources/static',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-admin': ['jspdf', 'xlsx', 'jszip', 'papaparse'],
+          'vendor-motion': ['framer-motion', 'gsap', 'lenis'],
+          'vendor-react': ['react', 'react-dom']
+        }
+      }
+    }
   },
   server: {
     proxy: {

@@ -2745,6 +2745,8 @@
         renderPlaylistEditor();
         showToast('Reset to original default songs. Click Save to persist.', 'info');
       }
+    }
+
     async function handleUploadTrackImage(index, event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -2942,22 +2944,24 @@
     // ==========================================
     async function openTimingsModal() {
       openModal('timingsModal');
-      try {
-        const resp = await fetch(`${apiBaseUrl}/api/config`);
-        if (resp.ok) {
-          const cfg = await resp.json();
-          document.getElementById('timingMehendi').value = cfg.TIME_MEHENDI || '10:00 AM';
-          document.getElementById('timingHaldi').value = cfg.TIME_HALDI || '03:00 PM';
-          document.getElementById('timingBaraat').value = cfg.TIME_BARAAT || '07:00 PM';
-          document.getElementById('timingWedding').value = cfg.TIME_WEDDING || '08:30 PM';
-        }
-      } catch (e) {
-        console.warn('Failed to load timing config from server', e);
-      }
+      // Set default timing values immediately so inputs are never empty
       if (!document.getElementById('timingMehendi').value) document.getElementById('timingMehendi').value = '10:00 AM';
       if (!document.getElementById('timingHaldi').value) document.getElementById('timingHaldi').value = '03:00 PM';
       if (!document.getElementById('timingBaraat').value) document.getElementById('timingBaraat').value = '07:00 PM';
       if (!document.getElementById('timingWedding').value) document.getElementById('timingWedding').value = '08:30 PM';
+
+      try {
+        const resp = await fetch(`${apiBaseUrl}/api/config`);
+        if (resp.ok) {
+          const cfg = await resp.json();
+          if (cfg.TIME_MEHENDI) document.getElementById('timingMehendi').value = cfg.TIME_MEHENDI;
+          if (cfg.TIME_HALDI) document.getElementById('timingHaldi').value = cfg.TIME_HALDI;
+          if (cfg.TIME_BARAAT) document.getElementById('timingBaraat').value = cfg.TIME_BARAAT;
+          if (cfg.TIME_WEDDING) document.getElementById('timingWedding').value = cfg.TIME_WEDDING;
+        }
+      } catch (e) {
+        console.warn('Failed to load timing config from server', e);
+      }
     }
 
     async function saveCeremonyTimings() {

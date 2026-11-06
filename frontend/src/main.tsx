@@ -1,9 +1,10 @@
-import React, { Component, type ErrorInfo, type ReactNode } from "react";
+import React, { Component, Suspense, type ErrorInfo, type ReactNode } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import AdminPage from "./pages/AdminPage";
-import QRCodePage from "./pages/QRCodePage";
 import "./styles/global.css";
+
+const AdminPage = React.lazy(() => import("./pages/AdminPage"));
+const QRCodePage = React.lazy(() => import("./pages/QRCodePage"));
 
 interface Props {
   children: ReactNode;
@@ -63,11 +64,19 @@ function Root() {
   const path = window.location.pathname.toLowerCase();
 
   if (path.startsWith("/admin")) {
-    return <AdminPage />;
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF5EB] text-[#8C1D24] font-serif">Loading Admin Dashboard...</div>}>
+        <AdminPage />
+      </Suspense>
+    );
   }
 
   if (path.startsWith("/qrcode")) {
-    return <QRCodePage />;
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF5EB] text-[#8C1D24] font-serif">Loading QR Code...</div>}>
+        <QRCodePage />
+      </Suspense>
+    );
   }
 
   return <App />;

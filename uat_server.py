@@ -14,7 +14,7 @@ import json
 import re
 import shutil
 import mimetypes
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 if hasattr(sys.stdout, 'reconfigure'):
@@ -306,7 +306,7 @@ class UATRequestHandler(BaseHTTPRequestHandler):
                             break
                         try:
                             self.wfile.write(chunk)
-                        except (ConnectionResetError, BrokenPipeError):
+                        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
                             break
                         bytes_remaining -= len(chunk)
                 return
@@ -321,10 +321,14 @@ class UATRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         with open(file_path, "rb") as f:
-            shutil.copyfileobj(f, self.wfile)
+            try:
+                shutil.copyfileobj(f, self.wfile)
+            except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+                pass
 
 def run(port=3000):
-    server = HTTPServer(("0.0.0.0", port), UATRequestHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), UATRequestHandler)
+    server.daemon_threads = True
     print("=" * 70)
     print(f" [UAT] WEDDING WEBSITE LOCAL VIEW-ONLY ENVIRONMENT IS READY")
     print("=" * 70)
