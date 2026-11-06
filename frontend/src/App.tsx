@@ -1,526 +1,1056 @@
-import React, { useEffect, useState } from "react";
-import Hero from "./components/Hero";
-import CountdownSection from "./components/CountdownSection";
-import EventDetails from "./components/EventDetails";
-import RSVPForm from "./components/RSVPForm";
-import PhotoMusicSection from "./components/PhotoMusicSection";
-import MusicPlayer from "./components/MusicPlayer";
-import Navbar from "./components/Navbar";
-import FloatingPetals from "./components/FloatingPetals";
-import VideoLanding from "./components/VideoLanding";
-import InstallPrompt from "./components/InstallPrompt";
-import WeddingLoader from "./components/WeddingLoader";
-import StoryModal from "./components/StoryModal";
-import { useConfig } from "./hooks/useConfig";
-import { Heart, Quote, Mail } from "lucide-react";
-import { personalizedRsvpService } from "./services/personalizedRsvpService";
-import WeddingAIChatbot from "./components/WeddingAIChatbot";
-import Lenis from "lenis";
-import "lenis/dist/lenis.css";
-
-const extractTokenFromUrl = (): string | null => {
-  if (typeof window === "undefined") return null;
-  const match = window.location.pathname.match(/\/rsvp\/([a-zA-Z0-9_-]+)/);
-  if (match && match[1] && match[1].toLowerCase() !== "stats") {
-    return match[1];
-  }
-  const params = new URLSearchParams(window.location.search);
-  return params.get("token") || params.get("rsvp") || null;
-};
-
-const App: React.FC = () => {
-  const { config, loading } = useConfig();
-  const [personalizedGuestName, setPersonalizedGuestName] = useState<string | null>(null);
-  const [allowedEvents, setAllowedEvents] = useState<string[] | null>(null);
-  const [isStoryOpen, setIsStoryOpen] = useState(false);
-
-  useEffect(() => {
-    const syncTokenData = () => {
-      const token = extractTokenFromUrl();
-      if (token) {
-        personalizedRsvpService
-          .getInvitation(token)
-          .then((inv) => {
-            if (inv && inv.name) {
-              setPersonalizedGuestName(inv.name);
-            }
-            if (inv && inv.allowedEvents) {
-              setAllowedEvents(inv.allowedEvents);
-            }
-          })
-          .catch(() => {
-            // Fallback or ignore if invalid token
-          });
-      } else {
-        setPersonalizedGuestName(null);
-        setAllowedEvents(null);
-      }
-    };
-
-    syncTokenData();
-    window.addEventListener("popstate", syncTokenData);
-    return () => window.removeEventListener("popstate", syncTokenData);
-  }, []);
-
-  // Lenis smooth momentum scrolling (for desktop wheel/pointer)
-  useEffect(() => {
-    const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: !isTouch,
-      syncTouch: false,
-      touchMultiplier: 0, // Let native hardware momentum and scroll snap handle touch devices
-    });
-
-    (window as any).lenis = lenis;
-
-    let animationFrameId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      animationFrameId = requestAnimationFrame(raf);
-    }
-    animationFrameId = requestAnimationFrame(raf);
-
-    // Smooth scroll for anchor navigation links (#events, #venue, #rsvp, #photo-music)
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const anchor = target?.closest("a");
-      if (anchor) {
-        const href = anchor.getAttribute("href");
-        if (href && href.startsWith("#") && href.length > 1) {
-          const targetEl = document.querySelector(href);
-          if (targetEl) {
-            e.preventDefault();
-            lenis.scrollTo(targetEl as HTMLElement, {
-              offset: -20,
-              duration: 1.2,
-            });
-          }
-        }
-      }
-    };
-
-    document.addEventListener("click", handleAnchorClick);
-
-    return () => {
-      document.removeEventListener("click", handleAnchorClick);
-      cancelAnimationFrame(animationFrameId);
-      lenis.destroy();
-      delete (window as any).lenis;
-    };
-  }, []);
-
-  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
-  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
-  // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
-  useEffect(() => {
-    let isSnapping = false;
-    let touchStartY = 0;
-    let touchStartX = 0;
-    let scrollSettleTimer: any = null;
-
-    const snapToPage = (targetId: "video-hero" | "invitation") => {
-      if (isSnapping) return;
-      isSnapping = true;
-
-      const target = document.getElementById(targetId);
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else if (targetId === "video-hero") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      setTimeout(() => {
-        isSnapping = false;
-      }, 700);
-    };
-
-    // Desktop mouse wheel handler: intercepts wheel events around Page 1 and Page 2 boundary
-    const handleWheel = (e: WheelEvent) => {
-      const y = window.scrollY;
-      const invitationEl = document.getElementById("invitation");
-      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
-
-      // If already gliding to a page, absorb wheel impulses around the hero zone
-      if (isSnapping) {
-        if (y <= invitationTop + 50) {
-          e.preventDefault();
-        }
-        return;
-      }
-
-      // 1. On Page 1 (Video Hero): any downward wheel scroll glides to Page 2
-      if (y < 40 && e.deltaY > 0) {
-        e.preventDefault();
-        snapToPage("invitation");
-        return;
-      }
-
-      // 2. On Page 2 (Invitation) or between Page 1 & 2: any upward wheel scroll glides to Page 1
-      if (y <= invitationTop + 30 && e.deltaY < 0 && y > 10) {
-        e.preventDefault();
-        snapToPage("video-hero");
-        return;
-      }
-
-      // 3. In the transition zone between Page 1 and Page 2:
-      if (y > 10 && y < invitationTop - 10) {
-        e.preventDefault();
-        if (e.deltaY > 0) {
-          snapToPage("invitation");
-        } else {
-          snapToPage("video-hero");
-        }
-        return;
-      }
-    };
-
-    // Mobile touch gestures:
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-      }
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isSnapping || e.changedTouches.length === 0) return;
-
-      const touchEndY = e.changedTouches[0].clientY;
-      const touchEndX = e.changedTouches[0].clientX;
-      const deltaY = touchStartY - touchEndY; // > 0 means swiped UP (user wants to scroll DOWN)
-      const deltaX = touchStartX - touchEndX;
-
-      // Ignore horizontal swipes or subtle micro-taps
-      if (Math.abs(deltaY) < 20 || Math.abs(deltaX) > Math.abs(deltaY) * 1.5) return;
-
-      const y = window.scrollY;
-      const invitationEl = document.getElementById("invitation");
-      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
-
-      // If on Page 1 (y < 40) and user swiped UP: glide immediately to Page 2!
-      if (y < 40 && deltaY > 0) {
-        snapToPage("invitation");
-        return;
-      }
-
-      // If around top of Page 2 (y <= invitationTop + 30) and user swiped DOWN: glide back to Page 1!
-      if (y <= invitationTop + 30 && deltaY < 0 && y > 10) {
-        snapToPage("video-hero");
-        return;
-      }
-
-      // If user stopped in the transition zone between Page 1 and Page 2:
-      if (y > 10 && y < invitationTop - 10) {
-        if (deltaY > 0) {
-          snapToPage("invitation");
-        } else {
-          snapToPage("video-hero");
-        }
-      }
-    };
-
-    let lastScrollY = window.scrollY;
-    let scrollDirection: "down" | "up" = "down";
-
-    // Debounced Settle Guard: guarantees user NEVER gets stuck half-way
-    const handleScrollSettle = () => {
-      const y = window.scrollY;
-      if (y > lastScrollY + 2) {
-        scrollDirection = "down";
-      } else if (y < lastScrollY - 2) {
-        scrollDirection = "up";
-      }
-      lastScrollY = y;
-
-      if (isSnapping) return;
-      clearTimeout(scrollSettleTimer);
-      scrollSettleTimer = setTimeout(() => {
-        if (isSnapping) return;
-        const currentY = window.scrollY;
-        const invitationEl = document.getElementById("invitation");
-        if (!invitationEl) return;
-        const invitationTop = invitationEl.offsetTop;
-
-        // If the scroll settled anywhere in the transition zone between Page 1 and Page 2:
-        if (currentY > 10 && currentY < invitationTop - 10) {
-          if (scrollDirection === "down" || currentY >= invitationTop * 0.15) {
-            snapToPage("invitation");
-          } else {
-            snapToPage("video-hero");
-          }
-        }
-      }, 70);
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-    window.addEventListener("scroll", handleScrollSettle, { passive: true });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("scroll", handleScrollSettle);
-      clearTimeout(scrollSettleTimer);
-    };
-  }, []);
-
-  const checkIsPhoneScreen = () => {
-    if (typeof window === "undefined") return false;
-    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-    return isMobileUA || window.innerWidth < 768;
-  };
-
-  const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => checkIsPhoneScreen());
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsPhoneScreen(checkIsPhoneScreen());
-    };
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-    };
-  }, []);
-
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("theme") as "light" | "dark";
-      if (saved === "dark") return "dark";
-      return "light";
-    }
-    return "light";
-  });
-
-  const [bufferProgress, setBufferProgress] = useState(25);
-  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
-
-  useEffect(() => {
-    // High-performance mobile-optimized loading sequence:
-    // 1. Immediately releases UI as soon as config & DOM initialize (< 450ms)
-    // 2. Never blocks or chokes cellular data with off-screen synthetic video buffering
-    // 3. Fallback timer guarantees the site opens within 800ms even on slow 3G
-    let timer1: any = null;
-    let timer2: any = null;
-    let finishTimer: any = null;
-
-    if (!loading && config) {
-      setBufferProgress(65);
-      timer1 = setTimeout(() => {
-        setBufferProgress(90);
-      }, 100);
-
-      timer2 = setTimeout(() => {
-        setBufferProgress(100);
-      }, 250);
-
-      finishTimer = setTimeout(() => {
-        setIsFullyLoaded(true);
-      }, 400);
-    } else {
-      const fallbackTimer = setTimeout(() => {
-        setBufferProgress(100);
-        setIsFullyLoaded(true);
-      }, 800);
-      return () => clearTimeout(fallbackTimer);
-    }
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(finishTimer);
-    };
-  }, [loading, config]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
-    if (!isFullyLoaded) return;
-    document.body.style.overflow = "unset";
-
-    const observerOptions = {
-      threshold: 0.08,
-      rootMargin: "0px 0px -60px 0px",
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("reveal-active");
-          entry.target.classList.remove("opacity-0");
-        }
-      });
-    }, observerOptions);
-
-    const sections = document.querySelectorAll(
-      "section:not(#video-hero):not(#invitation)"
-    );
-    sections.forEach((section) => {
-      section.classList.add(
-        "opacity-0",
-        "transition-all",
-        "duration-[1.2s]",
-        "ease-out"
-      );
-      observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, [isFullyLoaded, isPhoneScreen]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
-  if (!isFullyLoaded || loading || !config) {
-    return <WeddingLoader progress={bufferProgress} />;
-  }
-
-  // On root endpoint (https://chandrikawedsxudong.com/) or general invitation, and for guests invited to Mehendi,
-  // show 14 & 15 Feb video and footer date.
-  // Only show 15 Feb video if a personalized token is present and explicitly excludes Mehendi.
-  const isExplicitlyWeddingOnly = Boolean(
-    allowedEvents && allowedEvents.length > 0 && !allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
-  );
-  const show14And15 = !isExplicitlyWeddingOnly;
-  const landingVideoSrc = show14And15
-    ? "/Short_LandingPageVid.mp4?v=firstnames"
-    : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
-
-  const footerDate = show14And15 ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
-
-  return (
-    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] scroll-smooth">
-      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
-      <VideoLanding config={config} videoSrc={landingVideoSrc} />
-
-      {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
-
-      <InstallPrompt />
-      <FloatingPetals />
-
-      {/* 3. FORMAL ARCHED INVITATION CARD */}
-      <Hero
-        config={config}
-        personalizedGuestName={personalizedGuestName}
-        allowedEvents={allowedEvents}
-        onOpenStory={() => setIsStoryOpen(true)}
-      />
-
-      {/* Story Lightbox Modal */}
-      <StoryModal
-        isOpen={isStoryOpen}
-        onClose={() => setIsStoryOpen(false)}
-        slides={config.storySlides}
-      />
-
-      {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
-      <main className="relative z-10 space-y-0">
-        <CountdownSection config={config} allowedEvents={allowedEvents} />
-        <EventDetails
-          config={config}
-          allowedEvents={allowedEvents}
-          guestName={personalizedGuestName}
-        />
-        <RSVPForm config={config} />
-        <PhotoMusicSection config={config} />
-      </main>
-
-      <MusicPlayer url={config.music.url} />
-      <WeddingAIChatbot guestName={personalizedGuestName} />
-
-      {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
-      <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
-        {/* Romantic Proposal Night Bridge Ambient Backdrop */}
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <img
-            src="/couple/ring_reveal.jpg"
-            alt="Proposal Bridge"
-            className="w-full h-full object-cover object-center opacity-20 dark:opacity-10 filter blur-[1px] scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EB] via-[#FAF5EB]/90 to-[#FAF5EB] dark:from-darkBg dark:via-darkBg/92 dark:to-darkBg" />
-        </div>
-
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
-          <Heart className="animate-pulse-soft h-[85vw] w-[85vw] stroke-[0.3] text-[#8C1D24]" />
-        </div>
-
-        <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center gap-12 md:gap-24 py-16">
-          <div className="space-y-4 text-center md:space-y-6">
-            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#8C6B1C] uppercase">
-              Save The Date
-            </span>
-            <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
-              <span>{config.couple.bride.name}</span>
-              <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
-              <span>{config.couple.groom.name}</span>
-            </h2>
-            <div className="flex items-center justify-center gap-4 md:gap-6">
-              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
-              <p className="font-sans text-[#8C6B1C] dark:text-accent text-[12px] font-bold tracking-[0.4em] uppercase md:text-[18px]">
-                {footerDate}
-              </p>
-              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
-            </div>
-          </div>
-
-          <div className="space-y-12 text-center md:space-y-16">
-            <div className="group relative inline-block px-4">
-              <Quote className="text-[#8C6B1C] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
-              <div className="space-y-6">
-                <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#5A4D43] italic md:text-3xl dark:text-slate-400">
-                  "{config.text.closing.text}"
-                </p>
-                <p className="font-serif text-xl font-medium text-[#231C18] dark:text-white">
-                  {config.text.closing.salam}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center gap-6 border-t border-[#D4AF37]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
-              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#8C6B1C] md:text-[13px]">
-                {config.text.closing.signature}
-              </p>
-              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
-                {config.couple.bride.name} &amp; {config.couple.groom.name}
-              </p>
-              <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
-
-              {/* Host Credit & Contact */}
-              <div className="pt-4">
-                <a
-                  href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
-                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
-                  title="Contact Host: Aditya Rawat (rsvp@chandrikawedsxudong.com)"
-                >
-                  <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />
-                  <span>
-                    Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)
-                  </span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default App;
+import React, { useEffect, useState } from "react";
+
+import Hero from "./components/Hero";
+
+import CountdownSection from "./components/CountdownSection";
+
+import EventDetails from "./components/EventDetails";
+
+import RSVPForm from "./components/RSVPForm";
+
+import PhotoMusicSection from "./components/PhotoMusicSection";
+
+import MusicPlayer from "./components/MusicPlayer";
+
+import Navbar from "./components/Navbar";
+
+import FloatingPetals from "./components/FloatingPetals";
+
+import VideoLanding from "./components/VideoLanding";
+
+import InstallPrompt from "./components/InstallPrompt";
+
+import WeddingLoader from "./components/WeddingLoader";
+
+import StoryModal from "./components/StoryModal";
+
+import { useConfig } from "./hooks/useConfig";
+
+import { Heart, Quote, Mail } from "lucide-react";
+
+import { personalizedRsvpService } from "./services/personalizedRsvpService";
+
+import WeddingAIChatbot from "./components/WeddingAIChatbot";
+import SkiperUIValidator from "./components/SkiperUIValidator";
+import { Link001, Link003, Link005 } from "./components/ui/skiper-ui/skiper40";
+import { Link001, Link003, Link005 } from "./components/ui/skiper-ui/skiper40";
+
+import Lenis from "lenis";
+
+import "lenis/dist/lenis.css";
+
+
+
+const extractTokenFromUrl = (): string | null => {
+
+  if (typeof window === "undefined") return null;
+
+  const match = window.location.pathname.match(/\/rsvp\/([a-zA-Z0-9_-]+)/);
+
+  if (match && match[1] && match[1].toLowerCase() !== "stats") {
+
+    return match[1];
+
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  return params.get("token") || params.get("rsvp") || null;
+
+};
+
+
+
+const App: React.FC = () => {
+
+  const { config, loading } = useConfig();
+
+  const [personalizedGuestName, setPersonalizedGuestName] = useState<string | null>(null);
+
+  const [allowedEvents, setAllowedEvents] = useState<string[] | null>(null);
+
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
+
+
+
+  useEffect(() => {
+
+    const syncTokenData = () => {
+
+      const token = extractTokenFromUrl();
+
+      if (token) {
+
+        personalizedRsvpService
+
+          .getInvitation(token)
+
+          .then((inv) => {
+
+            if (inv && inv.name) {
+
+              setPersonalizedGuestName(inv.name);
+
+            }
+
+            if (inv && inv.allowedEvents) {
+
+              setAllowedEvents(inv.allowedEvents);
+
+            }
+
+          })
+
+          .catch(() => {
+
+            // Fallback or ignore if invalid token
+
+          });
+
+      } else {
+
+        setPersonalizedGuestName(null);
+
+        setAllowedEvents(null);
+
+      }
+
+    };
+
+
+
+    syncTokenData();
+
+    window.addEventListener("popstate", syncTokenData);
+
+    return () => window.removeEventListener("popstate", syncTokenData);
+
+  }, []);
+
+
+
+  // Lenis smooth momentum scrolling (for desktop wheel/pointer)
+
+  useEffect(() => {
+
+    const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
+    const lenis = new Lenis({
+
+      duration: 1.0,
+
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+
+      smoothWheel: !isTouch,
+
+      syncTouch: false,
+
+      touchMultiplier: 0, // Let native hardware momentum and scroll snap handle touch devices
+
+    });
+
+
+
+    (window as any).lenis = lenis;
+
+
+
+    let animationFrameId: number;
+
+    function raf(time: number) {
+
+      lenis.raf(time);
+
+      animationFrameId = requestAnimationFrame(raf);
+
+    }
+
+    animationFrameId = requestAnimationFrame(raf);
+
+
+
+    // Smooth scroll for anchor navigation links (#events, #venue, #rsvp, #photo-music)
+
+    const handleAnchorClick = (e: MouseEvent) => {
+
+      const target = e.target as HTMLElement | null;
+
+      const anchor = target?.closest("a");
+
+      if (anchor) {
+
+        const href = anchor.getAttribute("href");
+
+        if (href && href.startsWith("#") && href.length > 1) {
+
+          const targetEl = document.querySelector(href);
+
+          if (targetEl) {
+
+            e.preventDefault();
+
+            lenis.scrollTo(targetEl as HTMLElement, {
+
+              offset: -20,
+
+              duration: 1.2,
+
+            });
+
+          }
+
+        }
+
+      }
+
+    };
+
+
+
+    document.addEventListener("click", handleAnchorClick);
+
+
+
+    return () => {
+
+      document.removeEventListener("click", handleAnchorClick);
+
+      cancelAnimationFrame(animationFrameId);
+
+      lenis.destroy();
+
+      delete (window as any).lenis;
+
+    };
+
+  }, []);
+
+
+
+  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
+
+  // Strict Snap Lock Controller for BOTH Mobile and Desktop (Web View):
+
+  // Guarantees user is either 100% on Page 1 (Video) or 100% on Page 2 (Invitation) — NEVER in-between!
+
+  useEffect(() => {
+
+    let isSnapping = false;
+
+    let touchStartY = 0;
+
+    let touchStartX = 0;
+
+    let scrollSettleTimer: any = null;
+
+
+
+    const snapToPage = (targetId: "video-hero" | "invitation") => {
+
+      if (isSnapping) return;
+
+      isSnapping = true;
+
+
+
+      const target = document.getElementById(targetId);
+
+      if (target) {
+
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      } else if (targetId === "video-hero") {
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+      }
+
+
+
+      setTimeout(() => {
+
+        isSnapping = false;
+
+      }, 700);
+
+    };
+
+
+
+    // Desktop mouse wheel handler: intercepts wheel events around Page 1 and Page 2 boundary
+
+    const handleWheel = (e: WheelEvent) => {
+
+      const y = window.scrollY;
+
+      const invitationEl = document.getElementById("invitation");
+
+      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
+
+
+
+      // If already gliding to a page, absorb wheel impulses around the hero zone
+
+      if (isSnapping) {
+
+        if (y <= invitationTop + 50) {
+
+          e.preventDefault();
+
+        }
+
+        return;
+
+      }
+
+
+
+      // 1. On Page 1 (Video Hero): any downward wheel scroll glides to Page 2
+
+      if (y < 40 && e.deltaY > 0) {
+
+        e.preventDefault();
+
+        snapToPage("invitation");
+
+        return;
+
+      }
+
+
+
+      // 2. On Page 2 (Invitation) or between Page 1 & 2: any upward wheel scroll glides to Page 1
+
+      if (y <= invitationTop + 30 && e.deltaY < 0 && y > 10) {
+
+        e.preventDefault();
+
+        snapToPage("video-hero");
+
+        return;
+
+      }
+
+
+
+      // 3. In the transition zone between Page 1 and Page 2:
+
+      if (y > 10 && y < invitationTop - 10) {
+
+        e.preventDefault();
+
+        if (e.deltaY > 0) {
+
+          snapToPage("invitation");
+
+        } else {
+
+          snapToPage("video-hero");
+
+        }
+
+        return;
+
+      }
+
+    };
+
+
+
+    // Mobile touch gestures:
+
+    const handleTouchStart = (e: TouchEvent) => {
+
+      if (e.touches.length > 0) {
+
+        touchStartY = e.touches[0].clientY;
+
+        touchStartX = e.touches[0].clientX;
+
+      }
+
+    };
+
+
+
+    const handleTouchEnd = (e: TouchEvent) => {
+
+      if (isSnapping || e.changedTouches.length === 0) return;
+
+
+
+      const touchEndY = e.changedTouches[0].clientY;
+
+      const touchEndX = e.changedTouches[0].clientX;
+
+      const deltaY = touchStartY - touchEndY; // > 0 means swiped UP (user wants to scroll DOWN)
+
+      const deltaX = touchStartX - touchEndX;
+
+
+
+      // Ignore horizontal swipes or subtle micro-taps
+
+      if (Math.abs(deltaY) < 20 || Math.abs(deltaX) > Math.abs(deltaY) * 1.5) return;
+
+
+
+      const y = window.scrollY;
+
+      const invitationEl = document.getElementById("invitation");
+
+      const invitationTop = invitationEl ? invitationEl.offsetTop : window.innerHeight;
+
+
+
+      // If on Page 1 (y < 40) and user swiped UP: glide immediately to Page 2!
+
+      if (y < 40 && deltaY > 0) {
+
+        snapToPage("invitation");
+
+        return;
+
+      }
+
+
+
+      // If around top of Page 2 (y <= invitationTop + 30) and user swiped DOWN: glide back to Page 1!
+
+      if (y <= invitationTop + 30 && deltaY < 0 && y > 10) {
+
+        snapToPage("video-hero");
+
+        return;
+
+      }
+
+
+
+      // If user stopped in the transition zone between Page 1 and Page 2:
+
+      if (y > 10 && y < invitationTop - 10) {
+
+        if (deltaY > 0) {
+
+          snapToPage("invitation");
+
+        } else {
+
+          snapToPage("video-hero");
+
+        }
+
+      }
+
+    };
+
+
+
+    let lastScrollY = window.scrollY;
+
+    let scrollDirection: "down" | "up" = "down";
+
+
+
+    // Debounced Settle Guard: guarantees user NEVER gets stuck half-way
+
+    const handleScrollSettle = () => {
+
+      const y = window.scrollY;
+
+      if (y > lastScrollY + 2) {
+
+        scrollDirection = "down";
+
+      } else if (y < lastScrollY - 2) {
+
+        scrollDirection = "up";
+
+      }
+
+      lastScrollY = y;
+
+
+
+      if (isSnapping) return;
+
+      clearTimeout(scrollSettleTimer);
+
+      scrollSettleTimer = setTimeout(() => {
+
+        if (isSnapping) return;
+
+        const currentY = window.scrollY;
+
+        const invitationEl = document.getElementById("invitation");
+
+        if (!invitationEl) return;
+
+        const invitationTop = invitationEl.offsetTop;
+
+
+
+        // If the scroll settled anywhere in the transition zone between Page 1 and Page 2:
+
+        if (currentY > 10 && currentY < invitationTop - 10) {
+
+          if (scrollDirection === "down" || currentY >= invitationTop * 0.15) {
+
+            snapToPage("invitation");
+
+          } else {
+
+            snapToPage("video-hero");
+
+          }
+
+        }
+
+      }, 70);
+
+    };
+
+
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    window.addEventListener("scroll", handleScrollSettle, { passive: true });
+
+
+
+    return () => {
+
+      window.removeEventListener("wheel", handleWheel);
+
+      window.removeEventListener("touchstart", handleTouchStart);
+
+      window.removeEventListener("touchend", handleTouchEnd);
+
+      window.removeEventListener("scroll", handleScrollSettle);
+
+      clearTimeout(scrollSettleTimer);
+
+    };
+
+  }, []);
+
+
+
+  const checkIsPhoneScreen = () => {
+
+    if (typeof window === "undefined") return false;
+
+    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+
+      navigator.userAgent
+
+    );
+
+    return isMobileUA || window.innerWidth < 768;
+
+  };
+
+
+
+  const [isPhoneScreen, setIsPhoneScreen] = useState<boolean>(() => checkIsPhoneScreen());
+
+
+
+  useEffect(() => {
+
+    const handleResize = () => {
+
+      setIsPhoneScreen(checkIsPhoneScreen());
+
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+
+      window.removeEventListener("resize", handleResize);
+
+      window.removeEventListener("orientationchange", handleResize);
+
+    };
+
+  }, []);
+
+
+
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+
+    if (typeof window !== "undefined") {
+
+      const saved = localStorage.getItem("theme") as "light" | "dark";
+
+      if (saved === "dark") return "dark";
+
+      return "light";
+
+    }
+
+    return "light";
+
+  });
+
+
+
+  const [bufferProgress, setBufferProgress] = useState(25);
+
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+
+
+
+  useEffect(() => {
+
+    // High-performance mobile-optimized loading sequence:
+
+    // 1. Immediately releases UI as soon as config & DOM initialize (< 450ms)
+
+    // 2. Never blocks or chokes cellular data with off-screen synthetic video buffering
+
+    // 3. Fallback timer guarantees the site opens within 800ms even on slow 3G
+
+    let timer1: any = null;
+
+    let timer2: any = null;
+
+    let finishTimer: any = null;
+
+
+
+    if (!loading && config) {
+
+      setBufferProgress(65);
+
+      timer1 = setTimeout(() => {
+
+        setBufferProgress(90);
+
+      }, 100);
+
+
+
+      timer2 = setTimeout(() => {
+
+        setBufferProgress(100);
+
+      }, 250);
+
+
+
+      finishTimer = setTimeout(() => {
+
+        setIsFullyLoaded(true);
+
+      }, 400);
+
+    } else {
+
+      const fallbackTimer = setTimeout(() => {
+
+        setBufferProgress(100);
+
+        setIsFullyLoaded(true);
+
+      }, 800);
+
+      return () => clearTimeout(fallbackTimer);
+
+    }
+
+
+
+    return () => {
+
+      clearTimeout(timer1);
+
+      clearTimeout(timer2);
+
+      clearTimeout(finishTimer);
+
+    };
+
+  }, [loading, config]);
+
+
+
+  useEffect(() => {
+
+    const root = document.documentElement;
+
+    if (theme === "dark") {
+
+      root.classList.add("dark");
+
+    } else {
+
+      root.classList.remove("dark");
+
+    }
+
+    localStorage.setItem("theme", theme);
+
+  }, [theme]);
+
+
+
+  useEffect(() => {
+
+    if (!isFullyLoaded) return;
+
+    document.body.style.overflow = "unset";
+
+
+
+    const observerOptions = {
+
+      threshold: 0.08,
+
+      rootMargin: "0px 0px -60px 0px",
+
+    };
+
+
+
+    const observer = new IntersectionObserver((entries) => {
+
+      entries.forEach((entry) => {
+
+        if (entry.isIntersecting) {
+
+          entry.target.classList.add("reveal-active");
+
+          entry.target.classList.remove("opacity-0");
+
+        }
+
+      });
+
+    }, observerOptions);
+
+
+
+    const sections = document.querySelectorAll(
+
+      "section:not(#video-hero):not(#invitation)"
+
+    );
+
+    sections.forEach((section) => {
+
+      section.classList.add(
+
+        "opacity-0",
+
+        "transition-all",
+
+        "duration-[1.2s]",
+
+        "ease-out"
+
+      );
+
+      observer.observe(section);
+
+    });
+
+
+
+    return () => observer.disconnect();
+
+  }, [isFullyLoaded, isPhoneScreen]);
+
+
+
+  const toggleTheme = () => {
+
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+
+  };
+
+
+
+  if (!isFullyLoaded || loading || !config) {
+
+    return <WeddingLoader progress={bufferProgress} />;
+
+  }
+
+
+
+  // On root endpoint (https://chandrikawedsxudong.com/) or general invitation, and for guests invited to Mehendi,
+
+  // show 14 & 15 Feb video and footer date.
+
+  // Only show 15 Feb video if a personalized token is present and explicitly excludes Mehendi.
+
+  const isExplicitlyWeddingOnly = Boolean(
+
+    allowedEvents && allowedEvents.length > 0 && !allowedEvents.some((e) => e.toUpperCase().includes("MEH"))
+
+  );
+
+  const show14And15 = !isExplicitlyWeddingOnly;
+
+  const landingVideoSrc = show14And15
+
+    ? "/Short_LandingPageVid.mp4?v=firstnames"
+
+    : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
+
+
+
+  const footerDate = show14And15 ? "14 & 15 • 02 • 2027" : "15 • 02 • 2027";
+
+
+
+  return (
+
+    <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-hidden bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] scroll-smooth">
+
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
+
+      <VideoLanding config={config} videoSrc={landingVideoSrc} />
+
+
+
+      {/* 2. DOCK NAVBAR: MINIMIZED ON VIDEO, APPEARS AT BOTTOM UPON SCROLLING */}
+
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
+
+
+
+      <InstallPrompt />
+
+      <FloatingPetals />
+
+
+
+      {/* 3. FORMAL ARCHED INVITATION CARD */}
+
+      <Hero
+
+        config={config}
+
+        personalizedGuestName={personalizedGuestName}
+
+        allowedEvents={allowedEvents}
+
+        onOpenStory={() => setIsStoryOpen(true)}
+
+      />
+
+
+
+      {/* Story Lightbox Modal */}
+
+      <StoryModal
+
+        isOpen={isStoryOpen}
+
+        onClose={() => setIsStoryOpen(false)}
+
+        slides={config.storySlides}
+
+      />
+
+
+
+      {/* 4. WEDDING DETAILS & INTERACTIVE SECTIONS */}
+
+      <main className="relative z-10 space-y-0">
+
+        <CountdownSection config={config} allowedEvents={allowedEvents} />
+
+        <EventDetails
+
+          config={config}
+
+          allowedEvents={allowedEvents}
+
+          guestName={personalizedGuestName}
+
+        />
+
+        <RSVPForm config={config} />
+
+        <PhotoMusicSection config={config} />
+
+      </main>
+
+
+
+      <MusicPlayer url={config.music.url} />
+
+      <WeddingAIChatbot guestName={personalizedGuestName} />
+      <SkiperUIValidator />
+
+
+
+      {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}
+
+      <footer className="dark:bg-darkSurface relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#FAF5EB] px-6 transition-colors duration-1000 border-t border-[#D4AF37]/30">
+
+        {/* Romantic Proposal Night Bridge Ambient Backdrop */}
+
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+
+          <img
+
+            src="/couple/ring_reveal.jpg"
+
+            alt="Proposal Bridge"
+
+            className="w-full h-full object-cover object-center opacity-20 dark:opacity-10 filter blur-[1px] scale-105"
+
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EB] via-[#FAF5EB]/90 to-[#FAF5EB] dark:from-darkBg dark:via-darkBg/92 dark:to-darkBg" />
+
+        </div>
+
+
+
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-10 dark:opacity-[0.05]">
+
+          <Heart className="animate-pulse-soft h-[85vw] w-[85vw] stroke-[0.3] text-[#8C1D24]" />
+
+        </div>
+
+
+
+        <div className="relative z-10 container mx-auto flex max-w-4xl flex-col items-center gap-12 md:gap-24 py-16">
+
+          <div className="space-y-4 text-center md:space-y-6">
+
+            <span className="font-sans block text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#8C6B1C] uppercase">
+
+              Save The Date
+
+            </span>
+
+            <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
+
+              <span>{config.couple.bride.name}</span>
+
+              <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
+
+              <span>{config.couple.groom.name}</span>
+
+            </h2>
+
+            <div className="flex items-center justify-center gap-4 md:gap-6">
+
+              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
+
+              <p className="font-sans text-[#8C6B1C] dark:text-accent text-[12px] font-bold tracking-[0.4em] uppercase md:text-[18px]">
+
+                {footerDate}
+
+              </p>
+
+              <div className="bg-[#D4AF37]/40 h-[1px] w-10 md:w-20"></div>
+
+            </div>
+
+          </div>
+
+
+
+          <div className="space-y-12 text-center md:space-y-16">
+
+            <div className="group relative inline-block px-4">
+
+              <Quote className="text-[#8C6B1C] absolute -top-10 -left-2 h-12 w-12 rotate-180 opacity-[0.08] transition-transform duration-1000 md:-top-16 md:-left-12 md:h-24 md:w-24 dark:opacity-[0.12]" />
+
+              <div className="space-y-6">
+
+                <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#5A4D43] italic md:text-3xl dark:text-slate-400">
+
+                  "{config.text.closing.text}"
+
+                </p>
+
+                <p className="font-serif text-xl font-medium text-[#231C18] dark:text-white">
+
+                  {config.text.closing.salam}
+
+                </p>
+
+              </div>
+
+            </div>
+
+
+
+            <div className="flex flex-col items-center gap-6 border-t border-[#D4AF37]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
+
+              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#8C6B1C] md:text-[13px]">
+
+                {config.text.closing.signature}
+
+              </p>
+
+              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
+
+                {config.couple.bride.name} &amp; {config.couple.groom.name}
+
+              </p>
+
+              <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
+
+
+
+              {/* Host Credit & Contact */}
+
+              <div className="pt-4">
+
+                <a
+
+                  href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
+
+                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
+
+                  title="Contact Host: Aditya Rawat (rsvp@chandrikawedsxudong.com)"
+
+                >
+
+                  <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />
+
+                  <span>
+
+                    Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)
+
+                  </span>
+
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </footer>
+
+    </div>
+
+  );
+
+};
+
+
+
+export default App;
+

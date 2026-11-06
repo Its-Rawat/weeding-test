@@ -2,6 +2,7 @@ import React from "react";
 import type { AppConfig, CelebrationEvent } from "../types";
 import { DEFAULT_CEREMONIES } from "../utils/configParser";
 import { generateGoogleCalendarUrl } from "../utils/calendarUtils";
+import { Link001, Link003 } from "./ui/skiper-ui/skiper40";
 
 interface EventDetailsProps {
   config: AppConfig;
@@ -233,24 +234,23 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
           </p>
         </section>
 
-        {/* 4. Understated Action Bar */}
+        {/* 4. Understated Action Bar (Skiper UI skiper40 Enhanced) */}
         <footer className="pt-4 flex items-center justify-center gap-6 text-xs sm:text-sm tracking-wider uppercase font-semibold">
-          <button
+          <Link003
             onClick={() => handleAddToCalendar(evt)}
-            className="text-[#191410] dark:text-[#FAF5EB] py-1 border-b border-[#191410] dark:border-[#FAF5EB] hover:text-[#8F2837] hover:border-[#8F2837] dark:hover:text-[#FFB4AB] dark:hover:border-[#FFB4AB] transition-all cursor-pointer bg-transparent"
+            className="text-[#191410] dark:text-[#FAF5EB] py-1 hover:text-[#8F2837] dark:hover:text-[#FFB4AB] transition-colors cursor-pointer"
           >
             + Add to Calendar
-          </button>
+          </Link003>
           <span className="text-stone-300 dark:text-stone-600 font-light">&bull;</span>
-          <a
+          <Link001
             href={`https://maps.google.com/?q=${encodeURIComponent(evt.venueName + " " + evt.venueAddress)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#8F2837] dark:text-[#FFB4AB] py-1 border-b border-[#8F2837] dark:border-[#FFB4AB] hover:opacity-80 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            className="text-[#8F2837] dark:text-[#FFB4AB] py-1 hover:opacity-90 transition-colors cursor-pointer"
           >
-            <span>View Map</span>
-            <span className="text-[11px]">↗</span>
-          </a>
+            View Map
+          </Link001>
         </footer>
       </article>
     );
