@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, Eye, X, Check, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { Sparkles, X, Check, Volume2 } from "lucide-react";
 import { Link000, Link001, Link002, Link003, Link004, Link005 } from "./ui/skiper-ui/skiper40";
+import SkiperMusicToggle from "./ui/skiper-ui/skiper25";
 
 export const SkiperUIValidator: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUat, setIsUat] = useState(false);
+  const [demoMusicPlaying, setDemoMusicPlaying] = useState(false);
 
   useEffect(() => {
     // Only mount and show in UAT environments (localhost or 127.0.0.1 or ?uat=true)
@@ -39,7 +41,7 @@ export const SkiperUIValidator: React.FC = () => {
 
       {/* Expanded Interactive Validation Card */}
       {isOpen && (
-        <div className="w-[320px] sm:w-[380px] rounded-2xl bg-[#FFFDF9]/98 dark:bg-[#1C1717]/98 border border-[#D4AF37]/70 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 text-[#231C18] dark:text-[#FAF5EB] animate-scale-in">
+        <div className="w-[320px] sm:w-[390px] rounded-2xl bg-[#FFFDF9]/98 dark:bg-[#1C1717]/98 border border-[#D4AF37]/70 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 text-[#231C18] dark:text-[#FAF5EB] animate-scale-in max-h-[85vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-[#D4AF37]/30">
             <div className="flex items-center gap-2">
@@ -51,7 +53,7 @@ export const SkiperUIValidator: React.FC = () => {
                   Skiper UI Validation
                 </h4>
                 <p className="text-[10px] text-[#8C6B1C] dark:text-[#D4AF37] font-semibold uppercase tracking-widest">
-                  @skiper-ui/skiper40 • UAT Mode
+                  @skiper-ui • skiper40 + skiper25
                 </p>
               </div>
             </div>
@@ -64,48 +66,77 @@ export const SkiperUIValidator: React.FC = () => {
             </button>
           </div>
 
-          {/* Description */}
-          <p className="text-xs text-stone-600 dark:text-stone-300 mt-3 leading-relaxed">
-            Hover over the variants below to validate micro-interactions, directional underlines, and diagonal arrow reveals:
-          </p>
-
-          {/* Live Variants Preview */}
-          <div className="my-4 space-y-2.5 p-3 rounded-xl bg-[#FAF5EB] dark:bg-white/5 border border-[#D4AF37]/30 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-stone-500">Link001 (Left-to-Right + Arrow):</span>
-              <Link001 href="#event" className="text-[#8C1D24] dark:text-[#FFB4AB] font-semibold">
-                Ceremony Schedule
-              </Link001>
+          {/* Section 1: Music Toggle (skiper25) */}
+          <div className="mt-3.5 pb-3 border-b border-[#D4AF37]/20">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold text-[#8C1D24] dark:text-[#FFE082] uppercase tracking-wider flex items-center gap-1.5">
+                <Volume2 className="w-3.5 h-3.5" />
+                <span>skiper25: Music Equalizer Button</span>
+              </span>
+              <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold uppercase">
+                Active on Video
+              </span>
             </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-stone-500">Link002 (Right-to-Left + Arrow):</span>
-              <Link002 href="#event" className="text-[#8C6B1C] dark:text-[#D4AF37] font-semibold">
-                Destination Venue
-              </Link002>
+            <p className="text-[11px] text-stone-600 dark:text-stone-400 mb-2.5">
+              Live interactive equalizer button with animated jumping soundbars:
+            </p>
+            <div className="flex items-center justify-center p-3 rounded-xl bg-black/80 border border-white/10">
+              <SkiperMusicToggle
+                isPlaying={demoMusicPlaying}
+                onToggle={() => setDemoMusicPlaying((p) => !p)}
+              />
             </div>
+          </div>
 
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-stone-500">Link003 (Center Reveal):</span>
-              <Link003 href="#rsvp" className="text-[#191410] dark:text-[#FAF5EB] font-semibold">
-                + Add to Calendar
-              </Link003>
-            </div>
+          {/* Section 2: Animated Links (skiper40) */}
+          <div className="mt-3">
+            <span className="text-[11px] font-semibold text-[#8C1D24] dark:text-[#FFE082] uppercase tracking-wider block mb-1">
+              skiper40: Animated Micro-Links
+            </span>
+            <p className="text-[11px] text-stone-600 dark:text-stone-400 mb-2">
+              Hover to test directional underlines and diagonal sliding arrows:
+            </p>
 
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-stone-500">Link005 (Luxury Pill):</span>
-              <Link005 href="#rsvp" className="text-[#8C1D24] dark:text-[#FFD54F] text-[11px]">
-                Confirm RSVP
-              </Link005>
+            <div className="space-y-2.5 p-3 rounded-xl bg-[#FAF5EB] dark:bg-white/5 border border-[#D4AF37]/30 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-stone-500">Link001 (Left-to-Right + Arrow):</span>
+                <Link001 href="#event" className="text-[#8C1D24] dark:text-[#FFB4AB] font-semibold">
+                  Ceremony Schedule
+                </Link001>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-stone-500">Link002 (Right-to-Left + Arrow):</span>
+                <Link002 href="#event" className="text-[#8C6B1C] dark:text-[#D4AF37] font-semibold">
+                  Destination Venue
+                </Link002>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-stone-500">Link003 (Center Reveal):</span>
+                <Link003 href="#rsvp" className="text-[#191410] dark:text-[#FAF5EB] font-semibold">
+                  + Add to Calendar
+                </Link003>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-stone-500">Link005 (Luxury Pill):</span>
+                <Link005 href="#rsvp" className="text-[#8C1D24] dark:text-[#FFD54F] text-[11px]">
+                  Confirm RSVP
+                </Link005>
+              </div>
             </div>
           </div>
 
           {/* Active Placements in Wedding Site */}
-          <div className="space-y-1.5 text-[11px] text-stone-600 dark:text-stone-300">
+          <div className="mt-3.5 space-y-1 text-[11px] text-stone-600 dark:text-stone-300">
             <p className="font-semibold text-[#8C1D24] dark:text-[#E5C378] text-xs">
-              📍 Replaced Components in UAT:
+              📍 Components Upgraded in UAT:
             </p>
-            <ul className="space-y-1 pl-1 list-disc list-inside">
+            <ul className="space-y-0.5 pl-1 list-disc list-inside">
+              <li>
+                <strong>Video Landing:</strong> Skiper 25 Music Equalizer with instant 1st-click toggle
+              </li>
               <li>
                 <strong>Celebrations Card:</strong> "+ Add to Calendar" &amp; "View Map"
               </li>
@@ -113,7 +144,7 @@ export const SkiperUIValidator: React.FC = () => {
                 <strong>Countdown Section:</strong> "Ceremony Schedule" &amp; "Confirm RSVP"
               </li>
               <li>
-                <strong>Footer:</strong> Host Contact Link with animated diagonal arrow
+                <strong>Footer:</strong> Host Contact Link with sliding diagonal arrow
               </li>
             </ul>
           </div>

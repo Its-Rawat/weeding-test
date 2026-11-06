@@ -14,7 +14,8 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     audio.src = initialSrc;
 
     const notifyState = () => {
-      const isPlaying = !audio.paused && !audio.ended && audio.currentTime > 0;
+      // Direct reliable check: media is playing when it's not paused and has not ended
+      const isPlaying = !audio.paused && !audio.ended;
       window.dispatchEvent(
         new CustomEvent("wedding-music-state", {
           detail: { isPlaying },
@@ -24,6 +25,12 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
 
     const handlePlay = () => {
       if (!audio) return;
+      // Optimistically inform listeners that audio playback is starting
+      window.dispatchEvent(
+        new CustomEvent("wedding-music-state", {
+          detail: { isPlaying: true },
+        })
+      );
       audio
         .play()
         .then(notifyState)
@@ -31,7 +38,14 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
           console.warn("Audio play blocked, switching to fallback:", err);
           if (audio.src !== DEFAULT_FALLBACK_AUDIO) {
             audio.src = DEFAULT_FALLBACK_AUDIO;
-            audio.play().then(notifyState).catch(() => {});
+            audio
+              .play()
+              .then(notifyState)
+              .catch(() => {
+                notifyState();
+              });
+          } else {
+            notifyState();
           }
         });
     };
@@ -39,14 +53,28 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     const handleToggle = () => {
       if (!audio) return;
       if (audio.paused || audio.ended) {
+        // Optimistically notify on the very first click so UI changes instantaneously
+        window.dispatchEvent(
+          new CustomEvent("wedding-music-state", {
+            detail: { isPlaying: true },
+          })
+        );
         audio
           .play()
           .then(notifyState)
           .catch((err) => {
-            console.warn("Audio play failed on toggle:", err);
+            console.warn("Audio play failed on toggle, switching to fallback:", err);
             if (audio.src !== DEFAULT_FALLBACK_AUDIO) {
               audio.src = DEFAULT_FALLBACK_AUDIO;
-              audio.play().then(notifyState).catch((e) => console.error("Fallback play failed:", e));
+              audio
+                .play()
+                .then(notifyState)
+                .catch((e) => {
+                  console.error("Fallback play failed:", e);
+                  notifyState();
+                });
+            } else {
+              notifyState();
             }
           });
       } else {
@@ -71,6 +99,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
       if (audio.src !== DEFAULT_FALLBACK_AUDIO) {
         audio.src = DEFAULT_FALLBACK_AUDIO;
         audio.load();
+        audio.play().then(notifyState).catch(() => notifyState());
       }
     };
 
@@ -80,6 +109,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     window.addEventListener("query-wedding-music-state", handleQuery);
 
     audio.addEventListener("play", notifyState);
+    audio.addEventListener("playing", notifyState);
     audio.addEventListener("pause", notifyState);
     audio.addEventListener("ended", notifyState);
     audio.addEventListener("error", handleError);
@@ -91,6 +121,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
       window.removeEventListener("query-wedding-music-state", handleQuery);
 
       audio.removeEventListener("play", notifyState);
+      audio.removeEventListener("playing", notifyState);
       audio.removeEventListener("pause", notifyState);
       audio.removeEventListener("ended", notifyState);
       audio.removeEventListener("error", handleError);
@@ -101,7 +132,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     <audio
       ref={audioRef}
       loop
-      preload="none"
+      preload="metadata"
       className="hidden"
     />
   );

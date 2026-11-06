@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Volume2, VolumeX, ChevronDown } from "lucide-react";
+import SkiperMusicToggle from "./ui/skiper-ui/skiper25";
 import type { AppConfig } from "../types";
 
 interface VideoLandingProps {
@@ -117,12 +118,17 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   }, []);
 
   const handleToggleSound = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     // Video ALWAYS stays muted - never unmute the video soundtrack!
     if (videoRef.current) {
       videoRef.current.muted = true;
       videoRef.current.volume = 0;
     }
+    // Optimistic immediate toggle so button reflects state on the very first click!
+    setIsPlayingMusic((prev) => !prev);
     // Toggle the admin wedding soundtrack
     window.dispatchEvent(new CustomEvent("toggle-wedding-music"));
   };
@@ -154,29 +160,12 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
         className="absolute inset-0 w-full h-full object-cover md:object-contain max-w-lg md:mx-auto cursor-pointer"
       />
 
-      {/* TOP: MUSIC / SOUND TOGGLE (CONTROLS ADMIN-CONFIGURED AUDIO) */}
+      {/* TOP: MUSIC / SOUND TOGGLE (Skiper UI skiper25 Animated Waveform) */}
       <div className="relative z-30 pt-4 sm:pt-6 px-4 sm:px-6 flex items-center justify-end pointer-events-auto">
-        <button
-          onClick={handleToggleSound}
-          className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white/90 shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-          title={isPlayingMusic ? "Pause Wedding Music" : "Play Wedding Music"}
-        >
-          {isPlayingMusic ? (
-            <>
-              <Volume2 className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span className="text-[11px] font-serif text-amber-100 font-medium">
-                Sound On 🔊
-              </span>
-            </>
-          ) : (
-            <>
-              <VolumeX className="w-4 h-4 text-white/80" />
-              <span className="text-[11px] font-serif text-white/90 font-medium">
-                Tap for Sound 🔊
-              </span>
-            </>
-          )}
-        </button>
+        <SkiperMusicToggle
+          isPlaying={isPlayingMusic}
+          onToggle={handleToggleSound}
+        />
       </div>
 
       {/* BOTTOM: ULTRA-SUBTLE TRANSLUCENT SCROLL CHEVRON */}
