@@ -5,7 +5,7 @@ import {
   Send,
   Moon,
   Sun,
-  Music,
+  Camera,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -47,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
   const navItems = [
     { icon: Mail, label: "Invitation", href: "#invitation" },
     { icon: Calendar, label: "Celebrations", href: "#event" },
-    { icon: Music, label: "Melodies", href: "#photo-music" },
+    { icon: Camera, label: "Moments", href: "#photo-music" },
     { icon: Send, label: "RSVP", href: "#rsvp", isRsvp: true },
   ];
 
