@@ -101,7 +101,7 @@ const MusicPlayer: React.FC<{ url: string }> = ({ url }) => {
     <audio
       ref={audioRef}
       loop
-      preload="auto"
+      preload="none"
       className="hidden"
     />
   );

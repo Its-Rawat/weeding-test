@@ -143,6 +143,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       <video
         ref={videoRef}
         src={videoSrc}
+        poster="/Short_LandingPageVid_poster.jpg"
         autoPlay
         loop
         muted

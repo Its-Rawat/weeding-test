@@ -25,6 +25,18 @@ const Hero: React.FC<HeroProps> = ({
     return Math.random() < 0.5 ? "/couple/final1.jpg" : "/couple/final2.jpg";
   });
 
+  // Optimize mobile data: Only instantiate and load HD video element on desktop/tablet screens (>= 768px)
+  const [isDesktop, setIsDesktop] = React.useState(false);
+
+  React.useEffect(() => {
+    const update = () => {
+      setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 768);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <section
       id="invitation"
@@ -32,23 +44,25 @@ const Hero: React.FC<HeroProps> = ({
     >
       {/* 1. Full-Bleed Couple Media on the Resort Bridge:
           - Desktop / Laptop (>= 768px): Crisp HD Looping Video (gemini_generated_video_b0b01e67.mp4)
-          - Mobile devices (< 768px): Vertical photo (randomly final1 or final2)
+          - Mobile devices (< 768px): Vertical photo (randomly final1 or final2), saving 4.4MB on cellular data
       */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Desktop & Laptop Screens (PC, Laptop, iPad Landscape): High-Definition Video */}
-        <div className="hidden md:block absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            poster={selectedHeroImage}
-            className="w-full h-full object-cover object-center"
-          >
-            <source src="/gemini_generated_video_b0b01e67.mp4" type="video/mp4" />
-          </video>
-        </div>
+        {isDesktop && (
+          <div className="hidden md:block absolute inset-0 w-full h-full">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster={selectedHeroImage}
+              className="w-full h-full object-cover object-center"
+            >
+              <source src="/gemini_generated_video_b0b01e67.mp4" type="video/mp4" />
+            </video>
+          </div>
+        )}
 
         {/* Mobile Screens (Phone portrait): Vertical HD photo (randomly final1 or final2) */}
         <div className="block md:hidden absolute inset-0 w-full h-full">
