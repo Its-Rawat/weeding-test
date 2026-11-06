@@ -31,8 +31,6 @@ import { Heart, Quote, Mail } from "lucide-react";
 import { personalizedRsvpService } from "./services/personalizedRsvpService";
 
 import WeddingAIChatbot from "./components/WeddingAIChatbot";
-import SkiperUIValidator from "./components/SkiperUIValidator";
-import { Link001, Link003, Link005 } from "./components/ui/skiper-ui/skiper40";
 import { Link001, Link003, Link005 } from "./components/ui/skiper-ui/skiper40";
 
 import Lenis from "lenis";
@@ -892,8 +890,7 @@ const App: React.FC = () => {
       <MusicPlayer url={config.music.url} />
 
       <WeddingAIChatbot guestName={personalizedGuestName} />
-      <SkiperUIValidator />
-
+      
 
 
       {/* 5. FOOTER WITH ADITYA RAWAT HOST CREDIT & PROPOSAL NIGHT BACKDROP */}

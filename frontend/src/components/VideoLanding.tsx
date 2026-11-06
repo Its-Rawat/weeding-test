@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Volume2, VolumeX, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import SkiperMusicToggle from "./ui/skiper-ui/skiper25";
 import type { AppConfig } from "../types";
 
@@ -12,35 +12,68 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
   videoSrc = "/Short_LandingPageVid_15Feb.mp4?v=weddingonly",
 }) => {
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  // 1. Guaranteed Autoplay for Mobile Phones (iOS Safari, Android Chrome, Samsung Internet, Low Power Mode)
   useEffect(() => {
-    // 1. Permanently keep video 100% muted
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.volume = 0;
-      videoRef.current.play().catch((err) => {
-        console.warn("Video autoplay info:", err);
-      });
-    }
+    const video = videoRef.current;
+    if (!video) return;
 
-    // 2. Track background / wedding music state
+    // Set DOM properties directly: iOS Safari ignores React JSX muted on initial mount
+    video.defaultMuted = true;
+    video.muted = true;
+    video.volume = 0;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("x5-playsinline", "");
+
+    const playVideo = () => {
+      if (video && video.paused) {
+        const promise = video.play();
+        if (promise !== undefined) {
+          promise
+            .then(() => {
+              setVideoLoaded(true);
+            })
+            .catch((err) => {
+              console.log("Autoplay waiting for first touch gesture:", err?.message);
+            });
+        }
+      }
+    };
+
+    playVideo();
+
+    // Fallback for strict Low Power Mode / Battery Saver:
+    // If phone initially blocked autoplay, the first touch or scroll anywhere on the screen starts it immediately
+    const handleFirstGesture = () => {
+      playVideo();
+    };
+
+    window.addEventListener("touchstart", handleFirstGesture, { once: true, passive: true });
+    window.addEventListener("click", handleFirstGesture, { once: true, passive: true });
+    window.addEventListener("scroll", handleFirstGesture, { once: true, passive: true });
+
+    // Track background wedding music state
     const handleMusicState = (e: any) => {
       if (e.detail?.isPlaying !== undefined) {
         setIsPlayingMusic(e.detail.isPlaying);
       }
     };
     window.addEventListener("wedding-music-state", handleMusicState);
-
-    // Initial state query
     window.dispatchEvent(new CustomEvent("query-wedding-music-state"));
 
     return () => {
+      window.removeEventListener("touchstart", handleFirstGesture);
+      window.removeEventListener("click", handleFirstGesture);
+      window.removeEventListener("scroll", handleFirstGesture);
       window.removeEventListener("wedding-music-state", handleMusicState);
     };
-  }, []);
+  }, [videoSrc]);
 
-  // 1-Scroll transition: when user scrolls or swipes down on video, smoothly glide to the second page
+  // 2. Smooth Glide / 1-Scroll transition: when user scrolls or swipes down on video, smoothly glide to page 2
   useEffect(() => {
     let isTransitioning = false;
 
@@ -90,7 +123,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       videoSection.addEventListener("touchend", handleTouchEnd, { passive: true });
     }
 
-    // Auto-pause video frames when user scrolls down past video
+    // Auto-pause video frames when user scrolls down past video to save phone GPU/battery
     const handleScroll = () => {
       if (videoRef.current) {
         const rect = videoRef.current.getBoundingClientRect();
@@ -145,23 +178,47 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
       id="video-hero"
       className="relative w-full h-screen h-[100svh] min-h-screen min-h-[100svh] overflow-hidden bg-black select-none flex flex-col justify-between scroll-mt-0"
     >
+      {/* INSTANT VISUAL POSTER BACKDROP:
+          Guarantees the first frame is visible at 0ms on any mobile network, completely eliminating black screen */}
+      <img
+        src="/Short_LandingPageVid_poster.jpg"
+        alt="Chandrika & Xudong Wedding"
+        className="absolute inset-0 w-full h-full object-cover md:object-contain max-w-lg md:mx-auto select-none pointer-events-none z-0"
+        loading="eager"
+      />
+
       {/* 100% FULL-SCREEN CINEMATIC VIDEO (ZERO CLUTTER, PERMANENTLY SILENT) */}
       <video
         ref={videoRef}
-        src={videoSrc}
-        poster="/Short_LandingPageVid_poster.jpg"
         autoPlay
         loop
         muted
+        defaultMuted
         playsInline
         webkit-playsinline="true"
         preload="auto"
+        poster="/Short_LandingPageVid_poster.jpg"
         onClick={handleToggleSound}
-        className="absolute inset-0 w-full h-full object-cover md:object-contain max-w-lg md:mx-auto cursor-pointer"
-      />
+        onLoadedData={() => {
+          setVideoLoaded(true);
+          if (videoRef.current && videoRef.current.paused) {
+            videoRef.current.play().catch(() => {});
+          }
+        }}
+        onCanPlay={() => {
+          if (videoRef.current && videoRef.current.paused) {
+            videoRef.current.play().catch(() => {});
+          }
+        }}
+        className={`absolute inset-0 w-full h-full object-cover md:object-contain max-w-lg md:mx-auto cursor-pointer z-10 transition-opacity duration-700 ${
+          videoLoaded ? "opacity-100" : "opacity-90"
+        }`}
+      >
+        <source src={videoSrc} type="video/mp4" />
+      </video>
 
-      {/* TOP: MUSIC / SOUND TOGGLE (Skiper UI skiper25 Animated Waveform) */}
-      <div className="relative z-30 pt-4 sm:pt-6 px-4 sm:px-6 flex items-center justify-end pointer-events-auto">
+      {/* TOP: COMPACT SKICKER 25 MUSIC EQUALIZER TOGGLE */}
+      <div className="relative z-30 pt-3 sm:pt-5 px-3.5 sm:px-6 flex items-center justify-end pointer-events-auto">
         <SkiperMusicToggle
           isPlaying={isPlayingMusic}
           onToggle={handleToggleSound}
@@ -178,7 +235,7 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
           <span className="text-[11px] font-serif italic text-white/80 drop-shadow-md group-hover:text-white">
             Scroll to explore
           </span>
-          <div className="w-8 h-8 rounded-full bg-black/25 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+          <div className="w-8 h-8 rounded-full border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center group-hover:bg-black/50 transition-colors">
             <ChevronDown className="w-4 h-4 text-white/90 animate-bounce" />
           </div>
         </button>
