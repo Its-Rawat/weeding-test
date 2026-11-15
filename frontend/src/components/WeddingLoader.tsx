@@ -133,36 +133,45 @@ export const WeddingLoader: React.FC<WeddingLoaderProps> = ({
         <p className="font-serif italic text-xs sm:text-sm tracking-[0.25em] text-[#FDE68A]/90">
           Welcomes You
         </p>
-      </div>
 
-      {/* 5. OMFGDOGS PIXEL DOG RUNNING ACROSS SCREEN */}
-      <div className="absolute inset-x-0 bottom-8 sm:bottom-12 pointer-events-none overflow-hidden z-20 h-20 flex items-center">
-        {/* Subtle ethereal golden runner beam */}
-        <div className="absolute inset-x-0 bottom-3 h-[1px] bg-gradient-to-r from-transparent via-[#FDE047]/35 to-transparent" />
+        {/* 5. JOYFUL MASCOT RUNNING IN PLACE (Always 100% visible, zero empty path) */}
+        <div className="mt-6 flex flex-col items-center">
+          <div className="relative flex flex-col items-center">
+            {/* Subtle warm golden ambient pedestal glow */}
+            <div className="absolute -bottom-1 w-24 h-3 bg-gradient-to-r from-transparent via-[#FDE047]/30 to-transparent blur-xs rounded-full" />
 
-        {/* Running Dog from omfgdogs.com */}
-        <div
-          className="absolute will-change-transform flex items-center"
-          style={{ animation: "omfgDogRun 3.6s linear infinite" }}
-        >
-          <img
-            src="/illustrations/omfg_dog_running.gif"
-            alt="Running Dog"
-            className="w-16 sm:w-20 h-auto drop-shadow-[0_2px_12px_rgba(253,224,71,0.5)] select-none"
-            style={{ imageRendering: "pixelated" }}
-            draggable={false}
-          />
+            {/* Running Dog */}
+            <div
+              className="relative will-change-transform flex items-center justify-center"
+              style={{ animation: "dogGallopBob 0.6s ease-in-out infinite alternate" }}
+            >
+              <img
+                src="/illustrations/omfg_dog_running.gif"
+                alt="Running Mascot"
+                className="w-20 sm:w-24 h-auto drop-shadow-[0_4px_16px_rgba(253,224,71,0.45)] select-none"
+                style={{ imageRendering: "pixelated" }}
+                draggable={false}
+              />
+            </div>
+
+            {/* Elegant Royal Golden Flourish */}
+            <div className="flex items-center gap-2 mt-2 opacity-60">
+              <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#FDE047]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#FEF08A] shadow-[0_0_6px_#FEF08A]" />
+              <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#FDE047]" />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 6. KEYFRAME ANIMATIONS */}
       <style>{`
-        @keyframes omfgDogRun {
+        @keyframes dogGallopBob {
           0% {
-            transform: translateX(-80px);
+            transform: translateY(0px) scale(1);
           }
           100% {
-            transform: translateX(calc(100vw + 80px));
+            transform: translateY(-3px) scale(1.02);
           }
         }
 
