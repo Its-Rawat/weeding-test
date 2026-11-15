@@ -133,7 +133,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
     setDragOffset(0);
   };
 
-  // Helper to render a ceremony article
+  // Helper to render a ceremony article with huge modern typography & minimal clutter
   const renderCeremony = (evt: CelebrationEvent, index: number, isSingleView: boolean) => {
     const isWedding =
       evt.key === "WEDDING" ||
@@ -141,9 +141,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
     const isMehendi = evt.key === "MEHENDI" || evt.title.toLowerCase().includes("mehendi");
     const isHaldi = evt.key === "HALDI" || evt.title.toLowerCase().includes("haldi");
 
-    const eventTitle = cleanEventTitle(evt.title, isWedding, isMultiEvent);
-    const eventSubtitle = cleanEventSubtitle(evt.subtitle, isWedding);
-    const badgeText = getEventBadge(evt.key, index);
+    const ceremonyShortTitle = isWedding ? "Wedding" : isHaldi ? "Haldi" : "Mehendi";
+    const venueShort = evt.venueName.includes("The Club")
+      ? "The Club International, Gurugram"
+      : `${evt.venueName}, Gurugram`;
 
     // Dynamic Admin-Configurable Timings with fallbacks
     const baraatTime = config.ceremonyTimings?.baraat || evt.baraatTime || "07:00 PM";
@@ -151,107 +152,83 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
     const haldiTime = config.ceremonyTimings?.haldi || (isHaldi ? evt.time : "10:00 AM onwards");
     const mehendiTime = config.ceremonyTimings?.mehendi || (isMehendi ? evt.time : "04:00 PM onwards");
 
+    const accentColor = isHaldi
+      ? "text-[#D97706] dark:text-[#FBBF24]"
+      : isMehendi
+      ? "text-[#DB2777] dark:text-[#F472B6]"
+      : "text-[#E11D48] dark:text-[#FB7185]";
+
     return (
       <article
         key={evt.id}
-        className="w-full text-center space-y-8 sm:space-y-10"
+        className="w-full text-center py-2 space-y-6 sm:space-y-8"
       >
-        {/* 1. Editorial Header & Chapter Badge */}
-        <header className="space-y-3">
-          {isMultiEvent && (
-            <div className="flex justify-center pb-1">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] sm:text-[11px] font-sans font-bold tracking-[0.25em] uppercase bg-[#FAF5EB] dark:bg-[#1A1414] text-[#8C1D24] dark:text-[#D4AF37] border border-[#D4AF37]/40 shadow-xs">
-                <span>{badgeText}</span>
-              </span>
-            </div>
-          )}
-
-          <h3 className="text-4xl sm:text-5xl md:text-6xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight leading-none">
-            {eventTitle}
-          </h3>
-          <p className="text-xs sm:text-sm font-sans font-medium tracking-[0.3em] uppercase text-[#8F2837] dark:text-[#FFB4AB]">
-            {eventSubtitle}
+        {/* 1. HUGE MODERN EDITORIAL TITLE & DATE */}
+        <div className="space-y-1.5">
+          <p className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#8C6B1C] dark:text-[#D4AF37]">
+            {evt.dayDate}
           </p>
-        </header>
+          <h3 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight leading-none drop-shadow-xs">
+            {ceremonyShortTitle}
+          </h3>
+        </div>
 
-        {/* 2. Date & Time Axis (Dynamic Admin-Configurable Timings) */}
-        <section className="py-8 border-y border-[#E2D8C9] dark:border-white/15 space-y-6">
-          {/* Date */}
-          <div>
-            <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#9E7D46] dark:text-[#D4AF37]">
-              Date
-            </span>
-            <p className="text-xl sm:text-2xl font-serif font-medium text-[#191410] dark:text-[#FAF5EB] mt-1">
-              {evt.dayDate}
-            </p>
-          </div>
-
-          {/* Baraat & Wedding Timings (or single timing for Haldi / Mehendi) */}
+        {/* 2. HUGE MODERN TIMINGS (MINIMALIST AXIS) */}
+        <div className="py-5 sm:py-7 border-y border-pink-100/80 dark:border-white/10">
           {isWedding ? (
-            <div className="flex items-center justify-center gap-8 sm:gap-16 pt-2">
+            <div className="flex items-center justify-center gap-6 sm:gap-14">
               <div className="text-center">
-                <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#9E7D46] dark:text-[#D4AF37]">
+                <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-stone-500 dark:text-stone-400 block mb-1">
                   Baraat
                 </span>
-                <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] mt-0.5">
+                <p className="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight">
                   {baraatTime}
                 </p>
               </div>
 
-              <div className="h-8 w-[1px] bg-[#E2D8C9] dark:bg-white/15"></div>
+              <div className="h-10 sm:h-16 w-[1px] bg-pink-200/70 dark:bg-white/15" />
 
               <div className="text-center">
-                <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#8F2837] dark:text-[#FFB4AB]">
-                  Wedding Ceremony
+                <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#E11D48] dark:text-[#FB7185] block mb-1">
+                  Ceremony
                 </span>
-                <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#8F2837] dark:text-[#FFB4AB] mt-0.5">
+                <p className="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[#E11D48] dark:text-[#FB7185] tracking-tight">
                   {weddingTime}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="pt-2 text-center">
-              <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#9E7D46] dark:text-[#D4AF37]">
-                Ceremony Timing
-              </span>
-              <p className="text-2xl sm:text-3xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] mt-0.5">
+            <div className="text-center">
+              <p className={`text-5xl sm:text-7xl md:text-8xl font-serif font-light tracking-tight leading-none ${accentColor}`}>
                 {isHaldi ? haldiTime : isMehendi ? mehendiTime : evt.time}
               </p>
             </div>
           )}
-        </section>
+        </div>
 
-        {/* 3. Venue & Destination */}
-        <section className="space-y-2 max-w-md mx-auto">
-          <span className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.25em] text-[#9E7D46] dark:text-[#D4AF37]">
-            Destination
-          </span>
-          <h4 className="text-xl sm:text-2xl font-serif font-semibold text-[#191410] dark:text-[#FAF5EB] leading-snug">
-            {evt.venueName}
-          </h4>
-          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-light leading-relaxed">
-            {evt.venueAddress}
+        {/* 3. MINIMAL DESTINATION & SLEEK ACTION PILLS */}
+        <div className="space-y-4 max-w-md mx-auto">
+          <p className="text-sm sm:text-base font-serif italic text-stone-600 dark:text-stone-300">
+            {venueShort}
           </p>
-        </section>
 
-        {/* 4. Understated Action Bar (Skiper UI skiper40 Enhanced) */}
-        <footer className="pt-4 flex items-center justify-center gap-6 text-xs sm:text-sm tracking-wider uppercase font-semibold">
-          <Link003
-            onClick={() => handleAddToCalendar(evt)}
-            className="text-[#191410] dark:text-[#FAF5EB] py-1 hover:text-[#8F2837] dark:hover:text-[#FFB4AB] transition-colors cursor-pointer"
-          >
-            + Add to Calendar
-          </Link003>
-          <span className="text-stone-300 dark:text-stone-600 font-light">&bull;</span>
-          <Link001
-            href={`https://maps.google.com/?q=${encodeURIComponent(evt.venueName + " " + evt.venueAddress)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#8F2837] dark:text-[#FFB4AB] py-1 hover:opacity-90 transition-colors cursor-pointer"
-          >
-            View Map
-          </Link001>
-        </footer>
+          <div className="flex items-center justify-center gap-3 pt-1">
+            <button
+              onClick={() => handleAddToCalendar(evt)}
+              className="px-4 py-2 rounded-full border border-pink-200/80 dark:border-white/15 bg-white/90 dark:bg-white/5 hover:border-pink-300 dark:hover:border-white/30 text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#191410] dark:text-[#FAF5EB] shadow-xs hover:shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              + Add to Calendar
+            </button>
+            <a
+              href={`https://maps.google.com/?q=${encodeURIComponent(evt.venueName + " " + evt.venueAddress)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-full border border-amber-200/80 dark:border-white/15 bg-white/90 dark:bg-white/5 hover:border-amber-300 dark:hover:border-white/30 text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#D97706] dark:text-[#FBBF24] shadow-xs hover:shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              View Map ↗
+            </a>
+          </div>
+        </div>
       </article>
     );
   };
@@ -264,23 +241,19 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
       className="relative py-14 sm:py-20 px-4 sm:px-8 bg-[#FAF5EB] dark:bg-darkBg overflow-hidden transition-colors duration-1000 select-none"
     >
       {/* Editorial Container (Zero cards, zero container boxes, completely seamless) */}
-      <div className="w-full max-w-2xl mx-auto space-y-8 sm:space-y-12 relative z-10">
+      <div className="w-full max-w-2xl mx-auto space-y-6 sm:space-y-8 relative z-10">
 
-        {/* Multi-ceremony header (Sacred Itinerary removed) */}
+        {/* Minimal Modern Header */}
         {isMultiEvent && (
-          <header className="text-center space-y-2 pb-2">
-            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.3em] uppercase text-[#9E7D46] dark:text-[#D4AF37]">
-              Celebrations
+          <header className="text-center space-y-1 pb-1">
+            <span className="text-[10px] sm:text-[11px] font-sans font-bold tracking-[0.35em] uppercase text-[#D97706] dark:text-[#FBBF24]">
+              The Itinerary
             </span>
-            <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#191410] dark:text-[#FAF5EB] tracking-tight">
-              The Wedding Celebrations
-            </h2>
             {guestName && (
-              <p className="text-xs sm:text-sm font-serif italic text-[#8F2837] dark:text-[#E5A8AD] pt-0.5">
+              <p className="text-xs font-serif italic text-[#DB2777] dark:text-[#E5A8AD]">
                 Specially curated for {guestName}
               </p>
             )}
-            <div className="w-16 h-[1px] bg-[#E2D8C9] dark:bg-white/15 mx-auto mt-3" />
           </header>
         )}
 
@@ -293,7 +266,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
             onTouchEnd={handleTouchEnd}
           >
             {/* Interactive Luxury Segmented Tab Switcher with Golden Crimson Aura */}
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 p-1 sm:p-1.5 rounded-full bg-[#EFE7D8]/80 dark:bg-white/5 border border-[#D4AF37]/40 shadow-xs max-w-md mx-auto">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-3 p-1 sm:p-1.5 rounded-full bg-[#EFE7D8]/80 dark:bg-white/5 border border-[#D4AF37]/40 shadow-xs w-full max-w-lg sm:max-w-xl mx-auto">
               {displayCeremonies.map((evt, idx) => {
                 const isActive = idx === activeTabIndex;
                 const label = evt.key === "MEHENDI" ? "Mehendi" : evt.key === "HALDI" ? "Haldi" : "Wedding";
@@ -304,15 +277,19 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
                   <button
                     key={evt.id}
                     onClick={() => goToTab(idx)}
-                    className={`flex-1 min-w-0 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-full text-xs sm:text-sm font-sans transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer relative group ${
+                    className={`flex-1 py-2 sm:py-2.5 px-2.5 sm:px-5 rounded-full text-xs sm:text-sm font-sans transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer relative group whitespace-nowrap ${
                       isActive
-                        ? "bg-gradient-to-r from-[#8C1D24] via-[#A8232B] to-[#B71C1C] text-white shadow-[0_4px_16px_rgba(140,29,36,0.3)] font-bold scale-[1.02] border border-[#FFD54F]/70"
+                        ? (evt.key === "HALDI"
+                            ? "bg-gradient-to-r from-[#F59E0B] via-[#FBBF24] to-[#F59E0B] text-[#78350F] shadow-[0_4px_16px_rgba(245,158,11,0.4)] font-bold scale-[1.02] border border-amber-300"
+                            : evt.key === "MEHENDI"
+                            ? "bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#DB2777] text-white shadow-[0_4px_16px_rgba(236,72,153,0.4)] font-bold scale-[1.02] border border-pink-200"
+                            : "bg-white text-[#9D174D] dark:bg-stone-900 dark:text-[#F472B6] shadow-[0_4px_16px_rgba(244,114,182,0.35)] font-bold scale-[1.02] border-2 border-[#F472B6]")
                         : "text-[#5A4D43] dark:text-stone-300 font-medium hover:text-[#8C1D24] dark:hover:text-[#D4AF37] hover:bg-black/5 dark:hover:bg-white/5 active:scale-95"
                     }`}
                   >
                     <span className="text-sm transition-transform duration-300 group-hover:scale-110">{icon}</span>
-                    <span className="truncate">{label}</span>
-                    <span className="text-[10px] opacity-75 font-normal hidden sm:inline">({dateShort})</span>
+                    <span className="whitespace-nowrap font-medium">{label}</span>
+                    <span className="text-[10.5px] opacity-75 font-normal hidden sm:inline">({dateShort})</span>
                   </button>
                 );
               })}
@@ -340,7 +317,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ config, allowedEvents, gues
 
             {/* Compact Bottom Navigation: Prev / Next + Liquid Dot Indicators */}
             <div className="pt-2 space-y-3">
-              <div className="flex items-center justify-between border-t border-[#E2D8C9] dark:border-white/10 max-w-md mx-auto pt-4 text-xs uppercase font-sans tracking-wider">
+              <div className="flex items-center justify-between border-t border-pink-100 dark:border-white/10 max-w-md mx-auto pt-4 text-xs uppercase font-sans tracking-wider">
                 <button
                   onClick={() => goToTab(activeTabIndex - 1)}
                   disabled={activeTabIndex === 0}

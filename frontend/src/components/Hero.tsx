@@ -82,26 +82,31 @@ const Hero: React.FC<HeroProps> = ({
       </div>
 
       {/* 2. TOP SECTION (In the dark night sky above Bride & Groom's heads) */}
-      <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center space-y-2.5 pt-4 sm:pt-8 md:pt-10 animate-reveal">
+      <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center space-y-2 pt-4 sm:pt-8 md:pt-10 animate-reveal">
         {/* Line 1: We're getting married */}
-        <p className="font-sans text-[11px] sm:text-xs md:text-sm font-semibold tracking-[0.35em] sm:tracking-[0.45em] text-[#E5C378] uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-          We&apos;re getting married
+        <p className="font-sans text-[10.5px] sm:text-xs md:text-sm font-semibold tracking-[0.35em] sm:tracking-[0.45em] text-[#FDE68A] uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] flex items-center gap-1.5 sm:gap-2">
+          <span className="text-xs text-[#F472B6]">🌸</span>
+          <span>We&apos;re getting married</span>
+          <span className="text-xs text-[#FBBF24]">✨</span>
         </p>
 
-        {/* Line 2: Chandrika & Xudong | [Date] */}
-        <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-[0.06em] sm:tracking-[0.08em] text-[#FFFBF0] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] leading-tight flex flex-wrap items-center justify-center">
-          <span>Chandrika</span>
-          <span className="font-script lowercase text-2xl sm:text-4xl md:text-5xl text-[#E5C378] mx-1.5 sm:mx-2.5 font-normal">
+        {/* Line 2: Chandrika & Xudong (Grand Focal Headline) */}
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-wide text-[#FFFBF0] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] leading-tight flex items-center justify-center">
+          <span className="bg-gradient-to-r from-white via-[#FFF5F7] to-[#FCE7F3] bg-clip-text text-transparent">Chandrika</span>
+          <span className="font-script lowercase text-3xl sm:text-5xl md:text-6xl text-[#F472B6] mx-2 sm:mx-3 font-normal drop-shadow-[0_0_12px_rgba(244,114,182,0.6)]">
             &amp;
           </span>
-          <span>Xudong</span>
-          <span className="mx-2 sm:mx-3 text-[#E5C378]/70 font-sans font-light text-lg sm:text-3xl">
-            |
-          </span>
-          <span className="font-sans text-xs sm:text-sm md:text-lg tracking-[0.2em] sm:tracking-[0.25em] text-[#E5C378] font-light uppercase align-middle whitespace-nowrap">
-            {formattedDate}
-          </span>
+          <span className="bg-gradient-to-r from-[#FCE7F3] via-[#FFFBEB] to-white bg-clip-text text-transparent">Xudong</span>
         </h1>
+
+        {/* Line 3: Auspicious Wedding Dates */}
+        <div className="flex items-center justify-center gap-2 pt-0.5">
+          <span className="text-[10px] text-[#FDE047]/70">✨</span>
+          <p className="font-sans text-xs sm:text-sm md:text-base tracking-[0.25em] sm:tracking-[0.3em] text-[#FDE68A] font-medium uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            {formattedDate}
+          </p>
+          <span className="text-[10px] text-[#FDE047]/70">✨</span>
+        </div>
       </div>
 
       {/* 3. CENTER SPACER: Intentionally empty so Bride & Groom's smiling faces, engagement ring, and bodies are 100% visible */}

@@ -627,13 +627,13 @@ const App: React.FC = () => {
 
     if (!loading && config) {
 
-      setBufferProgress(65);
+      setBufferProgress(25);
 
       timer1 = setTimeout(() => {
 
-        setBufferProgress(90);
+        setBufferProgress(68);
 
-      }, 100);
+      }, 500);
 
 
 
@@ -641,7 +641,7 @@ const App: React.FC = () => {
 
         setBufferProgress(100);
 
-      }, 250);
+      }, 1200);
 
 
 
@@ -649,7 +649,7 @@ const App: React.FC = () => {
 
         setIsFullyLoaded(true);
 
-      }, 400);
+      }, 1650);
 
     } else {
 
@@ -659,7 +659,7 @@ const App: React.FC = () => {
 
         setIsFullyLoaded(true);
 
-      }, 800);
+      }, 2000);
 
       return () => clearTimeout(fallbackTimer);
 
@@ -987,43 +987,33 @@ const App: React.FC = () => {
 
 
 
-            <div className="flex flex-col items-center gap-6 border-t border-[#D4AF37]/20 pt-16 md:gap-8 md:pt-24 dark:border-white/5">
+            <div className="flex flex-col items-center gap-3 border-t border-[#D4AF37]/20 pt-10 md:gap-4 md:pt-14 dark:border-white/5">
 
-              <p className="font-sans tracking-luxury text-[9px] font-bold uppercase text-[#8C6B1C] md:text-[13px]">
+              <span className="font-sans tracking-[0.35em] text-[10.5px] sm:text-xs font-bold uppercase text-[#D97706] dark:text-[#FBBF24]">
 
-                {config.text.closing.signature}
+                With Love &amp; Gratitude
 
-              </p>
-
-              <p className="font-script text-3xl sm:text-4xl md:text-5xl text-[#231C18] dark:text-white py-1">
-
-                {config.couple.bride.name} &amp; {config.couple.groom.name}
-
-              </p>
-
-              <p className="font-sans text-[11px] text-[#5A4D43] uppercase tracking-widest">{config.text.closing.family}</p>
-
-
+              </span>
 
               {/* Host Credit & Contact */}
 
-              <div className="pt-4">
+              <div className="pt-2">
 
                 <a
 
                   href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20Inquiry%20-%20Chandrika%20%26%20Xudong"
 
-                  className="group inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9] px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#8C1D24] hover:shadow-md shadow-sm"
+                  className="group inline-flex items-center gap-2 rounded-full border border-pink-200/80 dark:border-white/10 bg-white/90 dark:bg-darkSurface/90 px-4 py-2 text-xs text-[#231C18] dark:text-slate-300 transition-all duration-300 hover:border-[#EC4899] hover:shadow-md shadow-xs"
 
                   title="Contact Host: Aditya Rawat (rsvp@chandrikawedsxudong.com)"
 
                 >
 
-                  <Mail className="h-3.5 w-3.5 text-[#8C1D24] group-hover:scale-110 transition-transform" />
+                  <Mail className="h-3.5 w-3.5 text-[#EC4899] group-hover:scale-110 transition-transform" />
 
                   <span>
 
-                    Host: <strong className="font-semibold text-[#8C1D24] transition-colors">Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)
+                    RSVP &amp; Host Inquiries: <strong className="font-semibold text-[#8C1D24] dark:text-pink-300 transition-colors">Aditya Rawat</strong> (rsvp@chandrikawedsxudong.com)
 
                   </span>
 

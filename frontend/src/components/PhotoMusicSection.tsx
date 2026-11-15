@@ -66,16 +66,16 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = ({ config }) 
       id="photo-music"
       className="relative py-14 sm:py-20 px-4 sm:px-6 bg-[#FAF5EB] dark:bg-darkBg text-[#231C18] dark:text-[#FAF5EB] border-t border-[#D4AF37]/30 overflow-visible overflow-x-clip transition-colors duration-700"
     >
-      {/* Ambient Gradient Lighting */}
-      <div className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#F7D8A5]/10 to-transparent blur-[110px]" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-[#8C1D24]/15 via-[#D4AF37]/10 to-transparent blur-[120px]" />
+      {/* Ambient Gradient Lighting: Lotus Pink & Marigold Yellow */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#EC4899]/20 via-[#F472B6]/10 to-transparent blur-[110px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-[#F59E0B]/20 via-[#FBBF24]/10 to-transparent blur-[120px]" />
 
       <div className="container mx-auto max-w-4xl relative z-10">
         {/* Section Header */}
         <div className="mb-10 sm:mb-14 text-center space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFFDF9] dark:bg-darkSurface border border-[#D4AF37]/50 shadow-xs">
-            <Camera className="w-3.5 h-3.5 text-[#8C1D24] dark:text-[#FFE082]" />
-            <span className="font-sans text-[10px] font-bold tracking-[0.25em] uppercase text-[#8C6B1C] dark:text-[#FFE082]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white dark:bg-darkSurface border border-pink-200/80 shadow-xs">
+            <Camera className="w-3.5 h-3.5 text-[#EC4899] dark:text-[#F472B6]" />
+            <span className="font-sans text-[10px] font-bold tracking-[0.25em] uppercase text-[#D97706] dark:text-[#FBBF24]">
               Captured Moments
             </span>
           </div>
@@ -88,7 +88,15 @@ export const PhotoMusicSection: React.FC<{ config?: AppConfig }> = ({ config }) 
             Every photograph holds a heartbeat of our journey together. Scroll down to explore our story in frames.
           </p>
 
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full mt-2" />
+          <div className="pt-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 dark:bg-white/10 border border-pink-200/80 dark:border-white/15 shadow-xs text-[11px] font-sans font-semibold tracking-wider text-[#DB2777] dark:text-[#F472B6]">
+              <span className="animate-bounce">👇</span>
+              <span>Scroll down to peel through our story</span>
+              <span className="text-[10px] opacity-75 font-normal text-stone-500 dark:text-stone-400">({photos.length} chapters)</span>
+            </div>
+          </div>
+
+          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full mt-1" />
         </div>
 
         {/* Skiper UI (skiper16) Card Stack Scroll */}

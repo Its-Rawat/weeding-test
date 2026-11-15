@@ -91,57 +91,90 @@ const RSVPForm: React.FC<{ config?: AppConfig }> = () => {
             <PersonalizedRSVPSection token={token} />
           </div>
         ) : (
-          /* Guest without invite link: ONLY show "Have a personalized invitation code? Click here" button */
-          <div className="max-w-md mx-auto text-center py-6">
-            {!showTokenInput ? (
-              <button
-                type="button"
-                onClick={() => setShowTokenInput(true)}
-                className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full bg-[#FFFDF9] hover:bg-[#F3E7D5] border-2 border-[#D4AF37]/70 text-xs sm:text-sm font-semibold text-[#8C6B1C] hover:text-[#8C1D24] shadow-md hover:shadow-lg transition-all cursor-pointer group"
-              >
-                <Sparkles className="w-4 h-4 text-[#D4AF37] group-hover:rotate-12 transition-transform" />
-                <span>Have a personalized invitation code? Click here</span>
-              </button>
-            ) : (
-              <form
-                onSubmit={handleOpenToken}
-                className="animate-reveal p-6 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-[#D4AF37]/70 shadow-lg max-w-md mx-auto space-y-4 text-center"
-              >
-                <div className="flex items-center justify-between text-xs text-[#5A4D43] font-serif border-b border-[#D4AF37]/25 pb-2">
-                  <span className="font-medium text-[#231C18]">
-                    Enter your personal invitation code:
-                  </span>
+          /* Guest without invite link: Elevated Luxury Arched Stationery Card */
+          <div className="max-w-lg mx-auto">
+            <div className="rounded-3xl sm:rounded-4xl p-7 sm:p-10 bg-white/85 dark:bg-darkSurface/90 border border-pink-200/80 dark:border-white/10 shadow-[0_16px_45px_rgba(236,72,153,0.08)] backdrop-blur-md text-center space-y-6 relative overflow-hidden">
+              {/* Subtle Ambient Card Glow */}
+              <div className="pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full bg-[#FDE047]/15 blur-2xl" />
+              <div className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-[#EC4899]/15 blur-2xl" />
+
+              {/* Decorative Envelope Emblem */}
+              <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-[#FEF08A]/80 via-[#FCE7F3] to-[#FDE68A]/80 flex items-center justify-center mx-auto shadow-xs border border-pink-200/60 text-xl">
+                💌
+              </div>
+
+              {/* Card Heading */}
+              <div className="relative z-10 space-y-1.5">
+                <h3 className="font-serif text-2xl sm:text-3xl font-light text-[#191410] dark:text-[#FAF5EB] tracking-wide">
+                  Guest Verification
+                </h3>
+                <p className="font-serif italic text-xs sm:text-sm text-stone-600 dark:text-stone-300 max-w-sm mx-auto leading-relaxed">
+                  Please enter your personal invitation code to confirm your attendance and ceremony schedule.
+                </p>
+              </div>
+
+              {!showTokenInput ? (
+                <div className="relative z-10 space-y-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => setShowTokenInput(false)}
-                    className="text-[10px] text-stone-400 hover:text-stone-600 font-bold uppercase tracking-wider cursor-pointer"
+                    onClick={() => setShowTokenInput(true)}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#F59E0B] text-white text-xs sm:text-sm font-sans font-bold uppercase tracking-wider shadow-md hover:shadow-lg hover:opacity-95 transition-all cursor-pointer group active:scale-95"
                   >
-                    Cancel
+                    <Sparkles className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+                    <span>Enter Invitation Code</span>
                   </button>
+
+                  <div className="pt-2">
+                    <a
+                      href="mailto:rsvp@chandrikawedsxudong.com?subject=Wedding%20RSVP%20Assistance%20-%20Chandrika%20%26%20Xudong"
+                      className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-[#8C6B1C] dark:text-[#D4AF37] hover:text-[#8C1D24] font-medium tracking-wide hover:underline cursor-pointer"
+                    >
+                      <span>Need help with your code? Contact Host</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    required
-                    autoFocus
-                    placeholder="e.g. 7Kx92LmPq8Za"
-                    value={manualTokenInput}
-                    onChange={(e) => setManualTokenInput(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-2xl border border-[#D4AF37]/50 bg-[#FAF5EB] text-sm font-mono text-[#231C18] focus:outline-none focus:border-[#8C1D24] text-center uppercase tracking-widest shadow-inner"
-                  />
-                  <button
-                    type="submit"
-                    className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] hover:from-[#750D14] hover:to-[#8C1D24] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer flex items-center gap-1.5 transition-all"
-                  >
-                    <span>Open</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-[11px] text-[#8C6B1C] font-serif italic text-center">
-                  Please enter the private code provided with your invitation.
-                </p>
-              </form>
-            )}
+              ) : (
+                <form
+                  onSubmit={handleOpenToken}
+                  className="relative z-10 animate-reveal pt-2 space-y-4 text-center"
+                >
+                  <div className="flex items-center justify-between text-xs text-[#5A4D43] font-serif border-b border-pink-200/50 pb-2">
+                    <span className="font-medium text-[#231C18] dark:text-white">
+                      Enter your private code:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTokenInput(false)}
+                      className="text-[10.5px] text-stone-400 hover:text-stone-600 font-bold uppercase tracking-wider cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      required
+                      autoFocus
+                      placeholder="e.g. 7Kx92LmPq8Za"
+                      value={manualTokenInput}
+                      onChange={(e) => setManualTokenInput(e.target.value)}
+                      className="flex-1 px-4 py-3 rounded-2xl border border-pink-200/80 bg-white dark:bg-black/30 text-sm font-mono text-[#231C18] dark:text-white focus:outline-none focus:border-[#EC4899] text-center uppercase tracking-widest shadow-inner"
+                    />
+                    <button
+                      type="submit"
+                      className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#F59E0B] hover:opacity-95 text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                    >
+                      <span>Open</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-[#8C6B1C] dark:text-[#D4AF37] font-serif italic text-center">
+                    Check your digital invitation or WhatsApp message for your unique link.
+                  </p>
+                </form>
+              )}
+            </div>
           </div>
         )}
       </div>

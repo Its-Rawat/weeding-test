@@ -73,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
           : "translate-y-24 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="pointer-events-auto flex items-center justify-between md:justify-center gap-1 sm:gap-2 md:gap-3 rounded-full border border-[#D4AF37]/50 bg-[#FFFDF9]/95 dark:bg-[#1a1715]/95 p-1.5 sm:p-2 px-2.5 sm:px-5 shadow-[0_12px_35px_rgba(140,107,28,0.2)] backdrop-blur-2xl transition-colors duration-500">
+      <div className="pointer-events-auto flex items-center justify-between md:justify-center gap-1 sm:gap-2 md:gap-3 rounded-full border border-pink-200/70 dark:border-white/10 bg-white/95 dark:bg-[#1a1715]/95 p-1.5 sm:p-2 px-2.5 sm:px-5 shadow-[0_12px_35px_rgba(236,72,153,0.12)] backdrop-blur-2xl transition-colors duration-500">
         
         {navItems.map((item) => {
           if (item.isRsvp) {
@@ -81,10 +81,10 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
               <button
                 key={item.label}
                 onClick={(e) => handleNavClick(e, item.href)}
-                className="py-1.5 sm:py-2 px-2.5 sm:px-4 md:px-5 rounded-full bg-gradient-to-r from-[#8C1D24] to-[#B71C1C] text-white shadow-md active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer border border-[#FFD54F]/70 shrink-0"
+                className="py-1.5 sm:py-2 px-2.5 sm:px-4 md:px-5 rounded-full bg-gradient-to-r from-[#E05283] via-[#F43F5E] to-[#F59E0B] text-white shadow-md shadow-pink-500/25 active:scale-95 transition-all flex items-center gap-1 font-bold text-xs group relative cursor-pointer border border-amber-200/80 shrink-0"
                 title={item.label}
               >
-                <item.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#FFE082]" />
+                <item.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#FFFBEB]" />
                 <span className="text-[10px] sm:text-xs uppercase tracking-wider font-sans font-bold">RSVP</span>
                 <span className={tooltipClass}>Confirm Attendance</span>
               </button>

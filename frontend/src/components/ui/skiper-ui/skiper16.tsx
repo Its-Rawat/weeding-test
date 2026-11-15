@@ -50,7 +50,7 @@ const StickyCard: React.FC<StickyCardProps> = ({
           "rounded-3xl sm:rounded-4xl relative flex flex-col overflow-hidden origin-top",
           "w-[90vw] max-w-[350px] sm:max-w-[460px] md:max-w-[540px]",
           "h-[380px] sm:h-[440px] md:h-[480px]",
-          "border border-[#D4AF37]/60 shadow-[0_20px_50px_rgba(0,0,0,0.45)]",
+          "border-2 border-pink-300/40 shadow-[0_20px_50px_rgba(236,72,153,0.18)] ring-1 ring-amber-300/40",
           "bg-[#1A1412] text-white select-none"
         )}
       >
@@ -67,7 +67,7 @@ const StickyCard: React.FC<StickyCardProps> = ({
 
         {/* Card Header Tag */}
         <div className="absolute top-3.5 left-4 right-4 flex items-center justify-between">
-          <span className="px-3 py-1 rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] bg-black/60 backdrop-blur-md text-[#FFE082] border border-[#D4AF37]/50 shadow-sm">
+          <span className="px-3 py-1 rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] bg-black/60 backdrop-blur-md text-[#FEF08A] border border-pink-400/50 shadow-sm">
             {item.tag}
           </span>
           <span className="text-[11px] font-serif font-light text-white/70 italic bg-black/50 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15">
