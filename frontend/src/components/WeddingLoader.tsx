@@ -135,8 +135,37 @@ export const WeddingLoader: React.FC<WeddingLoaderProps> = ({
         </p>
       </div>
 
-      {/* 5. KEYFRAME ANIMATIONS */}
+      {/* 5. OMFGDOGS PIXEL DOG RUNNING ACROSS SCREEN */}
+      <div className="absolute inset-x-0 bottom-8 sm:bottom-12 pointer-events-none overflow-hidden z-20 h-20 flex items-center">
+        {/* Subtle ethereal golden runner beam */}
+        <div className="absolute inset-x-0 bottom-3 h-[1px] bg-gradient-to-r from-transparent via-[#FDE047]/35 to-transparent" />
+
+        {/* Running Dog from omfgdogs.com */}
+        <div
+          className="absolute will-change-transform flex items-center"
+          style={{ animation: "omfgDogRun 3.6s linear infinite" }}
+        >
+          <img
+            src="/illustrations/omfg_dog_running.gif"
+            alt="Running Dog"
+            className="w-16 sm:w-20 h-auto drop-shadow-[0_2px_12px_rgba(253,224,71,0.5)] select-none"
+            style={{ imageRendering: "pixelated" }}
+            draggable={false}
+          />
+        </div>
+      </div>
+
+      {/* 6. KEYFRAME ANIMATIONS */}
       <style>{`
+        @keyframes omfgDogRun {
+          0% {
+            transform: translateX(-80px);
+          }
+          100% {
+            transform: translateX(calc(100vw + 80px));
+          }
+        }
+
         @keyframes laltenHover {
           0%, 100% {
             transform: translateY(0px) rotate(-1.5deg);
