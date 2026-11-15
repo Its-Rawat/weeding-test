@@ -9,7 +9,7 @@ interface VideoLandingProps {
 }
 
 const VideoLanding: React.FC<VideoLandingProps> = ({
-  videoSrc = "/OpeningLandingVideo.mp4?v=firstnames",
+  videoSrc = "/Short_LandingPageVid_15Feb.mp4?v=weddingonly",
 }) => {
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -219,9 +219,9 @@ const VideoLanding: React.FC<VideoLandingProps> = ({
         }`}
       >
         <source src={videoSrc} type="video/mp4" />
+        <source src="/Short_LandingPageVid.mp4" type="video/mp4" />
         <source src="/OpeningLandingVideo.mp4" type="video/mp4" />
         <source src="/Short_LandingPageVid_15Feb.mp4" type="video/mp4" />
-        <source src="/Short_LandingPageVid.mp4" type="video/mp4" />
       </video>
 
       {/* TOP: COMPACT SKICKER 25 MUSIC EQUALIZER TOGGLE */}
