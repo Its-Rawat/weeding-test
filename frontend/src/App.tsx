@@ -800,9 +800,7 @@ const App: React.FC = () => {
   const show14And15 = !isExplicitlyWeddingOnly;
 
   const landingVideoSrc = show14And15
-
-    ? "/Short_LandingPageVid.mp4?v=firstnames"
-
+    ? "/OpeningLandingVideo.mp4?v=firstnames"
     : "/Short_LandingPageVid_15Feb.mp4?v=weddingonly";
 
 
