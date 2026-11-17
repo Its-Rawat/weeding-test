@@ -3,15 +3,24 @@ import React from "react";
 interface WeddingLoaderProps {
   progress?: number;
   message?: string;
+  isExiting?: boolean;
 }
 
 export const WeddingLoader: React.FC<WeddingLoaderProps> = ({
   progress = 0,
+  isExiting = false,
 }) => {
   const clampedProgress = Math.min(100, Math.max(5, Math.round(progress)));
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-b from-[#120B16] via-[#1B0F20] to-[#261022] text-white select-none overflow-hidden px-4 transition-opacity duration-700">
+    <div
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-b from-[#120B16] via-[#1B0F20] to-[#261022] text-white select-none overflow-hidden px-4 transition-all duration-700 ease-out ${
+        isExiting
+          ? "opacity-0 pointer-events-none scale-105 blur-[2px]"
+          : "opacity-100 scale-100 blur-0"
+      }`}
+      style={{ willChange: "opacity, transform, filter" }}
+    >
       {/* 1. AMBIENT CELEBRATORY SUNSET GLOW ORBS (Pink, Yellow, White) */}
       <div className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[440px] h-[440px] rounded-full bg-[#F59E0B]/20 blur-[140px] animate-pulse" />
       <div

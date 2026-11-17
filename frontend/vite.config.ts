@@ -15,13 +15,23 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-admin': ['jspdf', 'xlsx', 'jszip', 'papaparse'],
-          'vendor-motion': ['framer-motion', 'gsap', 'lenis'],
-          'vendor-react': ['react', 'react-dom']
-        }
-      }
-    }
+        manualChunks(id) {
+          if (
+            id.includes('framer-motion') ||
+            id.includes('gsap') ||
+            id.includes('lenis')
+          ) {
+            return 'vendor-motion';
+          }
+          if (
+            id.includes('react') ||
+            id.includes('react-dom')
+          ) {
+            return 'vendor-react';
+          }
+        },
+      },
+    },
   },
   server: {
     proxy: {

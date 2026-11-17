@@ -24,7 +24,7 @@ import WeddingLoader from "./components/WeddingLoader";
 
 import StoryModal from "./components/StoryModal";
 
-import { useConfig } from "./hooks/useConfig";
+import { useConfig, DEFAULT_FALLBACK_CONFIG } from "./hooks/useConfig";
 
 import { Heart, Quote, Mail } from "lucide-react";
 
@@ -602,81 +602,86 @@ const App: React.FC = () => {
 
 
   const [bufferProgress, setBufferProgress] = useState(25);
-
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
-
-
+  const [isLoaderExiting, setIsLoaderExiting] = useState(false);
+  const [hasDismissedLoader, setHasDismissedLoader] = useState(false);
 
   useEffect(() => {
+    let isCancelled = false;
+    const startTime = Date.now();
+    const MIN_DWELL_MS = 1800; // Minimum dwell so guests enjoy the glowing Lalten lamp & running Rico
+    const MAX_TIMEOUT_MS = 3800; // Safety guard for spotty networks
 
-    // High-performance mobile-optimized loading sequence:
+    // Preload critical assets:
+    // 1. Landing Video Poster image
+    const posterPromise = new Promise<void>((resolve) => {
+      const img = new Image();
+      img.src = "/Short_LandingPageVid_poster.jpg";
+      if (img.complete) {
+        resolve();
+      } else {
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+      }
+    });
 
-    // 1. Immediately releases UI as soon as config & DOM initialize (< 450ms)
+    // 2. Critical web fonts
+    const fontsPromise =
+      document.fonts && document.fonts.ready
+        ? document.fonts.ready.catch(() => {})
+        : Promise.resolve();
 
-    // 2. Never blocks or chokes cellular data with off-screen synthetic video buffering
+    // 3. Smooth progressive animation
+    let currentPct = 25;
+    const interval = setInterval(() => {
+      if (isCancelled) return;
+      currentPct = Math.min(92, currentPct + Math.floor(Math.random() * 8 + 4));
+      setBufferProgress(currentPct);
+    }, 180);
 
-    // 3. Fallback timer guarantees the site opens within 800ms even on slow 3G
+    // When fonts, poster, and config are ready:
+    Promise.all([posterPromise, fontsPromise]).then(() => {
+      if (isCancelled) return;
+      const elapsed = Date.now() - startTime;
+      const remainingDwell = Math.max(0, MIN_DWELL_MS - elapsed);
 
-    let timer1: any = null;
-
-    let timer2: any = null;
-
-    let finishTimer: any = null;
-
-
-
-    if (!loading && config) {
-
-      setBufferProgress(25);
-
-      timer1 = setTimeout(() => {
-
-        setBufferProgress(68);
-
-      }, 500);
-
-
-
-      timer2 = setTimeout(() => {
-
+      setTimeout(() => {
+        if (isCancelled) return;
+        clearInterval(interval);
         setBufferProgress(100);
 
-      }, 1200);
+        // Brief pause at 100% so user sees completion, then smooth cross-dissolve!
+        setTimeout(() => {
+          if (isCancelled) return;
+          setIsLoaderExiting(true);
+          setIsFullyLoaded(true);
 
+          // Completely unmount after 700ms fade completes
+          setTimeout(() => {
+            if (isCancelled) return;
+            setHasDismissedLoader(true);
+          }, 750);
+        }, 220);
+      }, remainingDwell);
+    });
 
-
-      finishTimer = setTimeout(() => {
-
-        setIsFullyLoaded(true);
-
-      }, 1650);
-
-    } else {
-
-      const fallbackTimer = setTimeout(() => {
-
-        setBufferProgress(100);
-
-        setIsFullyLoaded(true);
-
-      }, 2000);
-
-      return () => clearTimeout(fallbackTimer);
-
-    }
-
-
+    // Safety timeout to ensure loader never hangs if user is offline or on ultra-slow connection
+    const safetyTimer = setTimeout(() => {
+      if (isCancelled) return;
+      clearInterval(interval);
+      setBufferProgress(100);
+      setIsLoaderExiting(true);
+      setIsFullyLoaded(true);
+      setTimeout(() => {
+        if (!isCancelled) setHasDismissedLoader(true);
+      }, 750);
+    }, MAX_TIMEOUT_MS);
 
     return () => {
-
-      clearTimeout(timer1);
-
-      clearTimeout(timer2);
-
-      clearTimeout(finishTimer);
-
+      isCancelled = true;
+      clearInterval(interval);
+      clearTimeout(safetyTimer);
     };
-
   }, [loading, config]);
 
 
@@ -777,13 +782,7 @@ const App: React.FC = () => {
 
 
 
-  if (!isFullyLoaded || loading || !config) {
-
-    return <WeddingLoader progress={bufferProgress} />;
-
-  }
-
-
+  const effectiveConfig = config || DEFAULT_FALLBACK_CONFIG;
 
   // On root endpoint (https://chandrikawedsxudong.com/) or general invitation, and for guests invited to Mehendi,
 
@@ -813,9 +812,9 @@ const App: React.FC = () => {
 
     <div className="selection:bg-accent/30 selection:text-primary relative min-h-screen overflow-x-clip bg-[#FAF5EB] text-[#2D2520] dark:bg-darkBg dark:text-[#FAF5EB] scroll-smooth">
 
-      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO */}
+      {/* 1. FIRST LANDING SITE: 100% FULL-SCREEN CINEMATIC VIDEO (Mounted immediately so poster & video buffer underneath loader!) */}
 
-      <VideoLanding config={config} videoSrc={landingVideoSrc} />
+      <VideoLanding config={effectiveConfig} videoSrc={landingVideoSrc} />
 
 
 
@@ -835,7 +834,7 @@ const App: React.FC = () => {
 
       <Hero
 
-        config={config}
+        config={effectiveConfig}
 
         personalizedGuestName={personalizedGuestName}
 
@@ -855,7 +854,7 @@ const App: React.FC = () => {
 
         onClose={() => setIsStoryOpen(false)}
 
-        slides={config.storySlides}
+        slides={effectiveConfig.storySlides}
 
       />
 
@@ -865,11 +864,11 @@ const App: React.FC = () => {
 
       <main className="relative z-10 space-y-0">
 
-        <CountdownSection config={config} allowedEvents={allowedEvents} />
+        <CountdownSection config={effectiveConfig} allowedEvents={allowedEvents} />
 
         <EventDetails
 
-          config={config}
+          config={effectiveConfig}
 
           allowedEvents={allowedEvents}
 
@@ -877,15 +876,15 @@ const App: React.FC = () => {
 
         />
 
-        <RSVPForm config={config} />
+        <RSVPForm config={effectiveConfig} />
 
-        <PhotoMusicSection config={config} />
+        <PhotoMusicSection config={effectiveConfig} />
 
       </main>
 
 
 
-      <MusicPlayer url={config.music.url} />
+      <MusicPlayer url={effectiveConfig.music.url} />
 
       <WeddingAIChatbot guestName={personalizedGuestName} />
       
@@ -935,11 +934,11 @@ const App: React.FC = () => {
 
             <h2 className="font-script text-6xl sm:text-8xl md:text-[10rem] leading-none text-[#231C18] py-2 drop-shadow-xl dark:text-white flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 text-center mx-auto">
 
-              <span>{config.couple.bride.name}</span>
+              <span>{effectiveConfig.couple.bride.name}</span>
 
               <span className="text-[#D4AF37] font-script font-normal text-5xl sm:text-7xl md:text-8xl">&amp;</span>
 
-              <span>{config.couple.groom.name}</span>
+              <span>{effectiveConfig.couple.groom.name}</span>
 
             </h2>
 
@@ -971,13 +970,13 @@ const App: React.FC = () => {
 
                 <p className="mx-auto max-w-2xl font-serif text-lg leading-relaxed text-balance text-[#5A4D43] italic md:text-3xl dark:text-slate-400">
 
-                  "{config.text.closing.text}"
+                  "{effectiveConfig.text.closing.text}"
 
                 </p>
 
                 <p className="font-serif text-xl font-medium text-[#231C18] dark:text-white">
 
-                  {config.text.closing.salam}
+                  {effectiveConfig.text.closing.salam}
 
                 </p>
 
@@ -1028,6 +1027,14 @@ const App: React.FC = () => {
         </div>
 
       </footer>
+
+      {/* SEAMLESS ROYAL WEDDING LOADER OVERLAY (Zero-white flash, buttery cross-dissolve) */}
+      {!hasDismissedLoader && (
+        <WeddingLoader
+          progress={bufferProgress}
+          isExiting={isLoaderExiting}
+        />
+      )}
 
     </div>
 

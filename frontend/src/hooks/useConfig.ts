@@ -46,6 +46,8 @@ const DEFAULT_RAW: Record<string, string> = {
   PLAYLIST_TRACKS: JSON.stringify(DEFAULT_PLAYLIST_TRACKS),
 };
 
+export const DEFAULT_FALLBACK_CONFIG = parseConfig(DEFAULT_RAW);
+
 let cache: { data: AppConfig; raw: Record<string, string> } | null = null;
 
 export function useConfig() {
