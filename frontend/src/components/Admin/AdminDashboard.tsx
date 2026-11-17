@@ -1,9 +1,13 @@
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Download,
   Edit,
+  Heart,
   Loader2,
+  MapPin,
   MessageCircle,
   Music,
   Printer,
@@ -11,11 +15,15 @@ import {
   Save,
   Search,
   Settings,
+  Sparkles,
   Trash2,
   UserCheck,
   UserPlus,
   Users,
   X,
+  Calendar,
+  Clock,
+  ShieldCheck,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { invalidateConfigCache } from "../../hooks/useConfig";
@@ -77,7 +85,7 @@ const DataTable = <T extends { id: number }>({
     setSelected([]);
   }, [data]);
 
-  const totalPages = Math.ceil(filteredData.length / pageSize);
+  const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
   const paginatedData = filteredData.slice(
     (page - 1) * pageSize,
     page * pageSize
@@ -116,7 +124,7 @@ const DataTable = <T extends { id: number }>({
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800"
+            className="rounded-xl border border-amber-900/15 bg-white px-3 py-2 text-xs font-medium text-amber-950 outline-none shadow-2xs focus:ring-2 focus:ring-amber-500/20"
           >
             {[5, 10, 25, 50].map((size) => (
               <option key={size} value={size}>
@@ -128,115 +136,100 @@ const DataTable = <T extends { id: number }>({
             <button
               type="button"
               onClick={executeBulkDelete}
-              className="flex items-center gap-2 rounded-lg bg-red-100 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+              className="flex items-center gap-1.5 rounded-xl bg-red-50 border border-red-200 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-100 transition cursor-pointer"
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete ({selected.length})
             </button>
           )}
         </div>
-        <div className="relative w-full md:w-64">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <div className="relative w-full md:w-72">
+          <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search records..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 py-2 pr-4 pl-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800"
+            className="w-full rounded-xl border border-amber-900/15 bg-white py-2 pr-4 pl-9 text-xs text-slate-800 outline-none shadow-2xs focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
           />
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <div className="overflow-hidden rounded-2xl border border-amber-900/10 bg-white shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-500 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#FAF7F2] text-[10px] font-bold text-amber-900/70 uppercase tracking-wider border-b border-amber-900/10">
               <tr>
-                {onBulkDelete && (
-                  <th className="w-4 px-6 py-4">
-                    <input
-                      type="checkbox"
-                      onChange={handleSelectAll}
-                      checked={
-                        paginatedData.length > 0 &&
-                        paginatedData.every((d) => selected.includes(d.id))
-                      }
-                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </th>
-                )}
+                <th className="w-10 px-4 py-3.5">
+                  <input
+                    type="checkbox"
+                    checked={
+                      paginatedData.length > 0 &&
+                      selected.length === paginatedData.length
+                    }
+                    onChange={handleSelectAll}
+                    className="h-3.5 w-3.5 rounded accent-amber-700"
+                  />
+                </th>
                 {columns.map((col, idx) => (
-                  <th
-                    key={idx}
-                    className={`px-6 py-4 font-bold ${col.className || ""}`}
-                  >
+                  <th key={idx} className={`px-4 py-3.5 ${col.className || ""}`}>
                     {col.header}
                   </th>
                 ))}
                 {(onEdit || onDelete) && (
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3.5 text-right">Actions</th>
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-amber-900/5">
               {paginatedData.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={
-                      columns.length + (onBulkDelete ? 2 : onEdit ? 1 : 0)
-                    }
-                    className="px-6 py-8 text-center text-slate-400"
+                    colSpan={columns.length + 2}
+                    className="py-12 text-center text-slate-400"
                   >
-                    No records found.
+                    No matching records found.
                   </td>
                 </tr>
               ) : (
                 paginatedData.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    className="hover:bg-amber-50/40 transition-colors"
                   >
-                    {onBulkDelete && (
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selected.includes(item.id)}
-                          onChange={() => handleSelectOne(item.id)}
-                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                        />
-                      </td>
-                    )}
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(item.id)}
+                        onChange={() => handleSelectOne(item.id)}
+                        className="h-3.5 w-3.5 rounded accent-amber-700"
+                      />
+                    </td>
                     {columns.map((col, idx) => (
-                      <td
-                        key={idx}
-                        className={`px-6 py-4 ${col.className || ""}`}
-                      >
+                      <td key={idx} className="px-4 py-3">
                         {typeof col.accessor === "function"
                           ? col.accessor(item)
-                          : (item[col.accessor] as React.ReactNode)}
+                          : (item[col.accessor] as any)}
                       </td>
                     ))}
                     {(onEdit || onDelete) && (
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           {onEdit && (
                             <button
-                              type="button"
                               onClick={() => onEdit(item)}
-                              className="rounded p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-amber-50 hover:text-amber-800 transition cursor-pointer"
+                              title="Edit item"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3.5 w-3.5" />
                             </button>
                           )}
                           {onDelete && (
                             <button
-                              type="button"
-                              onClick={() => {
-                                if (confirm("Are you sure you want to delete this record?"))
-                                  onDelete(item.id);
-                              }}
-                              className="rounded p-1.5 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                              onClick={() => onDelete(item.id)}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition cursor-pointer"
+                              title="Delete item"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           )}
                         </div>
@@ -248,323 +241,66 @@ const DataTable = <T extends { id: number }>({
             </tbody>
           </table>
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-xs text-slate-500">
-          Page {filteredData.length === 0 ? 0 : page} of {totalPages}{" "}
-          ({filteredData.length} total entries)
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setPage(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages || totalPages === 0}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
+        {/* Pagination Bar */}
+        <div className="flex items-center justify-between border-t border-amber-900/10 px-4 py-3 text-xs text-amber-900/70">
+          <div>
+            Showing{" "}
+            {filteredData.length === 0
+              ? 0
+              : (page - 1) * pageSize + 1}{" "}
+            to {Math.min(page * pageSize, filteredData.length)} of{" "}
+            {filteredData.length} records
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="rounded-lg p-1 text-slate-400 hover:bg-amber-50 disabled:opacity-30 cursor-pointer"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="px-2 font-medium">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="rounded-lg p-1 text-slate-400 hover:bg-amber-50 disabled:opacity-30 cursor-pointer"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-interface ConfigField {
-  key: string;
-  label: string;
-  type: "text" | "textarea" | "url" | "number" | "json";
-  placeholder?: string;
-}
-
-const CONFIG_SECTIONS: { title: string; fields: ConfigField[] }[] = [
-  {
-    title: "Bride Details",
-    fields: [
-      { key: "BRIDE_NICKNAME", label: "First Name / Nickname", type: "text" },
-      { key: "BRIDE_FULLNAME", label: "Full Name", type: "text" },
-      { key: "BRIDE_PARENTS", label: "Parents' Names", type: "text" },
-      { key: "BRIDE_INSTAGRAM", label: "Instagram (without @)", type: "text" },
-      { key: "BRIDE_IMAGE", label: "Photo URL", type: "url" },
-    ],
-  },
-  {
-    title: "Groom Details",
-    fields: [
-      { key: "GROOM_NICKNAME", label: "First Name / Nickname", type: "text" },
-      { key: "GROOM_FULLNAME", label: "Full Name", type: "text" },
-      { key: "GROOM_PARENTS", label: "Parents' Names", type: "text" },
-      { key: "GROOM_INSTAGRAM", label: "Instagram (without @)", type: "text" },
-      { key: "GROOM_IMAGE", label: "Photo URL", type: "url" },
-    ],
-  },
-  {
-    title: "Venue & Location",
-    fields: [
-      { key: "VENUE_NAME", label: "Venue Name", type: "text" },
-      { key: "VENUE_ADDRESS", label: "Full Address", type: "textarea" },
-      {
-        key: "VENUE_LAT",
-        label: "Latitude",
-        type: "text",
-        placeholder: "1.2838",
-      },
-      {
-        key: "VENUE_LNG",
-        label: "Longitude",
-        type: "text",
-        placeholder: "103.8591",
-      },
-    ],
-  },
-  {
-    title: "Ceremony & Function Timings",
-    fields: [
-      {
-        key: "TIME_MEHENDI",
-        label: "Mehendi Ceremony Timing",
-        type: "text",
-        placeholder: "04:00 PM onwards",
-      },
-      {
-        key: "TIME_HALDI",
-        label: "Haldi Ceremony Timing",
-        type: "text",
-        placeholder: "10:00 AM onwards",
-      },
-      {
-        key: "TIME_BARAAT",
-        label: "Baraat Procession Timing",
-        type: "text",
-        placeholder: "07:00 PM",
-      },
-      {
-        key: "TIME_WEDDING",
-        label: "Wedding Ceremony Timing",
-        type: "text",
-        placeholder: "08:30 PM",
-      },
-    ],
-  },
-  {
-    title: "Wedding Ceremony",
-    fields: [
-      { key: "AKAD_TITLE", label: "Ceremony Title", type: "text" },
-      { key: "AKAD_DAY", label: "Day", type: "text", placeholder: "Saturday" },
-      {
-        key: "AKAD_DATE",
-        label: "Date",
-        type: "text",
-        placeholder: "24 October 2026",
-      },
-      {
-        key: "AKAD_START",
-        label: "Start Time",
-        type: "text",
-        placeholder: "10:00",
-      },
-      {
-        key: "AKAD_END",
-        label: "End Time",
-        type: "text",
-        placeholder: "12:30",
-      },
-      {
-        key: "AKAD_ISO_START",
-        label: "ISO Start",
-        type: "text",
-        placeholder: "2026-10-24T10:00:00+08:00",
-      },
-      {
-        key: "AKAD_ISO_END",
-        label: "ISO End",
-        type: "text",
-        placeholder: "2026-10-24T12:30:00+08:00",
-      },
-    ],
-  },
-  {
-    title: "Reception & Celebration",
-    fields: [
-      { key: "RESEPSI_TITLE", label: "Reception Title", type: "text" },
-      {
-        key: "RESEPSI_DAY",
-        label: "Day",
-        type: "text",
-        placeholder: "Saturday",
-      },
-      {
-        key: "RESEPSI_DATE",
-        label: "Date",
-        type: "text",
-        placeholder: "24 October 2026",
-      },
-      {
-        key: "RESEPSI_START",
-        label: "Start Time",
-        type: "text",
-        placeholder: "18:30",
-      },
-      {
-        key: "RESEPSI_END",
-        label: "End Time",
-        type: "text",
-        placeholder: "22:30",
-      },
-      {
-        key: "RESEPSI_ISO_START",
-        label: "ISO Start",
-        type: "text",
-        placeholder: "2026-10-24T18:30:00+08:00",
-      },
-      {
-        key: "RESEPSI_ISO_END",
-        label: "ISO End",
-        type: "text",
-        placeholder: "2026-10-24T22:30:00+08:00",
-      },
-    ],
-  },
-  {
-    title: "Hero & Media",
-    fields: [
-      { key: "HERO_IMAGE", label: "Hero Image URL", type: "url" },
-      {
-        key: "HERO_CITY",
-        label: "City / Location",
-        type: "text",
-        placeholder: "Grand Crystal Ballroom, Crystal Bay",
-      },
-      { key: "MUSIC_URL", label: "Background Music URL (MP3)", type: "url" },
-      {
-        key: "RSVP_MAX_GUESTS",
-        label: "Max Guests per RSVP",
-        type: "number",
-        placeholder: "10",
-      },
-    ],
-  },
-  {
-    title: "Text & Content",
-    fields: [
-      { key: "TEXT_SALAM_OPENING", label: "Opening Salutation", type: "text" },
-      { key: "TEXT_QUOTE_AR_RUM", label: "Love Quote / Blessing Text", type: "textarea" },
-      {
-        key: "TEXT_QUOTE_SOURCE",
-        label: "Quote Source / Caption",
-        type: "text",
-        placeholder: "A Celebration of Love & Unity",
-      },
-      { key: "TEXT_INVITATION", label: "Invitation Message", type: "textarea" },
-      { key: "TEXT_CLOSING", label: "Closing Message", type: "textarea" },
-      { key: "TEXT_SALAM_CLOSING", label: "Closing Salutation", type: "text" },
-      {
-        key: "TEXT_SIGNATURE",
-        label: "Signature Sign-off",
-        type: "text",
-        placeholder: "Happily Ever After,",
-      },
-      {
-        key: "TEXT_FAMILY",
-        label: "Family Names",
-        type: "text",
-        placeholder: "The Families of Chandrika & Xudong",
-      },
-      {
-        key: "TEXT_GIFT_TITLE",
-        label: "Gift Section Title",
-        type: "text",
-        placeholder: "Wedding Blessings",
-      },
-      { key: "TEXT_GIFT_DESC", label: "Gift Section Description", type: "textarea" },
-    ],
-  },
-  {
-    title: "Bank & Registry Accounts",
-    fields: [
-      {
-        key: "BANK_ACCOUNTS",
-        label: 'JSON Array [{"bank":"...","number":"...","name":"..."}]',
-        type: "json",
-      },
-    ],
-  },
-  {
-    title: "Love Story Timeline",
-    fields: [
-      {
-        key: "LOVE_STORY",
-        label: 'JSON Array [{"date":"...","title":"...","desc":"..."}]',
-        type: "json",
-      },
-    ],
-  },
-  {
-    title: "Photo Gallery",
-    fields: [
-      {
-        key: "GALLERY_IMAGES",
-        label: 'JSON Array ["url1","url2",...]',
-        type: "json",
-      },
-    ],
-  },
-  {
-    title: "Telegram Notifications",
-    fields: [
-      {
-        key: "TELEGRAM_BOT_TOKEN",
-        label: "Bot Token",
-        type: "text",
-        placeholder: "123456:ABC...",
-      },
-      {
-        key: "TELEGRAM_CHAT_ID",
-        label: "Chat ID",
-        type: "text",
-        placeholder: "7671009829",
-      },
-    ],
-  },
-  {
-    title: "Playlist Tracks (Raw JSON)",
-    fields: [
-      {
-        key: "PLAYLIST_TRACKS",
-        label: 'JSON Array of Songs [{"id": "...", "title": "...", "artist": "...", "src": "...", "poster": "...", "mainColor": "...", "tag": "..."}, ...]',
-        type: "json",
-      },
-    ],
-  },
-];
+// -------------------------------------------------------------
+// Human-Friendly Settings Tab (Zero Raw JSON Required)
+// -------------------------------------------------------------
 
 const SettingsTab: React.FC = () => {
   const [rawConfig, setRawConfig] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch("/api/config/full", { credentials: "include" })
       .then((r) => r.json())
       .then((full) => {
-        setRawConfig(full);
+        setRawConfig(full || {});
         setLoading(false);
       })
       .catch(() => {
         fetch("/api/config", { credentials: "include" })
           .then((r) => r.json())
           .then((data) => {
-            setRawConfig(data);
+            setRawConfig(data || {});
             setLoading(false);
           });
       });
@@ -586,7 +322,7 @@ const SettingsTab: React.FC = () => {
       JSON.parse(value);
       return true;
     } catch {
-      setJsonErrors((prev) => ({ ...prev, [key]: "Invalid JSON" }));
+      setJsonErrors((prev) => ({ ...prev, [key]: "Invalid JSON format" }));
       return false;
     }
   };
@@ -621,25 +357,33 @@ const SettingsTab: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-amber-700" />
+        <p className="mt-3 text-xs font-medium text-amber-900/60">Loading wedding details...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Changes will take effect immediately once saved.
-        </p>
+    <div className="space-y-6">
+      {/* Top Banner & Save Action */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-3xl border border-amber-900/10 bg-white p-5 sm:p-6 shadow-xs">
+        <div>
+          <h2 className="font-serif text-xl font-bold italic text-[#231C18]">
+            Wedding Details &amp; Schedule
+          </h2>
+          <p className="mt-1 text-xs text-amber-900/60">
+            Edit couple information, ceremony times, and venue details. Changes take effect on the invitation immediately.
+          </p>
+        </div>
+
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all disabled:opacity-50 ${
+          className={`flex items-center gap-2 rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer ${
             saved
-              ? "bg-green-500"
-              : "bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+              ? "bg-emerald-600 shadow-emerald-600/20"
+              : "bg-gradient-to-r from-[#8C1D24] to-[#750D14] hover:from-[#750D14] hover:to-[#5E0A10] shadow-[#8C1D24]/20"
           }`}
         >
           {saving ? (
@@ -647,71 +391,508 @@ const SettingsTab: React.FC = () => {
           ) : (
             <Save className="h-4 w-4" />
           )}
-          {saved ? "Saved!" : "Save All"}
+          {saved ? "Saved Successfully!" : "Save All Changes"}
         </button>
       </div>
 
-      {CONFIG_SECTIONS.map((section) => (
-        <div
-          key={section.title}
-          className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
-        >
-          <h3 className="mb-6 font-serif text-lg font-bold text-slate-800 italic dark:text-white">
-            {section.title}
+      {/* Card 1: The Couple */}
+      <div className="rounded-3xl border border-amber-900/10 bg-white p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-amber-900/10 pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+            <Heart className="h-3.5 w-3.5" />
+          </span>
+          <h3 className="font-serif text-lg font-bold italic text-[#231C18]">
+            The Couple
           </h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            {section.fields.map((field) => (
-              <div
-                key={field.key}
-                className={
-                  field.type === "textarea" || field.type === "json"
-                    ? "md:col-span-2"
-                    : ""
-                }
-              >
-                <label className="mb-1.5 block text-[11px] font-bold tracking-widest text-slate-400 uppercase dark:text-slate-500">
-                  {field.label}
-                </label>
-                {field.type === "textarea" || field.type === "json" ? (
-                  <textarea
-                    value={rawConfig[field.key] ?? ""}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    placeholder={field.placeholder}
-                    rows={field.type === "json" ? 5 : 3}
-                    className={`w-full rounded-lg border bg-slate-50 px-4 py-3 font-mono text-sm transition-all outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-900 dark:text-white ${
-                      jsonErrors[field.key]
-                        ? "border-red-400 dark:border-red-500"
-                        : "border-slate-200 dark:border-slate-700"
-                    }`}
-                  />
-                ) : (
-                  <input
-                    type={field.type === "number" ? "number" : "text"}
-                    value={rawConfig[field.key] ?? ""}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm transition-all outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                  />
-                )}
-                {jsonErrors[field.key] && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {jsonErrors[field.key]}
-                  </p>
-                )}
-              </div>
-            ))}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Bride Nickname / First Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.BRIDE_NICKNAME ?? ""}
+              onChange={(e) => handleChange("BRIDE_NICKNAME", e.target.value)}
+              placeholder="e.g. Chandrika"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Bride Full Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.BRIDE_FULLNAME ?? ""}
+              onChange={(e) => handleChange("BRIDE_FULLNAME", e.target.value)}
+              placeholder="e.g. Chandrika Rawat"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Groom Nickname / First Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.GROOM_NICKNAME ?? ""}
+              onChange={(e) => handleChange("GROOM_NICKNAME", e.target.value)}
+              placeholder="e.g. Xudong"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Groom Full Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.GROOM_FULLNAME ?? ""}
+              onChange={(e) => handleChange("GROOM_FULLNAME", e.target.value)}
+              placeholder="e.g. Xudong Wang"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Bride&apos;s Parents
+            </label>
+            <input
+              type="text"
+              value={rawConfig.BRIDE_PARENTS ?? ""}
+              onChange={(e) => handleChange("BRIDE_PARENTS", e.target.value)}
+              placeholder="e.g. Beloved daughter of Mr. &amp; Mrs. Sharma"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Groom&apos;s Parents
+            </label>
+            <input
+              type="text"
+              value={rawConfig.GROOM_PARENTS ?? ""}
+              onChange={(e) => handleChange("GROOM_PARENTS", e.target.value)}
+              placeholder="e.g. Beloved son of Mr. &amp; Mrs. Wang"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Bride Instagram (without @)
+            </label>
+            <input
+              type="text"
+              value={rawConfig.BRIDE_INSTAGRAM ?? ""}
+              onChange={(e) => handleChange("BRIDE_INSTAGRAM", e.target.value)}
+              placeholder="e.g. chandrika_r"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Groom Instagram (without @)
+            </label>
+            <input
+              type="text"
+              value={rawConfig.GROOM_INSTAGRAM ?? ""}
+              onChange={(e) => handleChange("GROOM_INSTAGRAM", e.target.value)}
+              placeholder="e.g. xudong_w"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
           </div>
         </div>
-      ))}
+      </div>
 
-      <div className="flex justify-end pb-8">
+      {/* Card 2: Venue & Location */}
+      <div className="rounded-3xl border border-amber-900/10 bg-white p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-amber-900/10 pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+            <MapPin className="h-3.5 w-3.5" />
+          </span>
+          <h3 className="font-serif text-lg font-bold italic text-[#231C18]">
+            Wedding Venue &amp; Location
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Venue Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.VENUE_NAME ?? ""}
+              onChange={(e) => handleChange("VENUE_NAME", e.target.value)}
+              placeholder="e.g. The Club International"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Full Address
+            </label>
+            <textarea
+              rows={2}
+              value={rawConfig.VENUE_ADDRESS ?? ""}
+              onChange={(e) => handleChange("VENUE_ADDRESS", e.target.value)}
+              placeholder="e.g. Sector 109, Palam Vihar, Gurugram, Haryana 122017"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+                Map Latitude
+              </label>
+              <input
+                type="text"
+                value={rawConfig.VENUE_LAT ?? ""}
+                onChange={(e) => handleChange("VENUE_LAT", e.target.value)}
+                placeholder="28.5134"
+                className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs font-mono text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+                Map Longitude
+              </label>
+              <input
+                type="text"
+                value={rawConfig.VENUE_LNG ?? ""}
+                onChange={(e) => handleChange("VENUE_LNG", e.target.value)}
+                placeholder="77.0275"
+                className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs font-mono text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 3: Ceremony Schedule & Timings */}
+      <div className="rounded-3xl border border-amber-900/10 bg-white p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-amber-900/10 pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="h-3.5 w-3.5" />
+          </span>
+          <h3 className="font-serif text-lg font-bold italic text-[#231C18]">
+            Ceremony Schedule &amp; Timings
+          </h3>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              🌿 Mehendi Ceremony
+            </label>
+            <input
+              type="text"
+              value={rawConfig.TIME_MEHENDI ?? ""}
+              onChange={(e) => handleChange("TIME_MEHENDI", e.target.value)}
+              placeholder="e.g. 10:00 AM or 04:00 PM onwards"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              🌼 Haldi Ceremony
+            </label>
+            <input
+              type="text"
+              value={rawConfig.TIME_HALDI ?? ""}
+              onChange={(e) => handleChange("TIME_HALDI", e.target.value)}
+              placeholder="e.g. 03:00 PM onwards"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              🎺 Baraat Procession
+            </label>
+            <input
+              type="text"
+              value={rawConfig.TIME_BARAAT ?? ""}
+              onChange={(e) => handleChange("TIME_BARAAT", e.target.value)}
+              placeholder="e.g. 07:00 PM"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              👑 Wedding Ceremony (Mandap &amp; Pheras)
+            </label>
+            <input
+              type="text"
+              value={rawConfig.TIME_WEDDING ?? ""}
+              onChange={(e) => handleChange("TIME_WEDDING", e.target.value)}
+              placeholder="e.g. 08:30 PM"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Wedding Day &amp; Date
+            </label>
+            <input
+              type="text"
+              value={rawConfig.AKAD_DATE ?? ""}
+              onChange={(e) => handleChange("AKAD_DATE", e.target.value)}
+              placeholder="e.g. 15 February 2027"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Wedding Day Name
+            </label>
+            <input
+              type="text"
+              value={rawConfig.AKAD_DAY ?? ""}
+              onChange={(e) => handleChange("AKAD_DAY", e.target.value)}
+              placeholder="e.g. Monday"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Card 4: Greetings & Love Quotes */}
+      <div className="rounded-3xl border border-amber-900/10 bg-white p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-amber-900/10 pb-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+            <Sparkles className="h-3.5 w-3.5" />
+          </span>
+          <h3 className="font-serif text-lg font-bold italic text-[#231C18]">
+            Greetings &amp; Blessing Quotes
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Opening Salutation
+            </label>
+            <input
+              type="text"
+              value={rawConfig.TEXT_SALAM_OPENING ?? ""}
+              onChange={(e) => handleChange("TEXT_SALAM_OPENING", e.target.value)}
+              placeholder="e.g. Together with our families, we cordially invite you"
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Love Quote / Blessing Text
+            </label>
+            <textarea
+              rows={3}
+              value={rawConfig.TEXT_QUOTE_AR_RUM ?? ""}
+              onChange={(e) => handleChange("TEXT_QUOTE_AR_RUM", e.target.value)}
+              placeholder="Two souls with but a single thought, two hearts that beat as one..."
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+                Quote Caption / Title
+              </label>
+              <input
+                type="text"
+                value={rawConfig.TEXT_QUOTE_SOURCE ?? ""}
+                onChange={(e) => handleChange("TEXT_QUOTE_SOURCE", e.target.value)}
+                placeholder="A Celebration of Love &amp; Unity"
+                className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+                Family Signature Sign-Off
+              </label>
+              <input
+                type="text"
+                value={rawConfig.TEXT_FAMILY ?? ""}
+                onChange={(e) => handleChange("TEXT_FAMILY", e.target.value)}
+                placeholder="e.g. Warmly Hosted by Aditya Rawat &amp; Family"
+                className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Invitation Note
+            </label>
+            <textarea
+              rows={2}
+              value={rawConfig.TEXT_INVITATION ?? ""}
+              onChange={(e) => handleChange("TEXT_INVITATION", e.target.value)}
+              placeholder="With immense joy and grateful hearts, we invite you to share in our happiness..."
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900/70 mb-1">
+              Closing Thank You Message
+            </label>
+            <textarea
+              rows={2}
+              value={rawConfig.TEXT_CLOSING ?? ""}
+              onChange={(e) => handleChange("TEXT_CLOSING", e.target.value)}
+              placeholder="Your blessings, presence, and prayers mean everything to us..."
+              className="w-full rounded-xl border border-amber-900/15 bg-white p-3 text-xs text-slate-800 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Card 5: Optional Advanced Settings (Collapsible) */}
+      <div className="rounded-3xl border border-amber-900/10 bg-white overflow-hidden shadow-xs">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-amber-50/40 transition cursor-pointer"
+        >
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+              <Settings className="h-3.5 w-3.5" />
+            </span>
+            <div>
+              <h3 className="font-serif text-base font-bold italic text-[#231C18]">
+                Advanced Developer &amp; Automation Settings
+              </h3>
+              <p className="text-[11px] text-slate-400">
+                Optional: Telegram notification bot tokens, raw JSON arrays, and ISO timestamps.
+              </p>
+            </div>
+          </div>
+          {showAdvanced ? (
+            <ChevronUp className="h-4 w-4 text-slate-400" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-slate-400" />
+          )}
+        </button>
+
+        {showAdvanced && (
+          <div className="p-6 pt-0 border-t border-amber-900/10 space-y-4">
+            <div className="rounded-xl bg-amber-50/70 p-3.5 border border-amber-200/50 text-[11px] text-amber-800">
+              Note: These fields configure background integrations and raw widgets. Regular hosts do not need to change these.
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  Telegram Bot Token
+                </label>
+                <input
+                  type="text"
+                  value={rawConfig.TELEGRAM_BOT_TOKEN ?? ""}
+                  onChange={(e) => handleChange("TELEGRAM_BOT_TOKEN", e.target.value)}
+                  placeholder="123456:ABC..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-mono outline-none focus:border-amber-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  Telegram Chat ID
+                </label>
+                <input
+                  type="text"
+                  value={rawConfig.TELEGRAM_CHAT_ID ?? ""}
+                  onChange={(e) => handleChange("TELEGRAM_CHAT_ID", e.target.value)}
+                  placeholder="7671009829"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-mono outline-none focus:border-amber-600"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                Bank &amp; Registry Accounts (JSON)
+              </label>
+              <textarea
+                rows={3}
+                value={rawConfig.BANK_ACCOUNTS ?? ""}
+                onChange={(e) => handleChange("BANK_ACCOUNTS", e.target.value)}
+                placeholder="[]"
+                className={`w-full rounded-xl border bg-slate-50 p-3 text-xs font-mono outline-none ${
+                  jsonErrors.BANK_ACCOUNTS ? "border-red-400" : "border-slate-200"
+                }`}
+              />
+              {jsonErrors.BANK_ACCOUNTS && (
+                <p className="mt-1 text-[11px] text-red-600">{jsonErrors.BANK_ACCOUNTS}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                Love Story Timeline (JSON)
+              </label>
+              <textarea
+                rows={3}
+                value={rawConfig.LOVE_STORY ?? ""}
+                onChange={(e) => handleChange("LOVE_STORY", e.target.value)}
+                placeholder="[]"
+                className={`w-full rounded-xl border bg-slate-50 p-3 text-xs font-mono outline-none ${
+                  jsonErrors.LOVE_STORY ? "border-red-400" : "border-slate-200"
+                }`}
+              />
+              {jsonErrors.LOVE_STORY && (
+                <p className="mt-1 text-[11px] text-red-600">{jsonErrors.LOVE_STORY}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                Photo Gallery (JSON)
+              </label>
+              <textarea
+                rows={3}
+                value={rawConfig.GALLERY_IMAGES ?? ""}
+                onChange={(e) => handleChange("GALLERY_IMAGES", e.target.value)}
+                placeholder="[]"
+                className={`w-full rounded-xl border bg-slate-50 p-3 text-xs font-mono outline-none ${
+                  jsonErrors.GALLERY_IMAGES ? "border-red-400" : "border-slate-200"
+                }`}
+              />
+              {jsonErrors.GALLERY_IMAGES && (
+                <p className="mt-1 text-[11px] text-red-600">{jsonErrors.GALLERY_IMAGES}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Save Action */}
+      <div className="flex justify-end pt-2 pb-8">
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-bold text-white shadow-lg transition-all disabled:opacity-50 ${
+          className={`flex items-center gap-2 rounded-xl px-8 py-3 text-xs font-bold text-white shadow-md transition-all cursor-pointer ${
             saved
-              ? "bg-green-500"
-              : "bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+              ? "bg-emerald-600 shadow-emerald-600/20"
+              : "bg-gradient-to-r from-[#8C1D24] to-[#750D14] hover:from-[#750D14] hover:to-[#5E0A10] shadow-[#8C1D24]/20"
           }`}
         >
           {saving ? (
@@ -719,14 +900,18 @@ const SettingsTab: React.FC = () => {
           ) : (
             <Save className="h-4 w-4" />
           )}
-          {saved ? "Saved!" : "Save All"}
+          {saved ? "Saved Successfully!" : "Save All Changes"}
         </button>
       </div>
     </div>
   );
 };
 
-const AdminDashboard = ({
+// -------------------------------------------------------------
+// Main Admin Dashboard Component (5 Human-Friendly Categories)
+// -------------------------------------------------------------
+
+export const AdminDashboard = ({
   initialRsvps,
   initialWishes,
   siteUrl,
@@ -736,8 +921,15 @@ const AdminDashboard = ({
   siteUrl: string;
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "guests" | "rsvp" | "wishes" | "music" | "qr" | "pdf" | "settings"
+    "guests" | "wishes" | "music" | "print" | "settings"
   >("guests");
+
+  // Guests sub-view: VIP Personalized vs Open Public RSVPs
+  const [guestSubTab, setGuestSubTab] = useState<"vip" | "public">("vip");
+
+  // Print sub-view: Table QR codes vs Printable PDF cards
+  const [printSubTab, setPrintSubTab] = useState<"qr" | "pdf">("qr");
+
   const [rsvps, setRsvps] = useState(initialRsvps);
   const [wishes, setWishes] = useState(initialWishes);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -803,146 +995,211 @@ const AdminDashboard = ({
   };
 
   const tabs = [
-    { id: "guests", label: "Guests & Invitations", icon: UserCheck },
-    { id: "rsvp", label: "Public RSVPs", icon: Users },
-    { id: "wishes", label: "Wishes & Blessings", icon: MessageCircle },
+    { id: "guests", label: "Guests & Invitations", icon: Users },
+    { id: "wishes", label: "Wishes & Blessings", icon: Heart },
     { id: "music", label: "Music & Songs", icon: Music },
-    { id: "qr", label: "QR Generator", icon: QrCode },
-    { id: "pdf", label: "Design PDF", icon: Printer },
-    { id: "settings", label: "Settings", icon: Settings },
+    { id: "print", label: "Print & QR Codes", icon: Printer },
+    { id: "settings", label: "Wedding Details", icon: Settings },
   ];
 
   return (
     <div>
       {isDeleting && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="flex items-center gap-4 rounded-xl bg-white p-6 shadow-2xl">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <span className="text-lg font-bold text-slate-700">
-              Deleting Data...
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xs">
+          <div className="flex items-center gap-3 rounded-2xl bg-white p-6 shadow-2xl">
+            <Loader2 className="h-6 w-6 animate-spin text-amber-700" />
+            <span className="text-sm font-bold text-slate-800">
+              Removing record...
             </span>
           </div>
         </div>
       )}
 
-      <div className="mb-8 flex gap-2 overflow-x-auto border-b border-slate-200 pb-1 dark:border-slate-700">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 border-b-2 px-6 py-3 text-sm font-bold whitespace-nowrap transition-colors ${
-              activeTab === tab.id
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-            }`}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </button>
-        ))}
+      {/* 5 Main Category Tabs */}
+      <div className="mb-6 flex gap-1.5 overflow-x-auto rounded-2xl bg-amber-900/5 p-1.5 border border-amber-900/10">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                isActive
+                  ? "bg-gradient-to-r from-[#8C1D24] to-[#750D14] text-white shadow-md shadow-[#8C1D24]/20"
+                  : "text-amber-950/70 hover:text-amber-950 hover:bg-amber-900/5"
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
+      {/* Tab 1: Guests & Invitations */}
       {activeTab === "guests" && (
-        <div className="animate-reveal">
-          <GuestManager />
-        </div>
-      )}
-
-      {activeTab === "rsvp" && (
-        <div className="animate-reveal space-y-6">
-          <div className="flex justify-end">
-            <a
-              href="/api/export-rsvp"
-              target="_blank"
-              className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-green-700"
-            >
-              <Download className="h-4 w-4" /> EXPORT CSV
-            </a>
+        <div className="space-y-4">
+          {/* Sub-view switcher for Personalized vs Public RSVPs */}
+          <div className="flex items-center justify-between pb-1">
+            <div className="inline-flex rounded-xl bg-white border border-amber-900/10 p-1 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setGuestSubTab("vip")}
+                className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                  guestSubTab === "vip"
+                    ? "bg-amber-100/70 text-amber-950 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Users className="h-3.5 w-3.5" /> Personalized Guest Invitations
+              </button>
+              <button
+                type="button"
+                onClick={() => setGuestSubTab("public")}
+                className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                  guestSubTab === "public"
+                    ? "bg-amber-100/70 text-amber-950 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <UserCheck className="h-3.5 w-3.5" /> Public Website RSVPs ({rsvps.length})
+              </button>
+            </div>
           </div>
-          <DataTable
-            data={rsvps}
-            columns={[
-              {
-                header: "Guest Name",
-                accessor: "guest_name",
-                className: "font-medium",
-              },
-              {
-                header: "Attendance",
-                accessor: (item) => (
-                  <span
-                    className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${
-                      item.attendance === "hadir"
-                        ? "bg-green-100 text-green-700"
-                        : item.attendance === "tidak_hadir"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    {item.attendance === "hadir"
-                      ? "Attending"
-                      : item.attendance === "tidak_hadir"
-                        ? "Not Attending"
-                        : "Tentative"}
-                  </span>
-                ),
-              },
-              { header: "Guests", accessor: "guest_count" },
-              {
-                header: "Message",
-                accessor: (item) => (
-                  <span className="block max-w-[200px] truncate text-slate-500">
-                    {item.message}
-                  </span>
-                ),
-              },
-              {
-                header: "Date",
-                accessor: (item) =>
-                  new Date(item.created_at).toLocaleDateString("en-US"),
-              },
-            ]}
-            onEdit={(item) => {
-              setEditingItem(item);
-              setIsModalOpen(true);
-            }}
-            onDelete={(id) => handleDelete("rsvp", [id])}
-            onBulkDelete={(ids) => handleDelete("rsvp", ids)}
-          />
+
+          {guestSubTab === "vip" ? (
+            <GuestManager />
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-900/10 bg-white p-4 shadow-xs">
+                <div>
+                  <h3 className="font-serif text-base font-bold italic text-[#231C18]">
+                    Public Website RSVP Submissions
+                  </h3>
+                  <p className="text-xs text-amber-900/60">
+                    Responses received directly from the open RSVP form on the website.
+                  </p>
+                </div>
+                <a
+                  href="/api/export-rsvp"
+                  target="_blank"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
+                >
+                  <Download className="h-3.5 w-3.5" /> Export CSV
+                </a>
+              </div>
+
+              <DataTable
+                data={rsvps}
+                columns={[
+                  {
+                    header: "Guest Name",
+                    accessor: "guest_name",
+                    className: "font-semibold text-slate-900",
+                  },
+                  {
+                    header: "Attendance",
+                    accessor: (item) => (
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          item.attendance === "hadir"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : item.attendance === "tidak_hadir"
+                            ? "bg-rose-100 text-rose-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {item.attendance === "hadir"
+                          ? "Attending"
+                          : item.attendance === "tidak_hadir"
+                          ? "Cannot Attend"
+                          : "Tentative"}
+                      </span>
+                    ),
+                  },
+                  {
+                    header: "Pax",
+                    accessor: (item) => (
+                      <span className="font-medium text-slate-700">
+                        {item.guest_count}
+                      </span>
+                    ),
+                  },
+                  {
+                    header: "Message",
+                    accessor: (item) => (
+                      <span className="block max-w-[240px] truncate text-slate-500 italic">
+                        {item.message ? `"${item.message}"` : "—"}
+                      </span>
+                    ),
+                  },
+                  {
+                    header: "Date",
+                    accessor: (item) =>
+                      new Date(item.created_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }),
+                  },
+                ]}
+                onEdit={(item) => {
+                  setEditingItem(item);
+                  setIsModalOpen(true);
+                }}
+                onDelete={(id) => handleDelete("rsvp", [id])}
+                onBulkDelete={(ids) => handleDelete("rsvp", ids)}
+              />
+            </div>
+          )}
         </div>
       )}
 
+      {/* Tab 2: Wishes & Blessings */}
       {activeTab === "wishes" && (
-        <div className="animate-reveal space-y-6">
-          <div className="flex justify-end">
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-900/10 bg-white p-4 shadow-xs">
+            <div>
+              <h3 className="font-serif text-base font-bold italic text-[#231C18]">
+                Wishes &amp; Blessings
+              </h3>
+              <p className="text-xs text-amber-900/60">
+                Heartfelt messages and blessings shared by your wedding guests.
+              </p>
+            </div>
             <a
               href="/api/export-wishes"
               target="_blank"
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
             >
-              <Download className="h-4 w-4" /> EXPORT CSV
+              <Download className="h-3.5 w-3.5" /> Export CSV
             </a>
           </div>
+
           <DataTable
             data={wishes}
             columns={[
               {
                 header: "Sender Name",
                 accessor: "name",
-                className: "font-medium",
+                className: "font-semibold text-slate-900",
               },
               {
                 header: "Blessing / Message",
                 accessor: (item) => (
-                  <span className="block max-w-[300px] text-wrap text-slate-500 italic">
-                    "{item.message}"
+                  <span className="block max-w-[350px] text-slate-600 italic">
+                    &ldquo;{item.message}&rdquo;
                   </span>
                 ),
               },
               {
                 header: "Date",
                 accessor: (item) =>
-                  new Date(item.created_at).toLocaleDateString("en-US"),
+                  new Date(item.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }),
               },
             ]}
             onEdit={(item) => {
@@ -955,37 +1212,71 @@ const AdminDashboard = ({
         </div>
       )}
 
+      {/* Tab 3: Music & Songs */}
       {activeTab === "music" && (
-        <div className="animate-reveal">
+        <div>
           <MusicManager />
         </div>
       )}
 
-      {activeTab === "qr" && (
-        <div className="animate-reveal rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <QRCodeManager siteUrl={siteUrl} />
+      {/* Tab 4: Print & QR Codes (Combined) */}
+      {activeTab === "print" && (
+        <div className="space-y-4">
+          <div className="inline-flex rounded-xl bg-white border border-amber-900/10 p-1 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setPrintSubTab("qr")}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                printSubTab === "qr"
+                  ? "bg-amber-100/70 text-amber-950 shadow-2xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <QrCode className="h-3.5 w-3.5" /> 📌 Table Stand QR Codes
+            </button>
+            <button
+              type="button"
+              onClick={() => setPrintSubTab("pdf")}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                printSubTab === "pdf"
+                  ? "bg-amber-100/70 text-amber-950 shadow-2xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <Printer className="h-3.5 w-3.5" /> 💌 Printable Invitation Cards (PDF)
+            </button>
+          </div>
+
+          <div className="rounded-3xl border border-amber-900/10 bg-white p-6 sm:p-8 shadow-xs">
+            {printSubTab === "qr" ? (
+              <QRCodeManager siteUrl={siteUrl} />
+            ) : (
+              <InvitationManager siteUrl={siteUrl} />
+            )}
+          </div>
         </div>
       )}
 
-      {activeTab === "pdf" && (
-        <div className="animate-reveal rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <InvitationManager siteUrl={siteUrl} />
-        </div>
-      )}
-
+      {/* Tab 5: Wedding Details */}
       {activeTab === "settings" && (
-        <div className="animate-reveal">
+        <div>
           <SettingsTab />
         </div>
       )}
 
+      {/* Edit Entry Modal */}
       {isModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold dark:text-white">Edit Entry</h3>
-              <button onClick={() => setIsModalOpen(false)}>
-                <X className="h-5 w-5 text-slate-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-serif text-lg font-bold italic text-slate-900">
+                Edit {guestSubTab === "public" ? "RSVP" : "Wish"}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="rounded-full p-1 text-slate-400 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="h-5 w-5" />
               </button>
             </div>
             <form
@@ -994,110 +1285,110 @@ const AdminDashboard = ({
                 const formData = new FormData(e.currentTarget);
                 const data = Object.fromEntries(formData.entries());
                 handleUpdate(
-                  activeTab === "rsvp" ? "rsvp" : "wish",
+                  guestSubTab === "public" ? "rsvp" : "wish",
                   editingItem.id,
                   data
                 );
               }}
               className="space-y-4"
             >
-              {activeTab === "rsvp" ? (
+              {guestSubTab === "public" ? (
                 <>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                       Guest Name
                     </label>
                     <input
                       name="guest_name"
                       defaultValue={editingItem.guest_name}
-                      className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
                       required
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-500 uppercase">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                         Attendance
                       </label>
                       <select
                         name="attendance"
                         defaultValue={editingItem.attendance}
-                        className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
                       >
                         <option value="hadir">Attending</option>
                         <option value="ragu">Tentative</option>
-                        <option value="tidak_hadir">Not Attending</option>
+                        <option value="tidak_hadir">Cannot Attend</option>
                       </select>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-500 uppercase">
-                        Guests
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        Guests (Pax)
                       </label>
                       <input
                         type="number"
                         name="guest_count"
                         defaultValue={editingItem.guest_count}
                         min={1}
-                        className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
                       />
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                       Message
                     </label>
                     <textarea
                       name="message"
                       defaultValue={editingItem.message}
-                      className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
                       rows={3}
                     />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                       Sender Name
                     </label>
                     <input
                       name="name"
                       defaultValue={editingItem.name}
-                      className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
                       required
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                       Blessing / Message
                     </label>
                     <textarea
                       name="message"
                       defaultValue={editingItem.message}
-                      className="w-full rounded-lg border p-2 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                      rows={5}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs outline-none focus:border-amber-600"
+                      rows={4}
                       required
                     />
                   </div>
                 </>
               )}
-              <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
+              <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#8C1D24] to-[#750D14] px-5 py-2 text-xs font-bold text-white shadow-md hover:from-[#750D14] hover:to-[#5E0A10] disabled:opacity-50 cursor-pointer"
                 >
                   {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <Save className="h-3.5 w-3.5" />
                   )}
                   Save Changes
                 </button>

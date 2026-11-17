@@ -66,6 +66,75 @@ MOCK_CONFIG = {
 }
 
 # In-memory mock RSVPs and Wishes for testing
+MOCK_GUESTS = [
+    {
+        "id": 1,
+        "name": "The Rawat Family",
+        "type": "FAMILY",
+        "token": "rawat-family",
+        "rsvpLink": "http://localhost:3000/rsvp/rawat-family",
+        "status": "ACTIVE",
+        "rsvpStatus": "ATTENDING",
+        "members": [
+            {"id": 1, "name": "Aditya Rawat", "attending": True},
+            {"id": 2, "name": "Sunita Rawat", "attending": True},
+            {"id": 3, "name": "Virendra Rawat", "attending": True}
+        ],
+        "allowedEvents": ["MEHENDI", "HALDI", "WEDDING"],
+        "message": "Looking forward to celebrating together!",
+        "createdAt": "2026-11-15T10:00:00Z",
+        "respondedAt": "2026-11-16T14:30:00Z"
+    },
+    {
+        "id": 2,
+        "name": "The Wang Family",
+        "type": "FAMILY",
+        "token": "wang-family",
+        "rsvpLink": "http://localhost:3000/rsvp/wang-family",
+        "status": "ACTIVE",
+        "rsvpStatus": "ATTENDING",
+        "members": [
+            {"id": 4, "name": "Mr. Wang", "attending": True},
+            {"id": 5, "name": "Mrs. Wang", "attending": True}
+        ],
+        "allowedEvents": ["MEHENDI", "HALDI", "WEDDING"],
+        "message": "Very excited for this royal union!",
+        "createdAt": "2026-11-15T11:00:00Z",
+        "respondedAt": "2026-11-16T15:00:00Z"
+    },
+    {
+        "id": 3,
+        "name": "Priya & Rohan Sharma",
+        "type": "FAMILY",
+        "token": "priya-rohan",
+        "rsvpLink": "http://localhost:3000/rsvp/priya-rohan",
+        "status": "ACTIVE",
+        "rsvpStatus": "PENDING",
+        "members": [
+            {"id": 6, "name": "Priya Sharma", "attending": False},
+            {"id": 7, "name": "Rohan Sharma", "attending": False}
+        ],
+        "allowedEvents": ["HALDI", "WEDDING"],
+        "createdAt": "2026-11-15T12:00:00Z"
+    },
+    {
+        "id": 4,
+        "name": "Dr. Amitabh Sen",
+        "type": "INDIVIDUAL",
+        "token": "amitabh-sen",
+        "rsvpLink": "http://localhost:3000/rsvp/amitabh-sen",
+        "status": "ACTIVE",
+        "rsvpStatus": "NOT_ATTENDING",
+        "members": [
+            {"id": 8, "name": "Dr. Amitabh Sen", "attending": False}
+        ],
+        "allowedEvents": ["WEDDING"],
+        "message": "Heartiest congratulations! Unfortunately traveling overseas.",
+        "createdAt": "2026-11-15T12:30:00Z",
+        "respondedAt": "2026-11-16T18:00:00Z"
+    }
+]
+
 MOCK_RSVPS = [
     {
         "id": 1,
@@ -112,7 +181,7 @@ class UATRequestHandler(BaseHTTPRequestHandler):
     def end_headers_with_cors(self, content_type="application/json"):
         self.send_header("Content-Type", content_type)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Admin-Key")
         self.send_header("X-UAT-Environment", "View-Only-Local-Sandbox")
         self.end_headers()
@@ -133,6 +202,13 @@ class UATRequestHandler(BaseHTTPRequestHandler):
             return
 
         # 2. API: /api/rsvp
+                # 2b. API: /api/guests
+        if path == "/api/guests":
+            self.send_response(200)
+            self.end_headers_with_cors("application/json; charset=utf-8")
+            self.wfile.write(json.dumps(MOCK_GUESTS).encode("utf-8"))
+            return
+
         if path == "/api/rsvp":
             self.send_response(200)
             self.end_headers_with_cors("application/json; charset=utf-8")
@@ -235,10 +311,95 @@ class UATRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": True, "message": "UAT configuration updated in memory."}).encode("utf-8"))
             return
 
+        # 5. API: /api/guests (Single Add)
+        if path == "/api/guests":
+            new_id = max([g["id"] for g in MOCK_GUESTS] or [0]) + 1
+            token = body.get("name", f"guest-{new_id}").lower().replace(" ", "-")
+            new_guest = {
+                "id": new_id,
+                "name": body.get("name", "New Guest"),
+                "type": body.get("type", "FAMILY"),
+                "token": token,
+                "rsvpLink": f"http://localhost:3000/rsvp/{token}",
+                "status": "ACTIVE",
+                "rsvpStatus": "PENDING",
+                "members": [{"id": i+1, "name": m, "attending": False} for i, m in enumerate(body.get("members", []))],
+                "allowedEvents": body.get("allowedEvents", ["MEHENDI", "HALDI", "WEDDING"]),
+                "createdAt": "2026-11-17T00:00:00Z"
+            }
+            MOCK_GUESTS.append(new_guest)
+            self.send_response(201)
+            self.end_headers_with_cors("application/json; charset=utf-8")
+            self.wfile.write(json.dumps(new_guest).encode("utf-8"))
+            return
+
+        # 6. API: /api/guests/bulk (Bulk Add)
+        if path == "/api/guests/bulk":
+            created = []
+            for item in body:
+                new_id = max([g["id"] for g in MOCK_GUESTS] or [0]) + 1
+                token = item.get("name", f"guest-{new_id}").lower().replace(" ", "-")
+                new_g = {
+                    "id": new_id,
+                    "name": item.get("name", "Guest"),
+                    "type": item.get("type", "FAMILY"),
+                    "token": token,
+                    "rsvpLink": f"http://localhost:3000/rsvp/{token}",
+                    "status": "ACTIVE",
+                    "rsvpStatus": "PENDING",
+                    "members": [{"id": i+1, "name": m, "attending": False} for i, m in enumerate(item.get("members", []))],
+                    "allowedEvents": item.get("allowedEvents", ["MEHENDI", "HALDI", "WEDDING"]),
+                    "createdAt": "2026-11-17T00:00:00Z"
+                }
+                MOCK_GUESTS.append(new_g)
+                created.append(new_g)
+            self.send_response(201)
+            self.end_headers_with_cors("application/json; charset=utf-8")
+            self.wfile.write(json.dumps(created).encode("utf-8"))
+            return
+
         # Fallback 404
         self.send_response(404)
         self.end_headers_with_cors("application/json")
         self.wfile.write(json.dumps({"error": "Endpoint not found in UAT mode"}).encode("utf-8"))
+
+    def do_PATCH(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+        if path.startswith("/api/guests/") and path.endswith("/status"):
+            try:
+                gid = int(path.split("/")[3])
+                for g in MOCK_GUESTS:
+                    if g["id"] == gid:
+                        g["status"] = "INACTIVE" if g.get("status") == "ACTIVE" else "ACTIVE"
+                        break
+            except Exception:
+                pass
+            self.send_response(200)
+            self.end_headers_with_cors("application/json; charset=utf-8")
+            self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+            return
+        self.send_response(200)
+        self.end_headers_with_cors("application/json; charset=utf-8")
+        self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+
+    def do_DELETE(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+        if path.startswith("/api/guests/"):
+            try:
+                gid = int(path.split("/")[3])
+                global MOCK_GUESTS
+                MOCK_GUESTS = [g for g in MOCK_GUESTS if g["id"] != gid]
+            except Exception:
+                pass
+            self.send_response(200)
+            self.end_headers_with_cors("application/json; charset=utf-8")
+            self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+            return
+        self.send_response(200)
+        self.end_headers_with_cors("application/json; charset=utf-8")
+        self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
 
     def serve_static_file(self, rel_path):
         rel_path = rel_path.lstrip("/")
